@@ -1,0 +1,6 @@
+@import "src/components/core/styles/default";
+
+.#{$prefix}-backdrop-loading {
+  width: 100%;
+  height: 100%;
+}

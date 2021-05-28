@@ -1,0 +1,29 @@
+@import "src/components/core/styles/default";
+
+$workspace: '#{$prefix}-work-space';
+
+.#{$workspace} {
+  width: 100vw;
+  height: 100vh;
+
+  &-width {
+    max-width: 72rem;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  &-top-bar-left {
+    display: flex;
+    width: 7rem;
+    text-decoration: none;
+    justify-content: space-around;
+    align-items: center;
+  }
+
+  &-base-pane {
+    display: flex;
+    padding-top: 15px;
+    padding-bottom: 10px;
+    height: 100%;
+  }
+}

@@ -1,0 +1,66 @@
+@import "./app";
+
+.#{$application} {
+  display: grid;
+  height: 100vh;
+  width: 100vw;
+  box-sizing: border-box;
+  grid-template-rows: 48px calc(100% - 48px);
+  grid-template-columns: 100%;
+
+  .#{$application}-top-bar {
+
+    width: 100%;
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    padding: 0 5px;
+
+
+    > div:first-child {
+      flex: none;
+    }
+
+    > div:nth-child(2) {
+      flex: auto;
+    }
+
+    > div:nth-child(3) {
+      flex: none;
+      display: grid;
+      grid-template-columns: auto auto auto;
+      column-gap: 5px;
+      grid-column-gap: 5px;
+      justify-content: center;
+      align-content: center;
+      place-items: center;
+      vertical-align: middle;
+      text-align: center;
+      cursor: pointer;
+
+    }
+
+    > div:nth-child(4) {
+      flex: auto;
+    }
+
+    > div:last-child {
+      flex: none;
+    }
+  }
+
+  .#{$application}-top-background {
+    width: 100%;
+    z-index: -1;
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 78px;
+  }
+
+  .#{$application}-top-bar-back {
+    &:hover {
+      transform: scale(1.2);
+    }
+  }
+}

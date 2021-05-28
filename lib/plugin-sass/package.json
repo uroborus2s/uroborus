@@ -1,0 +1,27 @@
+{
+  "name": "plugin-sass",
+  "version": "1.0.0",
+  "description": "plugin-sass",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "files": [
+    "lib",
+    "src"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["sass"],
+  "author": "",
+  "license": "MIT",
+  "peerDependencies": {
+    "umi": "3.x"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "sass": "^1.32.11",
+    "sass-loader": "^10.1.1"
+  }
+}

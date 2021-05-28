@@ -1,0 +1,22 @@
+@import "src/components/core/styles/default";
+
+$tabs: '#{$prefix}-tabs';
+
+$tabs-bar-margin: 0 0 $margin-md 0;
+
+$tabs-ink-bar-color: #4580E6;
+$tabs-divider-color: #EBF1F5;
+
+
+$tabs-horizontal-margin: 0 32px 0 0;
+$tabs-horizontal-padding: $padding-sm 0;
+
+
+$tabs-title-font-size: $font-size-base;
+$tabs-title-font-size-lg: $font-size-lg;
+$tabs-title-font-size-sm: $font-size-base;
+
+$tabs-nav-font-color: var(--tab-font-color);
+$tabs-node-background-color: var(--tab-background-color);
+$tabs-node-background-color-active: var(--tab-background-color-active);
+$tabs-node-color-active:var(--tab-font-color-active)

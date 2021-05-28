@@ -1,0 +1,21 @@
+@import "../../app";
+
+$tableView: '#{$application}-main-table-view';
+
+.#{$tableView} {
+  flex: auto;
+
+  &-nav {
+    padding: 0 5px;
+  }
+
+
+  &-nav-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: auto;
+    grid-column-gap: 10px;
+    column-gap: 10px;
+    margin-left: 20px;
+  }
+}

@@ -1,0 +1,74 @@
+@import "src/components/core/styles/default";
+
+$base: '#{$prefix}-basis';
+
+.#{$base}-flex {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.#{$base}-items-center {
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  -ms-grid-row-align: center;
+  align-items: center;
+}
+
+.#{$base}-cursor-pointer {
+  cursor: pointer;
+}
+
+
+.#{$base}-scroll-y-container {
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+
+  &::-webkit-scrollbar-button {
+    display: none;
+    height: 0;
+    width: 12px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: hsla(0, 0%, 0%, 0.35);
+    background-clip: padding-box;
+    border: 3px solid rgba(0, 0, 0, 0);
+    border-radius: 6px;
+    min-height: 36px;
+  }
+}
+
+.#{$base}-hover-container {
+  &:hover .#{$base}-hover-display {
+    opacity: 1;
+  }
+
+  .#{$base}-hover-display {
+    opacity: 0;
+  }
+
+  &:hover .#{$base}-hover-disable-display {
+    opacity: 0;
+    display: none;
+  }
+
+  .#{$base}-hover-disable-display {
+    opacity: 1;
+  }
+}
+
+.#{$base}-menu-container{
+  width: 16rem;
+}

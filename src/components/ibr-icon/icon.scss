@@ -1,0 +1,34 @@
+@import "src/components/core/styles/default";
+
+$icon: '#{$prefix}-icon';
+
+
+.#{$icon} {
+  display: inline-block;
+  position: relative;
+
+  &:focus {
+    outline: none;
+  }
+
+
+  > svg {
+    text-align: center;
+    vertical-align: middle;
+
+  }
+
+  &-circle {
+    border-radius: 50%;
+    user-select: none;
+  }
+
+  &-square {
+    border-radius: 20%;
+    user-select: none;
+  }
+
+  &-button {
+    cursor: pointer;
+  }
+}

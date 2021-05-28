@@ -1,0 +1,22 @@
+@import '~normalize.css';
+
+:root {
+  --bg-color: #F5F8FA;
+  --color: #182026;
+  --tab-font-color: #293742;
+  --tab-background-color: #F5F8FA;
+  --tab-background-color-active: #F5F8FA;
+  --tab-font-color-active: #2d7ff9;
+}
+
+body {
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-color);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 18px;
+  color: var(--color);
+  font-family: -apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto, "黑体", "宋体", Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
+}
