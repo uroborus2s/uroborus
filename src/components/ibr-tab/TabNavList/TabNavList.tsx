@@ -13,18 +13,17 @@ import React, {
 import classNames from 'classnames';
 import {
   EditableConfig,
-  FontColorRefHandler,
   Tab,
   TabBarExtraContent,
   TabBarExtraPosition,
   TabSharedProps,
+  TabsType,
 } from '../types';
 import OperationNode from './OperationNode';
 import TabScrollButton from './TabScrollButton';
 import {
-  BaseColors,
   CommonProps,
-  UseAnimate,
+  cssFlexNone,
   UseForkRef,
   useRefCallback,
   useResizeObserver,
@@ -79,6 +78,7 @@ export interface TabNavListProps extends CommonProps, TabSharedProps {
   tabs: Tab[];
   tabNodeClassName?: string;
   tabNodeStyle?: React.CSSProperties;
+  type?: TabsType;
 }
 
 const TabNavList: ForwardRefRenderFunction<HTMLDivElement, TabNavListProps> = (
@@ -99,6 +99,7 @@ const TabNavList: ForwardRefRenderFunction<HTMLDivElement, TabNavListProps> = (
     tabNodeClassName,
     tabNodeStyle,
     tabs,
+    type,
   },
   ref,
 ) => {
@@ -298,47 +299,16 @@ const TabNavList: ForwardRefRenderFunction<HTMLDivElement, TabNavListProps> = (
     updateIndicatorState();
   }, [navLength, scrollNum, activeKey]);
 
-  const opeRef = useRef<FontColorRefHandler>();
-  const scrollLeftButRef = useRef<FontColorRefHandler>();
-  const scrollRightButRef = useRef<FontColorRefHandler>();
-
-  const addButRef = useRef<FontColorRefHandler>();
-  const [attrColor, setAttrColor] = useState(BaseColors.gary5);
-
-  useEffect(() => {
-    if (navRef.current) {
-      const navColor = getComputedStyle(navRef.current).color;
-      if (navColor !== attrColor)
-        setAttrColor(getComputedStyle(navRef.current).color);
-    }
-  });
-
-  useEffect(() => {
-    if (opeRef.current) opeRef.current.changeIconColor(attrColor);
-    if (scrollLeftButRef.current)
-      scrollLeftButRef.current.changeIconColor(attrColor);
-    if (addButRef.current) addButRef.current.changeIconColor(attrColor);
-    if (scrollRightButRef.current)
-      scrollRightButRef.current.changeIconColor(attrColor);
-  }, [attrColor]);
   return (
     <div
       // @ts-ignore
       ref={UseForkRef(navRef, ref)}
       role="tab-nav-bar"
-      className={classNames(prefixCls.concat('-nav'), className)}
+      className={classNames(prefixCls.concat('-nav'), cssFlexNone, className)}
       style={style}
     >
-      <ExtraContent
-        position="left"
-        extra={extra}
-        prefixCls={prefixCls}
-      ></ExtraContent>
-      <OperationNode
-        hasDropdown={hasDropdown}
-        prefixCls={prefixCls}
-        ref={opeRef as Ref<FontColorRefHandler>}
-      ></OperationNode>
+      <ExtraContent position="left" extra={extra} prefixCls={prefixCls} />
+      <OperationNode hasDropdown={hasDropdown} prefixCls={prefixCls} />
       <div
         className={prefixCls.concat('-nav-wrap')}
         // @ts-ignore
@@ -349,7 +319,7 @@ const TabNavList: ForwardRefRenderFunction<HTMLDivElement, TabNavListProps> = (
             [`${prefixCls}-ink-bar-animated`]: inkBar,
           })}
           style={inkStyle}
-        ></span>
+        />
         <div
           className={`${prefixCls}-nav-list`}
           ref={tabListRef as LegacyRef<HTMLDivElement>}
@@ -359,9 +329,8 @@ const TabNavList: ForwardRefRenderFunction<HTMLDivElement, TabNavListProps> = (
             prefixCls={prefixCls}
             direction={rtl ? 'right' : 'left'}
             disabled={!scrollBtn.start}
-            ref={scrollLeftButRef as Ref<FontColorRefHandler>}
             onClick={handleLeftScrollClick}
-          ></TabScrollButton>
+          />
           <TabList
             prefixCls={prefixCls}
             id={id}
@@ -377,47 +346,23 @@ const TabNavList: ForwardRefRenderFunction<HTMLDivElement, TabNavListProps> = (
             editable={editable}
             onWheel={handleWheel}
             onKeyDown={handleKeyDown}
+            type={type}
+            onClick={onTabClick}
           />
           <TabScrollButton
             prefixCls={prefixCls}
             direction={rtl ? 'left' : 'right'}
             disabled={!scrollBtn.end}
-            ref={scrollRightButRef as Ref<FontColorRefHandler>}
             onClick={handleRightScrollClick}
-          ></TabScrollButton>
+          />
         </div>
         {displayAddButton && (
-          <AddButton
-            ref={addButRef as Ref<FontColorRefHandler>}
-            addIcon={editable?.addIcon}
-            prefixCls={prefixCls}
-          />
+          <AddButton addIcon={editable?.addIcon} prefixCls={prefixCls} />
         )}
       </div>
-      <ExtraContent
-        position="right"
-        extra={extra}
-        prefixCls={prefixCls}
-      ></ExtraContent>
+      <ExtraContent position="right" extra={extra} prefixCls={prefixCls} />
     </div>
   );
 };
 
-function moveTabsScroll(
-  delta: number,
-  scrollStart: 'scrollTop' | 'scrollLeft',
-  ref: HTMLDivElement | undefined,
-  rtl: boolean,
-) {
-  if (ref) {
-    let scrollValue = ref[scrollStart];
-    if (scrollStart == 'scrollTop') {
-      scrollValue += delta;
-    } else {
-      scrollValue += delta * (rtl ? -1 : 1); // Fix for Edge
-    }
-    UseAnimate(scrollStart, ref, scrollValue);
-  }
-}
-
-export default React.forwardRef(TabNavList);
+export default memo(React.forwardRef(TabNavList));

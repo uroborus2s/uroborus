@@ -35,16 +35,12 @@ const OperatingList: React.FC<CSSPrefixRequiredProps> = ({ prefixCls }) => {
           root: `${prefixCls}-table-item`,
         }}
       >
-        <Icon
-          icon={FaFileSignature}
-          colorName={iconColors.cyan}
-          size={20}
-        ></Icon>
+        <Icon icon={FaFileSignature} colorName={iconColors.cyan} size={20} />
         <ListItemText
           primary="新建空白表"
           primaryTypographyProps={{ variant: 'subtitle2', noWrap: true }}
         />
-        <Icon icon={MdAdd} size={20}></Icon>
+        <Icon icon={MdAdd} size={20} />
       </ListItem>
       <ListSubheader
         style={{
@@ -64,12 +60,12 @@ const OperatingList: React.FC<CSSPrefixRequiredProps> = ({ prefixCls }) => {
           root: `${prefixCls}-table-item`,
         }}
       >
-        <Icon icon={FaFileCsv} colorName={iconColors.green} size={20}></Icon>
+        <Icon icon={FaFileCsv} colorName={iconColors.green} size={20} />
         <ListItemText
           primary="导入csv"
           primaryTypographyProps={{ variant: 'subtitle2', noWrap: true }}
         />
-        <Icon icon={MdAdd} size={20}></Icon>
+        <Icon icon={MdAdd} size={20} />
       </ListItem>
       <ListItem
         button
@@ -77,12 +73,12 @@ const OperatingList: React.FC<CSSPrefixRequiredProps> = ({ prefixCls }) => {
           root: `${prefixCls}-table-item`,
         }}
       >
-        <Icon icon={FaFileExcel} colorName={iconColors.red} size={20}></Icon>
+        <Icon icon={FaFileExcel} colorName={iconColors.red} size={20} />
         <ListItemText
           primary="导入Excel"
           primaryTypographyProps={{ variant: 'subtitle2', noWrap: true }}
         />
-        <Icon icon={MdAdd} size={20}></Icon>
+        <Icon icon={MdAdd} size={20} />
       </ListItem>
       <ListItem
         button
@@ -90,12 +86,12 @@ const OperatingList: React.FC<CSSPrefixRequiredProps> = ({ prefixCls }) => {
           root: `${prefixCls}-table-item`,
         }}
       >
-        <Icon icon={FaFileAlt} colorName={iconColors.pink} size={20}></Icon>
+        <Icon icon={FaFileAlt} colorName={iconColors.pink} size={20} />
         <ListItemText
           primary="导入Numbers"
           primaryTypographyProps={{ variant: 'subtitle2', noWrap: true }}
         />
-        <Icon icon={MdAdd} size={20}></Icon>
+        <Icon icon={MdAdd} size={20} />
       </ListItem>
     </List>
   );

@@ -2,12 +2,15 @@ import { defineConfig } from 'umi';
 
 export default defineConfig({
   define: {
-    apiBaseUrl: 'http://localhost:8000/',
-    socketServer: 'ws://localhost:8000/',
+    apiBaseUrl: 'http://8.136.107.252:8000/api/v1/',
+    socketServer: 'ws://8.136.107.252:8000/',
   },
   alias: {
     '@ibr': '@/components',
-    '@hooks': '@/components/core/hooks',
+    '@ibr-types': '@/core/ibr-types',
+    '@ibr-request': '@/core/ibr-request',
+    '@ibr-class': '@/core/ibr-class',
+    '@hooks': '@/core/hooks',
   },
   plugins: ['plugin-sass'],
   nodeModulesTransform: {

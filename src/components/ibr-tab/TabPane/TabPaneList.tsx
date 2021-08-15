@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import classNames from 'classnames';
 import TabPane from './TabPane';
 import { Tab, TabSharedProps } from '../types';
-import { CommonProps } from '@/util';
+import { CommonProps, cssFlexAuto } from '@/util';
 import { useRecoilValue } from 'recoil';
 import { TabActiveKey } from '@ibr/ibr-tab/mode/key';
 
@@ -30,6 +30,7 @@ const TabPanelList: React.FC<TabPanelList> = ({
     {
       [`${prefixCls}--content-animated`]: animated,
     },
+    cssFlexAuto,
     className,
   );
 

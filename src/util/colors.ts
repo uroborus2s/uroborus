@@ -21,6 +21,11 @@ export const BaseColors = {
   forest3: '#29A634',
   forest4: '#43BF4D',
   forest5: '#62D96B',
+  blue1: '#0E5A8A',
+  blue2: '#106BA3',
+  blue3: '#137CBD',
+  blue4: '#2B95D6',
+  blue5: '#48AFF0',
 };
 
 export enum FontColor {

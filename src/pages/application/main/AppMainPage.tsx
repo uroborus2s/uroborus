@@ -13,8 +13,8 @@ const AppMainPage: React.FC<CSSPrefixRequiredProps> = ({ prefixCls }) => {
 
   return (
     <div className={prefix} onContextMenuCapture={handlerContext}>
-      <TableSideBar prefixCls={prefix}></TableSideBar>
-      <TableView prefixCls={prefix}></TableView>
+      <TableSideBar prefixCls={prefix} />
+      <TableView prefixCls={prefix} />
     </div>
   );
 };

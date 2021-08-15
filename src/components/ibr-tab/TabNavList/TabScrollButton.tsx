@@ -1,15 +1,9 @@
-import React, {
-  forwardRef,
-  ForwardRefRenderFunction,
-  HTMLAttributes,
-  memo,
-} from 'react';
+import React, { HTMLAttributes, memo } from 'react';
 import classNames from 'classnames';
-import { CSSPrefixRequiredProps } from '@/util';
 import Icon from '@ibr/ibr-icon/Icon';
-import useChangeFontColor from '@ibr/ibr-tab/hooks/useChangeFontColor';
-import { FontColorRefHandler } from '@ibr/ibr-tab';
 import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
+import { useRecoilValue } from 'recoil';
+import { TabFontColor } from '@ibr/ibr-tab/mode/key';
 
 export interface TabScrollButtonProps extends HTMLAttributes<HTMLOrSVGElement> {
   /**
@@ -24,13 +18,14 @@ export interface TabScrollButtonProps extends HTMLAttributes<HTMLOrSVGElement> {
   prefixCls: string;
 }
 
-const TabScrollButton: ForwardRefRenderFunction<
-  FontColorRefHandler,
-  TabScrollButtonProps
-> = (
-  { onClick, className, direction, disabled = false, prefixCls, ...other },
-  ref,
-) => {
+const TabScrollButton: React.FC<TabScrollButtonProps> = ({
+  onClick,
+  className,
+  direction,
+  disabled = false,
+  prefixCls,
+  ...other
+}) => {
   const buttonClass = classNames(
     prefixCls.concat('-nav-scroll-button'),
     { [`${prefixCls}-nav-scroll-button-disabled`]: disabled },
@@ -40,7 +35,7 @@ const TabScrollButton: ForwardRefRenderFunction<
 
   const iconType = direction === 'left' ? IoIosArrowBack : IoIosArrowForward;
 
-  const color = useChangeFontColor(ref);
+  const color = useRecoilValue(TabFontColor);
 
   return (
     <Icon
@@ -57,4 +52,4 @@ const TabScrollButton: ForwardRefRenderFunction<
   );
 };
 
-export default memo(forwardRef(TabScrollButton));
+export default memo(TabScrollButton);

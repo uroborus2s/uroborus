@@ -40,7 +40,7 @@ const TableSideBar: React.FC<CSSPrefixRequiredProps> = ({ prefixCls }) => {
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <Icon icon={IoSearch} size={20}></Icon>
+                <Icon icon={IoSearch} size={20} />
               </InputAdornment>
             ),
             inputRef: inputRef,
@@ -52,10 +52,10 @@ const TableSideBar: React.FC<CSSPrefixRequiredProps> = ({ prefixCls }) => {
         />
         <TableList prefixCls={prefix} />
         <Divider classes={{ root: `${sideBar}-divider` }} />
-        <OperatingList prefixCls={sideBar}></OperatingList>
+        <OperatingList prefixCls={sideBar} />
       </div>
 
-      <MoveDivider prefixCls={prefix}></MoveDivider>
+      <MoveDivider prefixCls={prefix} />
     </div>
   );
 };

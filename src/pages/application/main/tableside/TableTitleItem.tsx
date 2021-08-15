@@ -20,33 +20,35 @@ import {
 } from '@material-ui/core';
 import { CgFile, CgImport, CgTemplate } from 'react-icons/cg';
 import useMenuShow from '@/util/hooks/useMenuShow';
-import { TableSchemaMode } from '@/models';
 import { AiOutlineBorderlessTable } from 'react-icons/ai';
+import { useRecoilValue } from 'recoil';
+import { baseState } from '@/models/baseState';
 
 interface TableTitleItemProps extends CSSPrefixRequiredProps {
-  table: TableSchemaMode;
-  selected: string;
+  tableId: string;
+  selected: boolean;
   onSelect: MouseEventHandler<HTMLElement>;
 }
 
 const TableTitleItem: React.FC<TableTitleItemProps> = ({
-  table,
+  tableId,
   prefixCls,
   onSelect,
   selected,
 }) => {
   const { anchorEl, handleOpen, handleClose } = useMenuShow();
   const textStyle = { fontSize: '14px', marginLeft: '5px' };
+  const name = useRecoilValue(baseState.useGetTableNameFromId(tableId));
 
   return (
     <>
       <ListItem
-        id={table!.id}
+        id={tableId}
         button
         classes={{
           root: classNames(`${prefixCls}-table-item`, cssHoverContainer),
         }}
-        selected={selected === table!.id}
+        selected={selected}
         onClick={onSelect}
         disableRipple
         onContextMenu={handleOpen}
@@ -55,10 +57,10 @@ const TableTitleItem: React.FC<TableTitleItemProps> = ({
           icon={AiOutlineBorderlessTable}
           size={20}
           colorName={BaseColors.forest1}
-        ></Icon>
+        />
 
         <ListItemText
-          primary={table!.name}
+          primary={name}
           primaryTypographyProps={{ variant: 'subtitle1', noWrap: true }}
         />
         <Icon
@@ -70,7 +72,7 @@ const TableTitleItem: React.FC<TableTitleItemProps> = ({
           outline="circle"
           onClick={handleOpen}
         />
-        {selected === table!.id && (
+        {selected && (
           <Icon icon={BiCheck} size={20} className={cssHoverDisableDisplay} />
         )}
       </ListItem>

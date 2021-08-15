@@ -1,41 +1,71 @@
-import React, { createContext, useEffect, useState } from 'react';
-import { scrollBarSize, useResizeObserver } from '@/util';
+import React, { useEffect } from 'react';
+import UseDebounce from '@/util/hooks/useDebounce';
+import { atom, useSetRecoilState } from 'recoil';
 
-const ScrollBarSizeContext = createContext<scrollBarSize>({
-  wight: 0,
-  height: 0,
+export const windowScrollBarSize = atom({
+  key: 'windowResize',
+  default: {
+    scrollWidth: 0,
+    scrollHeight: 0,
+    windowsWidth: 0,
+    windowsHeight: 0,
+  },
 });
 
 const ScrollBarSize: React.FC = ({ children }) => {
   const nodeRef = React.useRef<HTMLDivElement>();
-  const { width, height, clientWidth, clientHeight } = useResizeObserver(
-    nodeRef,
-  );
-  const [size, setSize] = useState({ wight: 0, height: 0 });
+  const setSize = useSetRecoilState(windowScrollBarSize);
+
+  const handleResize = UseDebounce(() => {
+    let width = 0;
+    let clientHeight = 0;
+    let height = 0;
+    let clientWidth = 0;
+    if (nodeRef.current) {
+      const rect = nodeRef.current.getBoundingClientRect();
+      width = rect.width;
+      height = rect.height;
+      clientHeight = nodeRef.current.clientHeight;
+      clientWidth = nodeRef.current.clientWidth;
+    }
+    console.log('窗口的大小', clientWidth, clientHeight, width, height);
+    setSize({
+      scrollWidth: Math.floor(width - clientWidth),
+      scrollHeight: Math.floor(height - clientHeight),
+      windowsWidth: clientWidth,
+      windowsHeight: clientHeight,
+    });
+  }, 200);
+
   useEffect(() => {
-    setSize({ wight: width - clientWidth, height: height - clientHeight });
-  }, [width, height, clientWidth, clientHeight]);
+    handleResize();
+    window.onresize = handleResize;
+    // window.addEventListener('resize', handleResize);
+    return () => {
+      window.onresize = null;
+    };
+  }, []);
 
   return (
     <>
       <div
         style={{
-          position: 'absolute',
+          boxSizing: 'border-box',
+          position: 'fixed',
           overflow: 'scroll',
-          width: 99,
-          height: 99,
-          top: -999,
+          width: '20vw',
+          height: '20vh',
+          visibility: 'hidden',
+          top: 0,
+          left: 0,
         }}
         // @ts-ignore
         ref={nodeRef}
         id="scroll size"
       ></div>
-      <ScrollBarSizeContext.Provider value={size}>
-        {children}
-      </ScrollBarSizeContext.Provider>
+      {children}
     </>
   );
 };
 
-export { ScrollBarSizeContext };
 export default ScrollBarSize;

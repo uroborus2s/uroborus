@@ -12,10 +12,10 @@ import {
   RiSuitcaseLine,
 } from 'react-icons/ri';
 import { GiBookshelf, GiSuitcase } from 'react-icons/gi';
-import { ViewSchemaType } from '@/models';
 import { BsFillGrid1X2Fill, BsKanbanFill } from 'react-icons/bs';
 
 import { SiGooglecalendar } from 'react-icons/si';
+import { ViewSchemaType } from '@/models/types';
 
 export const DefaultIcon = FaRegFile;
 
@@ -28,6 +28,7 @@ export const IconNames = {
   suitcaseAlt: GiSuitcase,
   ambulance: FaAmbulance,
   book: GiBookshelf,
+  blank: FaRegFile,
 };
 export type AppIconTypes = keyof typeof IconNames;
 
@@ -37,10 +38,10 @@ export function getAppIcon(name: AppIconTypes | null) {
     if (icon) {
       return icon;
     } else {
-      return DefaultIcon;
+      return IconNames['blank'];
     }
   } else {
-    return DefaultIcon;
+    return IconNames['blank'];
   }
 }
 

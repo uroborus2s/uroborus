@@ -1,4 +1,4 @@
-export default function <T extends Record<string, any>, K extends keyof T>(
+export default function <T extends Document<string, any>, K extends keyof T>(
   obj: T,
   ...attr: K[]
 ) {

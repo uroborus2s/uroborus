@@ -30,17 +30,19 @@
 
   &-top {
     > .#{$tabs}-nav {
-      margin-bottom: $margin-sm;
 
       .#{$tabs}-ink-bar {
         bottom: 0;
       }
     }
+
+    > .#{$tabs}-content {
+      padding-top: $margin-sm;
+    }
   }
 
   &-bottom {
     > .#{$tabs}-nav {
-      margin-top: $margin-sm;
       order: 1;
 
       .#{$tabs}-ink-bar {
@@ -50,6 +52,7 @@
 
     > .#{$tabs}-content {
       order: 0;
+      padding-bottom: $margin-sm;;
     }
   }
 

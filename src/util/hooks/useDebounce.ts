@@ -7,17 +7,21 @@ export default function useDebounce(
 ): CallBackFun {
   const timeout = useRef();
   const removedTimeout = useRef(false);
-  useEffect(() => () => {
-    removedTimeout.current = true;
-    clearTimeout(timeout.current);
-  });
+  useEffect(
+    () => () => {
+      removedTimeout.current = true;
+      clearTimeout(timeout.current);
+    },
+    [],
+  );
   const timeWait = wait ?? 166;
+
   return (...arg: any[]) => {
     clearTimeout(timeout.current);
-    if (!removedTimeout) {
+    if (!removedTimeout.current) {
       // @ts-ignore
       timeout.current = setTimeout(() => {
-        func.call(void 0, ...arg);
+        func(...arg);
       }, timeWait);
     }
   };

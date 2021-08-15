@@ -1,25 +1,19 @@
-import React, {
-  forwardRef,
-  ForwardRefRenderFunction,
-  memo,
-  ReactNode,
-} from 'react';
-import { FontColorRefHandler } from '@ibr/ibr-tab';
-import useChangeFontColor from '@ibr/ibr-tab/hooks/useChangeFontColor';
+import React, { memo, ReactNode } from 'react';
 import Icon from '@ibr/ibr-icon/Icon';
 import { GrAdd } from 'react-icons/gr';
 import { CSSPrefixRequiredProps } from '@/util';
-import TabScrollButton from '@ibr/ibr-tab/TabNavList/TabScrollButton';
+import { useRecoilValue } from 'recoil';
+import { TabFontColor } from '@ibr/ibr-tab/mode/key';
 
 export interface AddButtonProps extends CSSPrefixRequiredProps {
   addIcon?: ReactNode;
 }
 
-const AddButton: ForwardRefRenderFunction<
-  FontColorRefHandler,
-  AddButtonProps
-> = ({ addIcon: AddNode, prefixCls }, ref) => {
-  const color = useChangeFontColor(ref);
+const AddButton: React.FC<AddButtonProps> = ({
+  addIcon: AddNode,
+  prefixCls,
+}) => {
+  const color = useRecoilValue(TabFontColor);
 
   return AddNode ? (
     // @ts-ignore
@@ -36,4 +30,4 @@ const AddButton: ForwardRefRenderFunction<
   );
 };
 
-export default memo(forwardRef(AddButton));
+export default memo(AddButton);

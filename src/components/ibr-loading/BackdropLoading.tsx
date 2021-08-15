@@ -14,7 +14,7 @@ const BackdropLoading: React.FC<BackdropLoadingProps> = ({
 
   return (
     <Backdrop classes={{ root: preCls }} open={open}>
-      loading...
+      数据加载中...
       <CircularProgress />
     </Backdrop>
   );

@@ -7,7 +7,7 @@ import { CommonProps } from '@/util';
 const TopBarLeft: React.FC<CommonProps> = ({ className }) => {
   return (
     <Link className={className} to="/">
-      <FaLaravel size={24} color="#D9822B"></FaLaravel>
+      <FaLaravel size={24} color="#D9822B" />
       <Typography variant="h6" display="block">
         经纬表
       </Typography>

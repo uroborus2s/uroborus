@@ -1,7 +1,6 @@
 import {
   CSSPrefixRequiredProps,
   getAppIcon,
-  getIconColor,
   getIconTypeColor,
   getInvertOfFontColor,
 } from '@/util';
@@ -10,26 +9,26 @@ import { Tooltip, Typography } from '@material-ui/core';
 import Icon from '@ibr/ibr-icon/Icon';
 import { AiFillCaretDown } from 'react-icons/ai';
 import SettingBar from '@/pages/setting/SettingBar';
-import EditApplicationInfo from '@/pages/editApplicationInfo/EditApplicationInfo';
+import EditApplicationInfo from '@/pages/editbaseinfo/EditBaseDialogPage';
 import useDialogShow from '@/util/hooks/useDialogShow';
 import { Link } from 'umi';
 import { GiZigzagLeaf } from 'react-icons/gi';
-import { UsedApplication } from '@/models';
-import { useHover } from 'ahooks';
 import { useRecoilValue } from 'recoil';
+import { currentBaseColor, currentBaseIcon, currentBaseName } from '@/models';
 
 const AppTopBar: React.FC<CSSPrefixRequiredProps> = ({ prefixCls }) => {
   const { open, handleOpen, handleClose } = useDialogShow();
   const titleRef = useRef<HTMLDivElement>();
-  const isHovering = useHover(titleRef);
-  const application = useRecoilValue(UsedApplication);
-  if (Object.keys(application).length === 0) {
-    // @ts-ignore
-    return <div ref={titleRef} />;
-  }
+  console.log('render AppTopBar page');
+  const appColorType = useRecoilValue(currentBaseColor);
+  const appName = useRecoilValue(currentBaseName);
+  const appIconType = useRecoilValue(currentBaseIcon);
+  console.log(
+    `读取atom数据，color：${appColorType},name:${appName},icon:${appIconType}`,
+  );
 
   //当前颜色下文字图标的颜色类型
-  const appColor = getIconTypeColor(application.color);
+  const appColor = getIconTypeColor(appColorType);
   const fontColor = getInvertOfFontColor(appColor);
 
   return (
@@ -47,17 +46,17 @@ const AppTopBar: React.FC<CSSPrefixRequiredProps> = ({ prefixCls }) => {
             </Link>
           </Tooltip>
         </div>
-        <div></div>
+        <div />
         <div
           onClick={handleOpen}
           style={{ color: fontColor }}
           ref={titleRef as RefObject<HTMLDivElement>}
         >
-          <Icon icon={getAppIcon(application.icon)} colorName={fontColor} />
-          <Typography variant="h6">{application.name}</Typography>
+          <Icon icon={getAppIcon(appIconType)} colorName={fontColor} />
+          <Typography variant="h6">{appName}</Typography>
           <Icon icon={AiFillCaretDown} colorName={fontColor} />
         </div>
-        <div></div>
+        <div />
         <SettingBar color={fontColor} />
         <div
           style={{ backgroundColor: appColor }}
@@ -67,8 +66,8 @@ const AppTopBar: React.FC<CSSPrefixRequiredProps> = ({ prefixCls }) => {
       <EditApplicationInfo
         open={open}
         onClose={handleClose}
-        application={application}
-      ></EditApplicationInfo>
+        appId={undefined}
+      />
     </>
   );
 };

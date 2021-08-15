@@ -6,7 +6,12 @@ import React, {
   WheelEventHandler,
 } from 'react';
 
-import { EditableConfig, Tab, TabSharedProps } from '@ibr/ibr-tab/types';
+import {
+  EditableConfig,
+  Tab,
+  TabSharedProps,
+  TabsType,
+} from '@ibr/ibr-tab/types';
 import TabNode from '@ibr/ibr-tab/TabNavList/TabNode';
 import { Droppable } from 'react-beautiful-dnd';
 import mergeRefs from '@/util/hooks/useForkRef';
@@ -23,6 +28,8 @@ interface TabListProps extends TabSharedProps {
   getBtnRef: (key: React.Key) => RefObject<HTMLDivElement>;
   onKeyDown?: KeyboardEventHandler<HTMLDivElement>;
   onWheel?: WheelEventHandler<HTMLDivElement>;
+  type?: TabsType;
+  onClick?: (e: React.MouseEvent | React.KeyboardEvent) => void;
 }
 
 const TabList: ForwardRefRenderFunction<HTMLDivElement, TabListProps> = (
@@ -40,6 +47,8 @@ const TabList: ForwardRefRenderFunction<HTMLDivElement, TabListProps> = (
     getBtnRef,
     onKeyDown,
     onWheel,
+    type,
+    onClick,
   },
   ref,
 ) => {
@@ -61,6 +70,8 @@ const TabList: ForwardRefRenderFunction<HTMLDivElement, TabListProps> = (
       tabBarGutter={tabBarGutter}
       style={tabNodeStyle}
       editable={editable}
+      type={type}
+      onClick={onClick}
     ></TabNode>
   );
 

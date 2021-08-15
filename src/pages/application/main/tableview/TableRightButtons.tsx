@@ -16,15 +16,10 @@ const TableRightButtons: React.FC<TableRightButtonsProps> = ({
   return (
     <div className={`${prefixCls}-nav-buttons`}>
       <Tooltip title="协作人员配置" placeholder="bottom">
-        <Icon icon={TiGroup} button colorName={fontColor} size={16}></Icon>
+        <Icon icon={TiGroup} button colorName={fontColor} size={16} />
       </Tooltip>
       <Tooltip title="历史记录" placeholder="bottom">
-        <Icon
-          icon={RiHistoryLine}
-          button
-          colorName={fontColor}
-          size={16}
-        ></Icon>
+        <Icon icon={RiHistoryLine} button colorName={fontColor} size={16} />
       </Tooltip>
       <Tooltip title="分享视图" placeholder="bottom">
         <Icon
@@ -32,7 +27,7 @@ const TableRightButtons: React.FC<TableRightButtonsProps> = ({
           button
           colorName={fontColor}
           size={16}
-        ></Icon>
+        />
       </Tooltip>
     </div>
   );

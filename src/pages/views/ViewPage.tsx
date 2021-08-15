@@ -1,17 +1,22 @@
 import React from 'react';
-import { ViewSchemaMode } from '@/models';
 import { CSSPrefixProps, getPrefixCls } from '@/util';
 import GridView from './gridview/GridView';
+import { tableState } from '@/models/tableState';
 
 interface ViewPageProps extends CSSPrefixProps {
-  schema: ViewSchemaMode;
+  viewId: string;
+  loading: boolean;
 }
 
-const ViewPage: React.FC<ViewPageProps> = ({ schema, prefixCls }) => {
+const ViewPage: React.FC<ViewPageProps> = ({ loading, viewId, prefixCls }) => {
   const preCls = getPrefixCls('views', prefixCls);
 
+  if (loading) return <div>loading...</div>;
+
+  const viewInfo = tableState.getViewInfoFromId(viewId);
+
   let node = null;
-  switch (schema.type) {
+  switch (viewInfo.type) {
     case 'calendar':
       break;
     case 'form':
@@ -19,7 +24,7 @@ const ViewPage: React.FC<ViewPageProps> = ({ schema, prefixCls }) => {
     case 'gallery':
       break;
     case 'grid':
-      node = <GridView prefixCls={preCls} schema={schema}></GridView>;
+      node = <GridView prefixCls={preCls} />;
       break;
     case 'kanban':
       break;

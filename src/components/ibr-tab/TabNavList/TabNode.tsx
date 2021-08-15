@@ -1,4 +1,5 @@
 import React, {
+  CSSProperties,
   FocusEvent,
   forwardRef,
   ForwardRefRenderFunction,
@@ -7,10 +8,15 @@ import React, {
   useState,
 } from 'react';
 import classNames from 'classnames';
-import { EditableConfig, Tab, TabSharedProps } from '../types';
+import { EditableConfig, Tab, TabSharedProps, TabsType } from '../types';
 import { InputBase } from '@material-ui/core';
-import { useSetRecoilState } from 'recoil';
-import { TabActiveKey } from '@ibr/ibr-tab/mode/key';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
+import {
+  ActiveTabFontColor,
+  ActiveTabNodeBackgroundColor,
+  TabActiveKey,
+  TabNodeBackgroundColor,
+} from '@ibr/ibr-tab/mode/key';
 import { Draggable } from 'react-beautiful-dnd';
 import { CommonProps, UseForkRef } from '@/util';
 
@@ -29,6 +35,7 @@ interface TabNodeProps extends TabSharedProps, CommonProps {
   onChange?: React.ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
   active: boolean;
   editable?: EditableConfig;
+  type?: TabsType;
 }
 
 const TabNode: ForwardRefRenderFunction<HTMLElement, TabNodeProps> = (
@@ -47,6 +54,7 @@ const TabNode: ForwardRefRenderFunction<HTMLElement, TabNodeProps> = (
     editable,
     className,
     style,
+    type,
     ...other
   },
   ref,
@@ -62,9 +70,21 @@ const TabNode: ForwardRefRenderFunction<HTMLElement, TabNodeProps> = (
   }
 
   const clickActive = useSetRecoilState(TabActiveKey);
-
+  const activeFontColor = useRecoilValue(ActiveTabFontColor);
+  const tabBgColor = useRecoilValue(TabNodeBackgroundColor);
+  const activeTabBgColor = useRecoilValue(ActiveTabNodeBackgroundColor);
   const disabled = tab.disabled ?? false;
   const tabKey = tab.tabKey;
+
+  let btnStyle: CSSProperties = {};
+
+  if (!disabled && type !== 'line') {
+    if (active) {
+      btnStyle = { color: activeFontColor, backgroundColor: activeTabBgColor };
+    } else {
+      btnStyle = { backgroundColor: tabBgColor };
+    }
+  }
 
   const onInternalClick = (e: React.MouseEvent | React.KeyboardEvent): void => {
     if (disabled) return;
@@ -99,10 +119,11 @@ const TabNode: ForwardRefRenderFunction<HTMLElement, TabNodeProps> = (
   );
 
   const textNodeClass = classNames(tabPrefix, tabPrefix.concat('-text'));
-  const id = idProp && ''.concat(idProp, '-tab-').concat(String(tabKey));
+  const id =
+    idProp && 'draggable'.concat(idProp, '-tab-').concat(String(tabKey));
 
   const buttonNode = (
-    <div className={tabPrefix.concat('-btn')} style={style}>
+    <div className={tabPrefix.concat('-btn')} style={btnStyle}>
       {tab.tab(active)}
     </div>
   );
@@ -134,6 +155,7 @@ const TabNode: ForwardRefRenderFunction<HTMLElement, TabNodeProps> = (
             onBlur={onInternalBlur}
             {...dragProps}
             {...dragProvided.dragHandleProps}
+            id={String(tabKey)}
             role="tab"
           >
             {mode ? textFieldNode : buttonNode}

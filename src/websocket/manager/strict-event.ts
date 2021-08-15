@@ -1,7 +1,7 @@
 import Emitter from 'component-emitter';
 import { NullableObject } from '@/util';
 
-export type EventMap = Record<string, (...args: any[]) => void>;
+export type EventMap = Document<string, (...args: any[]) => void>;
 
 export type Merge<L extends EventMap, T extends EventMap> = {
   [P in keyof L]: L[P];

@@ -25,7 +25,6 @@ const MoveDivider: React.FC<CSSPrefixRequiredProps> = ({ prefixCls }) => {
     }
   });
 
-  console.log('移动', isDrag);
   return (
     <div
       className={`${prefixCls}-divider`}

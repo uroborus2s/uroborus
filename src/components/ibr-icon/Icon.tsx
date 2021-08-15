@@ -22,6 +22,8 @@ interface IconProps
   button?: boolean;
   onClick?: MouseEventHandler<HTMLSpanElement>;
   margin?: number;
+  disableHover?: boolean;
+  id?: string;
 }
 
 const Icon: ForwardRefRenderFunction<HTMLSpanElement, IconProps> = (
@@ -37,6 +39,8 @@ const Icon: ForwardRefRenderFunction<HTMLSpanElement, IconProps> = (
     style: styleProp,
     colorName: colorProp,
     tabIndex,
+    disableHover,
+    id,
     ...other
   },
   ref,
@@ -47,11 +51,12 @@ const Icon: ForwardRefRenderFunction<HTMLSpanElement, IconProps> = (
   const colorName = colorProp ?? BaseColors.gary3;
   const { hoverColor, inlineColor } = getIconColor(colorName);
   const margin = marginProp ?? 5;
+  const disHover = disableHover ?? false;
   let outColor;
 
   const [isHover, setHover] = useState(false);
 
-  if (button && isHover) {
+  if (button && !disHover && isHover) {
     outColor = hoverColor;
   } else {
     outColor = colorName;
@@ -99,6 +104,7 @@ const Icon: ForwardRefRenderFunction<HTMLSpanElement, IconProps> = (
           className={outClass}
           ref={ref as LegacyRef<HTMLSpanElement>}
           tabIndex={tabIndex}
+          id={id}
           {...buttonProps}
         >
           {SVG && (
@@ -120,6 +126,7 @@ const Icon: ForwardRefRenderFunction<HTMLSpanElement, IconProps> = (
           ref={ref as LegacyRef<HTMLSpanElement>}
           style={{ margin: `0 ${margin}px`, ...styleProp }}
           tabIndex={tabIndex}
+          id={id}
           {...buttonProps}
         >
           {SVG && <SVG size={size ?? 16} color={outColor} {...other}></SVG>}

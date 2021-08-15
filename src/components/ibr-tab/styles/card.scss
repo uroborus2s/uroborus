@@ -11,17 +11,14 @@
 
   .#{$tabs}-tab {
     cursor: pointer;
-    border-top-right-radius: 3px;
-    border-top-left-radius: 3px;
 
-    &-active {
-      font-weight: 500;
-      background-color: $tabs-node-background-color-active;
-
-    }
 
     &-btn {
-
+      width: 100%;
+      height: 100%;
+      border-top-right-radius: 3px;
+      border-top-left-radius: 3px;
+      padding: 0 8px;
     }
   }
 

@@ -39,6 +39,9 @@ export const defaultPrefixCls = 'ibr';
 export const baseClass = `${defaultPrefixCls}-basis`;
 
 export const cssFlex = `${baseClass}-flex`;
+export const cssFlexAuto = `${baseClass}-flex-auto`;
+export const cssFlexNone = `${baseClass}-flex-none`;
+
 export const cssFlexiCenter = `${baseClass}-items-center`;
 export const cssCursorPointer = `${baseClass}-cursor-pointer`;
 

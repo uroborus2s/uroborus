@@ -3,25 +3,23 @@ import React, {
   ForwardRefRenderFunction,
   memo,
   useEffect,
-  useImperativeHandle,
-  useState,
 } from 'react';
 import classNames from 'classnames';
-import { BaseColors, CSSPrefixRequiredProps } from '@/util';
+import { CSSPrefixRequiredProps } from '@/util';
 import Icon from '@ibr/ibr-icon/Icon';
 import { HiMenu } from 'react-icons/hi';
-import { FontColorRefHandler } from '@ibr/ibr-tab';
-import useChangeFontColor from '@ibr/ibr-tab/hooks/useChangeFontColor';
+import { useRecoilValue } from 'recoil';
+import { TabFontColor } from '@ibr/ibr-tab/mode/key';
 
 interface OperationNodeProps extends CSSPrefixRequiredProps {
   hasDropdown: boolean;
 }
 
 const OperationNode: ForwardRefRenderFunction<
-  FontColorRefHandler,
+  HTMLDivElement,
   OperationNodeProps
 > = ({ hasDropdown, prefixCls, style, className }, ref) => {
-  const color = useChangeFontColor(ref);
+  const color = useRecoilValue(TabFontColor);
 
   return (
     <div
@@ -30,6 +28,7 @@ const OperationNode: ForwardRefRenderFunction<
         { [`${prefixCls}-nav-operations-hidden`]: !hasDropdown },
         className,
       )}
+      ref={ref}
       style={style}
     >
       <Icon icon={HiMenu} colorName={color} button />

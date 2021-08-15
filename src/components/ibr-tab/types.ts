@@ -59,6 +59,13 @@ export interface TabSharedProps {
   rtl: boolean;
 }
 
-export interface FontColorRefHandler {
-  changeIconColor: (color: string) => void;
+export interface TabColorRefHandler {
+  changeColors: (colors: TabColorsOption) => void;
+}
+
+export interface TabColorsOption {
+  fontColor?: string;
+  activeFontColor?: string;
+  tabNodeColor?: string;
+  activeTabNodeColor?: string;
 }

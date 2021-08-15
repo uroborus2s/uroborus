@@ -19,8 +19,17 @@
       "@ibr/*": [
         "src/components/*"
       ],
+      "@ibr-types/*": [
+        "src/core/ibr-types/*"
+      ],
+      "@ibr-request/*": [
+        "src/core/ibr-request/*"
+      ],
+      "@ibr-class/*": [
+        "src/core/ibr-class/*"
+      ],
       "@hooks/*": [
-        "src/components/core/hooks/*"
+        "src/core/hooks/*"
       ]
     },
     "allowSyntheticDefaultImports": true

@@ -23,12 +23,7 @@ const SettingBar: React.FC<SettingBarProps> = ({
         <Icon icon={IoMdHelpCircle} size={20} button colorName={color} />
       </Tooltip>
       <Tooltip title="消息" placeholder="bottom">
-        <Icon
-          icon={IoMdNotifications}
-          button
-          colorName={color}
-          size={20}
-        ></Icon>
+        <Icon icon={IoMdNotifications} button colorName={color} size={20} />
       </Tooltip>
       <Tooltip title="账户" placeholder="bottom-start">
         <Icon
@@ -37,7 +32,7 @@ const SettingBar: React.FC<SettingBarProps> = ({
           outline="circle"
           size={24}
           colorName="#ff6f2c"
-        ></Icon>
+        />
       </Tooltip>
     </div>
   );

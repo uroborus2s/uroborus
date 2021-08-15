@@ -18,10 +18,11 @@ export default {
   'GET /api/v1/error': (req: http.ClientRequest, res: http.ServerResponse) => {
     // 添加跨域请求头
     res.setHeader("Access-Control-Allow-Origin", "*");
-    res.writeHead(400, {
-      'Content-Type': 'application/json; charset=utf-8'
-    });
-    res.end(JSON.stringify({msg: "SUCCESS", data: null}));
+    // res.writeHead(400, {
+    //   'Content-Type': 'application/json; charset=utf-8'
+    // });
+    // res.end(JSON.stringify({msg: "SUCCESS", data: null}));
     // res.end({});
+    res.end('ok')
   },
 }

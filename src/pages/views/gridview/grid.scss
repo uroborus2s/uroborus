@@ -1,15 +1,22 @@
 @import "../view";
-
+@import "~ag-grid-community/src/styles/ag-grid.scss";
+@import "~ag-grid-community/src/styles/ag-theme-balham/sass/ag-theme-balham";
 
 .#{$dataViews}-grid {
   display: flex;
   align-items: center;
+  flex-direction: column;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
 
   &-tool-bar {
     display: flex;
-    margin: 0 5px;
+    padding: 0 10px 0 20px;
     width: 100%;
     align-items: center;
+    box-sizing: border-box;
 
     > button {
       flex: none;
@@ -24,5 +31,8 @@
     }
 
   }
+}
+
+.ag-theme-balham{
 
 }

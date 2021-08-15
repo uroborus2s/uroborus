@@ -1,6 +1,6 @@
 import React, {
+  ForwardedRef,
   ForwardRefRenderFunction,
-  memo,
   ReactNode,
   useEffect,
   useMemo,
@@ -13,6 +13,7 @@ import {
   SizeType,
   Tab,
   TabBarExtraContent,
+  TabColorRefHandler,
   TabPosition,
   TabsType,
 } from './types';
@@ -22,15 +23,16 @@ import classNames from 'classnames';
 import warning from '@/util/warning';
 import { CSSPrefixProps, getPrefixCls } from '@/util';
 import TabDivider from './TabDivider';
-import { useSetRecoilState } from 'recoil';
-import { TabActiveKey } from '@ibr/ibr-tab/mode/key';
+import { RecoilRoot, useRecoilValue, useSetRecoilState } from 'recoil';
+import { TabActiveKey, TabFontColor } from '@ibr/ibr-tab/mode/key';
 import {
   DragDropContext,
   DropResult,
   ResponderProvided,
 } from 'react-beautiful-dnd';
 import Icon from '@ibr/ibr-icon/Icon';
-import { GrAdd, GrClose } from 'react-icons/gr';
+import { GrClose } from 'react-icons/gr';
+import useChangeFontColor from '@ibr/ibr-tab/hooks/useChangeFontColor';
 
 let uuid = 0;
 
@@ -51,6 +53,7 @@ interface TabsProps
   isTabDropDisabled?: boolean;
   isTabEditable?: boolean;
   onTabClick?: (e: React.MouseEvent | React.KeyboardEvent) => void;
+  tabRef?: ForwardedRef<HTMLDivElement>;
 
   onEdit?: (
     e: React.MouseEvent | React.KeyboardEvent | string,
@@ -77,7 +80,7 @@ interface TabsProps
   'aria-labelledby'?: string;
 }
 
-const Tabs: ForwardRefRenderFunction<HTMLDivElement, TabsProps> = (
+const TabsFunction: ForwardRefRenderFunction<TabColorRefHandler, TabsProps> = (
   {
     size,
     className,
@@ -105,6 +108,7 @@ const Tabs: ForwardRefRenderFunction<HTMLDivElement, TabsProps> = (
     style: styleProp,
     tabNodeClassName,
     tabNodeStyle,
+    tabRef,
     ...other
   },
   ref,
@@ -118,17 +122,16 @@ const Tabs: ForwardRefRenderFunction<HTMLDivElement, TabsProps> = (
     );
   }, [id]);
 
-  useEffect(() => {
-    if (!id) {
-      uuid += 1;
-    }
-  }, []);
-
   const active = defaultActiveKey ?? activeKey ?? tabPanes[0].tabKey;
   const setActiveKey = useSetRecoilState(TabActiveKey);
+  const fontColor = useRecoilValue(TabFontColor);
+
   useEffect(() => {
+    uuid += 1;
     setActiveKey(String(active));
-  }, [defaultActiveKey, activeKey, tabPanes]);
+  }, []);
+
+  useChangeFontColor(ref);
 
   if (tabPanes.length === 0) {
     warning(false, '`children` of Tab is empty. ');
@@ -168,9 +171,7 @@ const Tabs: ForwardRefRenderFunction<HTMLDivElement, TabsProps> = (
       },
       showAdd: hideAdd !== true,
       addIcon: addIcon,
-      removeIcon: addIcon ?? (
-        <Icon button icon={GrClose} outline="square"></Icon>
-      ),
+      removeIcon: addIcon ?? <Icon button icon={GrClose} outline="square" />,
     };
   }
 
@@ -191,10 +192,10 @@ const Tabs: ForwardRefRenderFunction<HTMLDivElement, TabsProps> = (
     prefixCls,
     {
       [`${prefixCls}-${size}`]: size,
-      [`${prefixCls}-card`]: type !== 'line' ? true : false,
+      [`${prefixCls}-card`]: type !== 'line',
       [`${prefixCls}-centered`]: centered,
       [`${prefixCls}-${tabPosition}`]: tabPosition,
-      [`${prefixCls}-rtl`]: rtl ? true : false,
+      [`${prefixCls}-rtl`]: rtl,
     },
     className,
   );
@@ -205,7 +206,13 @@ const Tabs: ForwardRefRenderFunction<HTMLDivElement, TabsProps> = (
 
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
-      <div ref={ref} id={id} className={tabsClass} {...other} style={styleProp}>
+      <div
+        ref={tabRef}
+        id={id}
+        className={tabsClass}
+        {...other}
+        style={{ color: fontColor, ...styleProp }}
+      >
         <TabNavList
           tabBarGutter={tabBarGutter}
           extra={tabBarExtraContent}
@@ -216,17 +223,31 @@ const Tabs: ForwardRefRenderFunction<HTMLDivElement, TabsProps> = (
           className={tabNavClassName}
           tabNodeClassName={tabNodeClassName}
           tabNodeStyle={tabNodeStyle}
+          type={type}
           {...tabNavBarProps}
-        ></TabNavList>
-        {divider && <TabDivider prefixCls={prefixCls}></TabDivider>}
+        />
+        {divider && <TabDivider prefixCls={prefixCls} />}
         <TabPaneList
           {...sharedProps}
           tabPaneAnimated={mergedAnimated.tabPane}
           className={tabPanesClassName}
-        ></TabPaneList>
+        />
       </div>
     </DragDropContext>
   );
 };
 
-export default memo(React.forwardRef(Tabs));
+const Tabs = React.forwardRef(TabsFunction);
+
+const RecoilTabs = (
+  props: TabsProps,
+  ref: ForwardedRef<TabColorRefHandler>,
+) => {
+  return (
+    <RecoilRoot>
+      <Tabs {...props} ref={ref} />
+    </RecoilRoot>
+  );
+};
+
+export default React.forwardRef(RecoilTabs);

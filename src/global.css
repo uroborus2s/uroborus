@@ -6,10 +6,11 @@
   --tab-font-color: #293742;
   --tab-background-color: #F5F8FA;
   --tab-background-color-active: #F5F8FA;
-  --tab-font-color-active: #2d7ff9;
+  --tab-font-color-active: #2B95D6;
 }
 
 body {
+  box-sizing: border-box;
   overflow: hidden;
   margin: 0;
   padding: 0;

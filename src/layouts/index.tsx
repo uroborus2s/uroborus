@@ -5,6 +5,7 @@ import { RecoilRoot } from 'recoil';
 import { CommonProps } from '@/util';
 import { StylesProvider } from '@material-ui/core/styles';
 import ErrorBoundary from './ErrorBoundary';
+import DebugObserver from './RecoilDebugObserver';
 
 const EntryNode: React.FC<CommonProps> = ({ children }) => {
   return (
@@ -14,13 +15,15 @@ const EntryNode: React.FC<CommonProps> = ({ children }) => {
   );
   // return <div>{children}</div>;
 };
-
 const WarpEntryNode: React.FC<CommonProps> = (props) => (
-  <ErrorBoundary>
-    <RecoilRoot>
-      <EntryNode {...props}></EntryNode>
-    </RecoilRoot>
-  </ErrorBoundary>
+  <React.StrictMode>
+    <ErrorBoundary>
+      <RecoilRoot>
+        <EntryNode {...props} />
+        <DebugObserver />
+      </RecoilRoot>
+    </ErrorBoundary>
+  </React.StrictMode>
 );
 
 export default WarpEntryNode;

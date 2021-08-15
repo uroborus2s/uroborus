@@ -9,6 +9,14 @@ $base: '#{$prefix}-basis';
   display: flex;
 }
 
+.#{$base}-flex-auto {
+  flex: auto;
+}
+
+.#{$base}-flex-none {
+  flex: none;
+}
+
 .#{$base}-items-center {
   -webkit-box-align: center;
   -webkit-align-items: center;

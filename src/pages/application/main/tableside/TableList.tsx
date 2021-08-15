@@ -4,19 +4,16 @@ import { cssOverflowY, CSSPrefixRequiredProps } from '@/util';
 import classNames from 'classnames';
 import TableTitleItem from './TableTitleItem';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { LastTableIdsUsed, SortTiebreakerKey, TableSchemas } from '@/models';
+import { baseState } from '@/models/baseState';
 
 const TableList: React.FC<CSSPrefixRequiredProps> = ({ prefixCls }) => {
-  const appId = useRecoilValue(SortTiebreakerKey);
-  const tables = useRecoilValue(TableSchemas).getSortResultOfKey(appId);
+  const tables = useRecoilValue(baseState.tablesOrder);
 
-  const [lastUsedTable, setLastUseTable] = useRecoilState(LastTableIdsUsed);
+  const [selectId, setSelect] = useRecoilState(baseState.lastUsedTableId);
 
-  const selectId = lastUsedTable.get(appId);
   const handlerSelect = (e: MouseEvent<HTMLElement>) => {
     if (e.currentTarget.id) {
-      lastUsedTable.set(appId, e.currentTarget.id);
-      setLastUseTable(new Map([...lastUsedTable]));
+      setSelect(e.currentTarget.id);
     }
   };
 
@@ -26,14 +23,14 @@ const TableList: React.FC<CSSPrefixRequiredProps> = ({ prefixCls }) => {
       classes={{ root: classNames(`${prefixCls}-table-list `, cssOverflowY) }}
     >
       {tables &&
-        tables.map((table) => (
+        tables.map((tableId) => (
           <TableTitleItem
-            key={table.id}
-            table={table}
+            key={tableId}
+            tableId={tableId}
             prefixCls={prefixCls}
             onSelect={handlerSelect}
-            selected={selectId!}
-          ></TableTitleItem>
+            selected={selectId === tableId}
+          />
         ))}
     </List>
   );
