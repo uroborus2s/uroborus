@@ -952,7 +952,7 @@ export default {
     "rawWorkspaces": {
       "wspNOl2FcrUIXXCeW": {
         "id": "wspNOl2FcrUIXXCeW",
-        "name": "Workspace 2",
+        "name": "ProjectPage 2",
         "visibleApplicationOrder": [],
         "billingPlanId": "plndkpdTaqYvi7YDT",
         "enterpriseAccountId": null,

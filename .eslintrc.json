@@ -31,10 +31,13 @@
     "react-hooks"
   ],
   "rules": {
-    "react/jsx-uses-react": "error",
+    "react/jsx-uses-react": "off",
+    "react/react-in-jsx-scope": "off",
     "react/jsx-uses-vars": "error",
     "react-hooks/rules-of-hooks": "error",
     "react/prop-types": 0,
-    "@typescript-eslint/ban-ts-comment": ["warn"]
+    "@typescript-eslint/ban-ts-comment": [
+      "warn"
+    ]
   }
 }

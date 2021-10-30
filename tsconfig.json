@@ -32,7 +32,10 @@
         "src/core/hooks/*"
       ]
     },
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "types": [
+      "webpack-env"
+    ]
   },
   "include": [
     "mock/**/*",

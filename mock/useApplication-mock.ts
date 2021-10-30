@@ -9,7 +9,7 @@ export default {
       'Content-Type': 'application/json; charset=utf-8',
     });
     res.write(JSON.stringify({
-      'code': 0,
+      'code': 1,
       'data': {},
       'message': 'SUCCESS',
       'trace_id': 'tyie888830kjdf',
@@ -60,7 +60,7 @@ export default {
           'update_able': true,
           'updated_at': '2020-11-24T15:23:18.000Z',
           'collaborator': null,
-          'columns':null,
+          'columns': null,
           'relate_rows': null,
           'rows': null,
           'views': null,

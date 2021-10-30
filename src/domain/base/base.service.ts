@@ -1,72 +1,59 @@
 import {
-  DataResponse,
-  EditBaseReq,
-  EditBaseService,
-  PromiseResponse,
-} from '@ibr-types/index';
-import { useRecoilCallback } from 'recoil';
-import { api, request } from '@ibr-request/index';
-import { useEffect, useState } from 'react';
+  api,
+  cmdDispatcher,
+  CommandOptions,
+  DELETEBASE,
+  DUPLIACTEBASE,
+  EDITBASE,
+  MOVEBASE,
+  request,
+  transformResponse,
+} from '../index';
 
-export function useEditBaseService(
-  baseId: string,
-  workId?: string,
-): EditBaseService {
-  const editBaseRequestService = useRecoilCallback(
-    ({ set }) => async (data: EditBaseReq) => {
-      if (baseId)
-        try {
-          const resp = await request(api.path.base(baseId), {
-            method: 'put',
-            data: data,
-          });
-          if (data.name)
-            if (data.color)
-              if (data.icon) if (data.desc) return resp.data as DataResponse;
-        } catch (err) {
-          console.error(err);
-          throw err;
-        }
+const editBase = async function (options: CommandOptions) {
+  const [err, res] = await request(api.path.base(options.request?.path?.id), {
+    cancelToken: options.token,
+    method: 'put',
+    data: { ...options.request?.data },
+  });
+  return transformResponse(options, err, res);
+};
+
+const dupliacteBase = async function (options: CommandOptions) {
+  const [err, res] = await request(
+    api.path.copyBase(options.request?.path?.id),
+    {
+      cancelToken: options.token,
+      method: 'post',
+      data: { ...options.request?.data },
     },
-    [],
-  ) as EditBaseService;
+  );
+  return transformResponse(options, err, res);
+};
 
-  editBaseRequestService.workspaceId = workId;
-  editBaseRequestService.baseId = baseId;
+const moveBase = async function (options: CommandOptions) {
+  const [err, res] = await request(
+    api.path.moveBase(options.request?.path?.id),
+    {
+      cancelToken: options.token,
+      method: 'put',
+      data: { ...options.request?.data },
+    },
+  );
+  return transformResponse(options, err, res);
+};
 
-  return editBaseRequestService;
-}
+const deleteBase = async function (options: CommandOptions) {
+  const [err, res] = await request(api.path.base(options.request?.path?.id), {
+    cancelToken: options.token,
+    method: 'delete',
+  });
+  return transformResponse(options, err, res);
+};
 
-// export function useGetCurrentBaseService(baseId: string) {
-//   const [loading, setLoading] = useState(true);
-//   const [error, setError] = useState(true);
-//
-//   useEffect(() => {
-//     const abortController = new AbortController();
-//     let isUnmounted = false;
-//     fetchCurrentBase(abortController.signal, baseId)
-//       .then(() => {
-//         if (!isUnmounted) setLoading(false);
-//       })
-//       .catch((error) => {
-//         console.log(`请求/workspace发生错误，错误信息：${error}`);
-//         if (!isUnmounted) setError(error);
-//       });
-//
-//     return () => {
-//       console.time('清理workspace localStorage');
-//       isUnmounted = true;
-//       abortController.abort();
-//       clearAllWorkspace().then(() => {
-//         console.timeEnd('清理workspace localStorage');
-//       });
-//     };
-//   }, []);
-//
-//   const service: PromiseResponse = {
-//     loading: loading,
-//     error: error,
-//   };
-//
-//   return service;
-// }
+export default cmdDispatcher({
+  [EDITBASE]: editBase,
+  [DUPLIACTEBASE]: dupliacteBase,
+  [MOVEBASE]: moveBase,
+  [DELETEBASE]: deleteBase,
+});

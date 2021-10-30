@@ -1,85 +1,107 @@
-import { BaseRecordProps, ColorType, IconType } from '@/core/ibr-types';
-import { Repository } from '@ibr-class/repository';
+import { BaseIconType, ColorType } from '@/core/util';
 import {
-  Collaborator,
-  IDRecord,
-  LogInfo,
-  Name,
-  Order,
-  Permission,
-} from '@ibr-class/class.storage';
-import { eventBus, initByReadWorkspaceList } from '@/core/event-hub';
-import { InitReadWorkspaceEventProps } from '@ibr-types/types.event';
+  atomFamily,
+  RecoilState,
+  RecoilValueReadOnly,
+  selectorFamily,
+  TransactionInterface_UNSTABLE,
+} from 'recoil';
+import { pureDispatcher } from '../core';
+import {
+  BaseEntity,
+  CommandOptions,
+  CREATWORKSPACE,
+  EDITBASE,
+  READWORKSPACELIST,
+} from '../index';
 
-class BaseRepository extends Repository {
-  constructor(name: string, prefix?: string) {
-    super(name, prefix);
-    eventBus.on(initByReadWorkspaceList, (data: InitReadWorkspaceEventProps) =>
-      this.updateAll(data.bases.map((bs) => new BaseRecord(bs))),
-    );
+export const base = (function () {
+  class c {
+    readonly name: (param: string) => RecoilState<string>;
+    readonly color: (param: string) => RecoilState<ColorType>;
+    readonly icon: (param: string) => RecoilState<BaseIconType>;
+    readonly desc: (param: string) => RecoilState<string>;
+    readonly lastUsedTableId: (param: string) => RecoilState<string>;
+    readonly tableIds: (param: string) => RecoilState<string[]>;
+    readonly bases: (
+      param: string[],
+    ) => RecoilValueReadOnly<{ name: string; id: string }[]>;
+
+    constructor() {
+      this.name = atomFamily<string, string>({
+        key: 'base/name',
+        default: '',
+      });
+
+      this.color = atomFamily<ColorType, string>({
+        key: 'base/color',
+        default: 'blue',
+      });
+
+      this.icon = atomFamily<BaseIconType, string>({
+        key: 'base/icon',
+        default: 'null',
+      });
+
+      this.desc = atomFamily<string, string>({
+        key: 'base/desc',
+        default: '',
+      });
+
+      this.lastUsedTableId = atomFamily<string, string>({
+        key: 'base/lastUsedTableId',
+        default: '',
+      });
+
+      this.tableIds = atomFamily<string[], string>({
+        key: 'base/tableids',
+        default: [],
+      });
+
+      this.bases = selectorFamily({
+        key: 'base/bases',
+        get:
+          (ids: string[]) =>
+          ({ get }) =>
+            ids.map((id) => ({
+              id: id,
+              name: get(this.name(id)),
+            })),
+      });
+    }
   }
 
-  convrecord(record: unknown) {
-    return new BaseRecord(record as BaseRecordProps);
+  return new c();
+})();
+
+function init({ set }: TransactionInterface_UNSTABLE, options: CommandOptions) {
+  if (options.response && options.response.bases) {
+    const entitys = options.response.bases as BaseEntity[];
+    entitys.forEach((entity) => {
+      const { id, name, color, icon, selected_table_id, tableIds, desc } =
+        entity;
+      set(base.name(id), name);
+      set(base.color(id), color);
+      set(base.icon(id), icon);
+      if (desc) set(base.desc(id), desc);
+      if (selected_table_id) set(base.lastUsedTableId(id), selected_table_id);
+      set(base.tableIds(id), tableIds ?? []);
+    });
   }
 }
 
-export const baseRepository = new BaseRepository('localBaseStore');
-
-export class BaseRecord extends IDRecord {
-  name: Name;
-  log: LogInfo;
-  permission: Permission;
-  order: Order;
-  icon: IconType;
-  color: ColorType;
-  user_role: 0;
-  workspace_id: string;
-  selected_table_id: string;
-  collaborators: Collaborator[];
-  tableIds: string[];
-
-  constructor(base: BaseRecordProps) {
-    super(base.id);
-    const {
-      name,
-      desc,
-      tableIds,
-      user_role,
-      order,
-      collaborators,
-      icon,
-      color,
-    } = base;
-    this.name = new Name(name, desc);
-    this.log = new LogInfo(base);
-    this.permission = new Permission(base);
-    this.order = new Order(order);
-    this.collaborators = collaborators.map(
-      (collaborator) => new Collaborator(collaborator),
-    );
-    this.user_role = user_role ?? 0;
-    this.tableIds = tableIds ?? [];
-    this.icon = icon ?? 'blank';
-    this.color = color ?? 'blue';
-    this.workspace_id = base.workspace_id ?? '';
-    this.selected_table_id = base.selected_table_id ?? '';
-  }
-
-  readAllfield(): Record<string, any> {
-    return {
-      workspace_id: this.workspace_id,
-      user_role: this.user_role,
-      icon: this.icon,
-      color: this.color,
-      tableIds: this.tableIds,
-      id: this.id,
-      selected_table_id: this.selected_table_id,
-      ...this.name.readAllfield(),
-      ...this.order.readAllfield(),
-      ...this.log.readAllfield(),
-      ...this.permission.readAllfield(),
-      collaborators: this.collaborators.map((co) => co.readAllfield()),
-    };
+function edit({ set }: TransactionInterface_UNSTABLE, options: CommandOptions) {
+  if (options.response) {
+    const { color, name, icon, id, desc } = options.response;
+    if (color) set(base.color(id), color);
+    if (name) set(base.name(id), name);
+    if (icon) set(base.icon(id), icon);
+    if (desc) set(base.desc(id), desc);
   }
 }
+
+export default pureDispatcher({
+  [READWORKSPACELIST]: init,
+  [CREATWORKSPACE]: init,
+  [EDITBASE]: edit,
+});

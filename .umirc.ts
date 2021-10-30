@@ -2,8 +2,8 @@ import { defineConfig } from 'umi';
 
 export default defineConfig({
   define: {
-    apiBaseUrl: 'http://8.136.107.252:8000/api/v1/',
-    socketServer: 'ws://8.136.107.252:8000/',
+    apiBaseUrl: 'http://whzhsc.com.cn/api/v1/',
+    socketServer: 'ws://www.whzhsc.com.cn/',
   },
   alias: {
     '@ibr': '@/components',
@@ -12,14 +12,21 @@ export default defineConfig({
     '@ibr-class': '@/core/ibr-class',
     '@hooks': '@/core/hooks',
   },
-  plugins: ['plugin-sass'],
+  mfsu: {},
+  chainWebpack(config) {
+    config.module
+      .rule('otf')
+      .test(/.(otf|ttf)$/)
+      .use('file-loader')
+      .loader('file-loader');
+  },
   nodeModulesTransform: {
     type: 'none',
   },
-  webpack5: {},
-  sass: {
-    implementation: require('node-sass'),
+  dynamicImport: {
+    loading: '@/Loading',
   },
+  webpack5: {},
   routes: [
     {
       path: '/',
@@ -27,13 +34,18 @@ export default defineConfig({
       routes: [
         {
           path: '/',
-          name: 'workspace',
-          component: '@/pages/workspace/WorkSpacePage',
+          name: 'home',
+          component: '@/pages/home/HomePage',
         },
         {
           path: '/application/:appId',
           name: 'application',
           component: '@/pages/application/ApplicationPage',
+        },
+        {
+          path: '/desktop',
+          name: 'account',
+          component: '@/pages/account/Login',
         },
       ],
     },

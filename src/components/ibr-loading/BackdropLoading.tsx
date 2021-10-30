@@ -1,19 +1,14 @@
-import { Backdrop, CircularProgress } from '@material-ui/core';
+import CircularProgress from '@mui/material/CircularProgress';
+import Backdrop from '@mui/material/Backdrop';
 import React from 'react';
-import { CSSPrefixProps, getPrefixCls } from '@/util';
 
-interface BackdropLoadingProps extends CSSPrefixProps {
+interface BackdropLoadingProps {
   open: boolean;
 }
 
-const BackdropLoading: React.FC<BackdropLoadingProps> = ({
-  open,
-  prefixCls,
-}) => {
-  const preCls = getPrefixCls('backdrop-loading', prefixCls);
-
+const BackdropLoading: React.FC<BackdropLoadingProps> = ({ open }) => {
   return (
-    <Backdrop classes={{ root: preCls }} open={open}>
+    <Backdrop open={open}>
       数据加载中...
       <CircularProgress />
     </Backdrop>

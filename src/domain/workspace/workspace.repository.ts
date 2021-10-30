@@ -1,85 +1,128 @@
-import { WorkspaceRecordProps } from '@ibr-types/index';
-import { Repository } from '@ibr-class/repository';
 import {
-  Collaborator,
-  IDRecord,
-  LogInfo,
-  Name,
-  Order,
-  Permission,
-} from '@ibr-class/class.storage';
-import { eventBus, initByReadWorkspaceList } from '@/core/event-hub';
-import { InitReadWorkspaceEventProps } from '@ibr-types/types.event';
+  atom,
+  atomFamily,
+  RecoilState,
+  RecoilValueReadOnly,
+  selector,
+  TransactionInterface_UNSTABLE,
+} from 'recoil';
+import {
+  CommandOptions,
+  CREATWORKSPACE,
+  EDITWORKSPACE,
+  READWORKSPACELIST,
+  WorkspaceEntity,
+  WorkspacesData,
+} from '../index';
+import { pureDispatcher } from '../core';
 
-class WorkspaceRepository extends Repository {
-  constructor(name: string, prefix?: string) {
-    super(name, prefix);
-    eventBus.on(initByReadWorkspaceList, (data: InitReadWorkspaceEventProps) =>
-      this.updateAll(data.workspaces.map((ws) => new WorkspaceRecord(ws))),
-    );
+export const workspaces = (function () {
+  class WorkspaceEntity {
+    readonly planId: (param: string) => RecoilState<string>;
+    readonly isEdit: (param: string) => RecoilState<boolean>;
+    readonly baseIds: (param: string) => RecoilState<Set<string>>;
+    readonly name: (param: string) => RecoilState<string>;
+    readonly ids: RecoilState<Set<string>>;
+    readonly workspaces: RecoilValueReadOnly<WorkspacesData[]>;
+    readonly baseIdsAll: RecoilValueReadOnly<string[]>;
+
+    constructor() {
+      this.planId = atomFamily({
+        key: 'workspace/planId',
+        default: '',
+      });
+
+      this.isEdit = atomFamily<boolean, string>({
+        key: 'workspace/editstate',
+        default: false,
+      });
+
+      this.baseIds = atomFamily({
+        key: 'workspace/baseIds',
+        default: new Set(),
+      });
+
+      this.name = atomFamily({
+        key: 'workspace/name',
+        default: '',
+      });
+
+      this.ids = atom({
+        key: 'workspace/ids',
+        default: new Set(),
+      });
+
+      this.workspaces = selector({
+        key: 'workspace/workspaces',
+        get: ({ get }) => {
+          const ids = get(this.ids);
+          return [...ids].map((id) => ({
+            id: id,
+            name: get(this.name(id)),
+            baseIds: [...get(this.baseIds(id))],
+          }));
+        },
+      });
+
+      this.baseIdsAll = selector({
+        key: 'workspace/allbaseids',
+        get: ({ get }) => {
+          const ids = get(this.ids);
+          const all: string[] = [];
+          ids.forEach((id) => all.push(...get(this.baseIds(id))));
+          return all;
+        },
+      });
+    }
   }
 
-  convrecord(record: unknown) {
-    return new WorkspaceRecord(record as WorkspaceRecordProps);
+  return new WorkspaceEntity();
+})();
+
+function saveByAll(
+  { set }: TransactionInterface_UNSTABLE,
+  options: CommandOptions,
+) {
+  if (options.response && options.response.workspaces && options.response.ids) {
+    const entitys = options.response.workspaces as WorkspaceEntity[];
+    const ids = options.response.ids as string[];
+    entitys.forEach((entity) => {
+      const { id, name, plan_id, baseIds } = entity;
+      set(workspaces.name(id), name);
+      set(workspaces.planId(id), plan_id);
+      set(workspaces.isEdit(id), false);
+      set(workspaces.baseIds(id), new Set(baseIds));
+    });
+    set(workspaces.ids, new Set(ids));
   }
 }
 
-export class WorkspaceRecord extends IDRecord {
-  name: Name;
-  log: LogInfo;
-  permission: Permission;
-  order: Order;
-  baseIds: string[];
-  user_role: number;
-  plan_id: string;
-  plan_name: string;
-  shared_only_bases: boolean;
-  collaborators: Collaborator[];
-
-  constructor(workspace: WorkspaceRecordProps) {
-    super(workspace.id);
-    const {
-      name,
-      desc,
-      baseIds,
-      user_role,
-      plan_id,
-      plan_name,
-      shared_only_bases,
-      order,
-      collaborators,
-    } = workspace;
-    this.name = new Name(name, desc);
-    this.log = new LogInfo(workspace);
-    this.permission = new Permission(workspace);
-    this.baseIds = baseIds ?? [];
-    this.user_role = user_role ?? 0;
-    this.plan_id = plan_id ?? '';
-    this.plan_name = plan_name ?? '';
-    this.shared_only_bases = shared_only_bases ?? false;
-    this.order = new Order(order);
-    this.collaborators = collaborators.map(
-      (collaborator) => new Collaborator(collaborator),
-    );
-  }
-
-  readAllfield(): Record<string, any> {
-    return {
-      baseIds: this.baseIds,
-      user_role: this.user_role,
-      plan_id: this.plan_id,
-      plan_name: this.plan_name,
-      shared_only_bases: this.shared_only_bases,
-      id: this.id,
-      ...this.name.readAllfield(),
-      ...this.order.readAllfield(),
-      ...this.log.readAllfield(),
-      ...this.permission.readAllfield(),
-      collaborators: this.collaborators.map((co) => co.readAllfield()),
-    };
+function savaByNewWorksapce(
+  { set, get }: TransactionInterface_UNSTABLE,
+  options: CommandOptions,
+) {
+  if (options.response && options.response.workspace) {
+    const { id, name, plan_id, baseIds } = options.response
+      .workspace as WorkspaceEntity;
+    set(workspaces.planId(id), plan_id);
+    set(workspaces.isEdit(id), true);
+    set(workspaces.baseIds(id), new Set(baseIds));
+    set(workspaces.name(id), name);
+    const ids = get(workspaces.ids);
+    set(workspaces.ids, new Set([...ids.add(id)]));
   }
 }
 
-export const workspaceRepository = new WorkspaceRepository(
-  'localWorkspaceStore',
-);
+function edit({ set }: TransactionInterface_UNSTABLE, options: CommandOptions) {
+  if (options.response) {
+    const { name, plan_id, id } = options.response;
+    if (plan_id) set(workspaces.planId(id), plan_id);
+    if (name) set(workspaces.name(id), name);
+  }
+}
+
+export default pureDispatcher({
+  [READWORKSPACELIST]: saveByAll,
+  [CREATWORKSPACE]: savaByNewWorksapce,
+  [EDITWORKSPACE]: edit,
+});

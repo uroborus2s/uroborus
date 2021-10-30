@@ -14,7 +14,6 @@ import useDialogShow from '@/util/hooks/useDialogShow';
 import { Link } from 'umi';
 import { GiZigzagLeaf } from 'react-icons/gi';
 import { useRecoilValue } from 'recoil';
-import { currentBaseColor, currentBaseIcon, currentBaseName } from '@/models';
 
 const AppTopBar: React.FC<CSSPrefixRequiredProps> = ({ prefixCls }) => {
   const { open, handleOpen, handleClose } = useDialogShow();

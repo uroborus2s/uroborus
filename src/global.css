@@ -2,22 +2,94 @@
 
 :root {
   --bg-color: #F5F8FA;
-  --color: #182026;
+  --color: hsl(0, 0%, 20%);
   --tab-font-color: #293742;
   --tab-background-color: #F5F8FA;
   --tab-background-color-active: #F5F8FA;
   --tab-font-color-active: #2B95D6;
 }
 
-body {
-  box-sizing: border-box;
+html, body {
+  position: absolute;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
-  margin: 0;
-  padding: 0;
+  font-weight: 400
+}
+
+body {
   background-color: var(--bg-color);
   font-size: 13px;
-  font-weight: 400;
   line-height: 18px;
   color: var(--color);
-  font-family: -apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto, "黑体", "宋体", Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
+  fill: var(--color);
+}
+
+#root {
+  width: 100vw;
+  height: 100vh;
+}
+
+.scrollbar::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.scrollbar::-webkit-scrollbar-button {
+  display: none;
+  height: 0;
+  width: 12px;
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+  background-color: hsla(0, 0%, 0%, 0.35);
+  background-clip: padding-box;
+  border: 3px solid rgba(0, 0, 0, 0);
+  border-radius: 6px;
+  min-height: 36px;
+}
+
+.baymax {
+  font-family: -apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto, "黑体", "宋体", Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
+}
+
+.baymax * {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box
+}
+
+input, textarea {
+  padding: 4px;
+  border-radius: 2px;
+  font-size: 13px;
+  line-height: 18px;
+  color: #333333;
+  background: white;
+  border: 1px solid #cccecf;
+  box-shadow: none;
+  resize: none;
+}
+
+@font-face {
+  font-family: 'ZoolXiaoWei';
+  src: url("../public/fonts/zool-xiao-wei.otf");
+}
+
+@font-face {
+  font-family: 'ZoolGDHei';
+  src: url("../public/fonts/zool-gao-heiti.ttf");
+}
+
+@font-face {
+  font-family: 'GenJyuuGothicNormal';
+  src: url("../public/fonts/GenJyuuGothic-Monospace-Normal.ttf");
+}
+
+@font-face {
+  font-family: 'GenJyuuGothicExtraLight';
+  src: url("../public/fonts/GenJyuuGothic-Monospace-ExtraLight.ttf");
 }
