@@ -31,8 +31,7 @@ const getStyled = ({ backgroundColor, color }: StyledProps) => ({
     color: color,
   },
   '& .IuiTabs-tabActive': { color: 'hsl(0,0%,20%)' },
-  '& .IuiTabs-operation': { color: color },
-  '& .IuiTabs-addButton': { color: color },
+  '& .IuiTabs-moreButton': { color: color },
 });
 
 const ShareButtonRoot = styled('div')<ShareButtonProps>(({ ownerState }) => ({
@@ -77,13 +76,13 @@ const BaseContainer: FC = () => {
           ownerState={{ color: fontColor, textColor: shareTextColor }}
         />
       }
-      addIcon={<AddTableInTab />}
+      addIcon={<AddTableInTab style={{ color: fontColor }} />}
       moreAddIcon={<AddTableInList />}
     >
       {allTables.map((tableInfo) => (
         <Tab
           key={tableInfo.id}
-          tab={<TabTitleNode name={tableInfo.name} active />}
+          tab={<TabTitleNode id={tableInfo.id} name={tableInfo.name} active />}
         />
       ))}
     </Tabs>

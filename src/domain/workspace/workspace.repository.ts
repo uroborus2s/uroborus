@@ -1,4 +1,14 @@
 import {
+  CREATWORKSPACE,
+  EDITWORKSPACE,
+  READWORKSPACELIST,
+} from '@/domain/domain.command';
+import {
+  CommandOptions,
+  WorkspaceEntity,
+  WorkspacesData,
+} from '@/domain/types';
+import {
   atom,
   atomFamily,
   RecoilState,
@@ -7,14 +17,6 @@ import {
   selectorFamily,
   TransactionInterface_UNSTABLE,
 } from 'recoil';
-import {
-  CommandOptions,
-  CREATWORKSPACE,
-  EDITWORKSPACE,
-  READWORKSPACELIST,
-  WorkspaceEntity,
-  WorkspacesData,
-} from '../index';
 import { pureDispatcher } from '../core';
 
 export const workspaces = (function () {

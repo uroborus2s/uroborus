@@ -80,6 +80,7 @@ const useUtilityClasses = (ownerState: TabsState) => {
     tabNode: ['tabNode'],
     pane: ['pane'],
     paneActive: ['paneActive'],
+    moreButton: ['moreButton'],
   };
   return composeClasses(slots, getTabsUtilityClass, classes);
 };

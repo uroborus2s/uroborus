@@ -378,6 +378,7 @@ const TabNavList: ForwardRefRenderFunction<HTMLDivElement, TabNavListProps> = (
               tabs={tabs}
               onTabClick={onInternalTabClick}
               addIcon={moreAddIcon}
+              className={classes?.moreButton}
             />
           )}
           <TabsScroller

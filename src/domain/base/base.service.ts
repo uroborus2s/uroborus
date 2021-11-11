@@ -1,22 +1,18 @@
 import {
   api,
-  BaseRsp,
-  cmdDispatcher,
-  CommandOptions,
   CREATBASE,
   CREATBASEBYFILE,
-  DataResponse,
   DELETEBASE,
   DUPLIACTEBASE,
   EDITBASE,
   MOVEBASE,
-  NullResponseError,
   READBASE,
-  request,
-  ResponseCode,
-  ServiceCodeError,
-  transformResponse,
-} from '../index';
+} from '../domain.command';
+import { NullResponseError } from '../error';
+import { ServiceCodeError } from '../request/error';
+import request, { ResponseCode } from '../request/request';
+import { BaseRsp, CommandOptions, DataResponse } from '../types';
+import { cmdDispatcher, transformResponse } from '../core';
 
 const creatBase = async function (options: CommandOptions) {
   const [err, res] = await request(api.path.base(), {

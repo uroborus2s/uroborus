@@ -1,5 +1,14 @@
 import { BaseIconType, BlankIcon, ColorType } from '@/core/util';
 import {
+  CREATTABLE,
+  CREATTABLEBYFILE,
+  CREATWORKSPACE,
+  EDITBASE,
+  READBASE,
+  READWORKSPACELIST,
+} from '../domain.command';
+import { BaseEntity, CommandOptions } from '../types';
+import {
   atomFamily,
   RecoilState,
   RecoilValueReadOnly,
@@ -7,16 +16,6 @@ import {
   TransactionInterface_UNSTABLE,
 } from 'recoil';
 import { calcSort, pureDispatcher } from '../core';
-import {
-  BaseEntity,
-  CommandOptions,
-  CREATTABLE,
-  CREATTABLEBYFILE,
-  CREATWORKSPACE,
-  EDITBASE,
-  READBASE,
-  READWORKSPACELIST,
-} from '../index';
 
 export const base = (function () {
   class c {

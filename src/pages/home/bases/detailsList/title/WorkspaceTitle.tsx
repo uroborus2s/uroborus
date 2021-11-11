@@ -2,29 +2,21 @@ import { DELETEWORKSPACE, EDITWORKSPACE, useDispath } from '@/domain';
 import { workspaces } from '@/domain/workspace/workspace.repository';
 import ShareWorkspace from '@/pages/home/bases/detailsList/title/ShareWorkspace';
 import { OriginDataType } from '@/pages/home/types';
+import useDoubleClickToEdit from '@hooks/useDoubleClickToEdit';
 import DeleteDialog from '@ibr/ibr-dialog/DeleteDialog';
 import PopDialog, { HandleFun } from '@ibr/ibr-dialog/PopDialog';
 import DeleteIcon from '@ibr/ibr-icon/DeleteIcon';
 import EditIcon from '@ibr/ibr-icon/EditIcon';
 import ShareIcon from '@ibr/ibr-icon/ShareIcon';
-import ShareIconOrgin from '@mui/icons-material/Share';
 import ArrowDropDownRoundedIcon from '@mui/icons-material/ArrowDropDownRounded';
+import ShareIconOrgin from '@mui/icons-material/Share';
 import CircularProgress from '@mui/material/CircularProgress';
 import InputBase from '@mui/material/InputBase';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import makeStyles from '@mui/styles/makeStyles';
 import styled from '@mui/styles/styled';
-import {
-  FC,
-  KeyboardEventHandler,
-  memo,
-  MouseEventHandler,
-  Ref,
-  SyntheticEvent,
-  useRef,
-  useState,
-} from 'react';
+import { FC, memo, Ref, SyntheticEvent, useRef, useState } from 'react';
 import { useRecoilState } from 'recoil';
 
 const useStyel = makeStyles({
@@ -108,40 +100,20 @@ const WorkspaceTitle: FC<{ data: OriginDataType }> = ({ data }) => {
   const shareRef = useRef<HandleFun>();
   const deleteRef = useRef<HandleFun>();
 
-  const handleEditClick: MouseEventHandler<HTMLElement> = (event) => {
-    event.stopPropagation();
-    if (!isEdit) setIsEdit(true);
-  };
-
-  const handleEditname = (event: SyntheticEvent<HTMLInputElement>) => {
-    event.stopPropagation();
-    const newName = event.currentTarget.value;
-    if (newName !== data.name)
-      editName({
-        path: { id: data.id },
-        data: { name: newName },
-      }).then();
-    setIsEdit(false);
-  };
-
-  const handleInputEnter: KeyboardEventHandler<HTMLInputElement> = (e) => {
-    if (e.key === 'Enter' || e.key === 'Escape') {
-      handleEditname(e);
-    }
-  };
+  const { handleKeyboardEnter, handleToEdit, handleDoubleClick } =
+    useDoubleClickToEdit(data.id, data.name, editName, isEdit, setIsEdit);
 
   const classes = useStyel();
 
   return (
     <>
-      <Title onDoubleClickCapture={handleEditClick}>
+      <Title onDoubleClickCapture={handleDoubleClick}>
         {isEdit ? (
           <InputBase
             autoFocus
             required
             onBlur={(e) => {
-              console.log('失去input焦点');
-              handleEditname(e as SyntheticEvent<HTMLInputElement>);
+              handleToEdit(e as SyntheticEvent<HTMLInputElement>);
             }}
             defaultValue={data.name}
             sx={{
@@ -154,7 +126,7 @@ const WorkspaceTitle: FC<{ data: OriginDataType }> = ({ data }) => {
               padding: '0.25px 0.5px',
               color: '#444',
             }}
-            onKeyUp={handleInputEnter}
+            onKeyUp={handleKeyboardEnter}
           />
         ) : loading ? (
           <CircularProgress size={20} />
@@ -202,7 +174,7 @@ const WorkspaceTitle: FC<{ data: OriginDataType }> = ({ data }) => {
                 disableRipple
                 disableTouchRipple
                 onClick={(e) => {
-                  handleEditClick(e);
+                  handleDoubleClick(e);
                   setAnchorEl(null);
                 }}
               >

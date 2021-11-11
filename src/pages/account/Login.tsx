@@ -1,7 +1,5 @@
-import ErrorBoundary from '@/layouts/ErrorBoundary';
 import LoginPane from '@/pages/account/LoginPane';
 import ScrollBarSize from '@ibr/ibr-scrollbar-size/ScrollbarSize';
-import { ThemeProvider } from '@mui/material/styles';
 import styled from '@mui/material/styles/styled';
 import Typography from '@mui/material/Typography';
 import { FC, StrictMode } from 'react';
@@ -24,6 +22,8 @@ const LoginTitle = styled('div')({
   display: 'flex',
   textDecoration: 'none',
   padding: '0.5rem 0',
+  width: '100%',
+  flex: 'none',
 });
 
 const LoginBody = styled('div')({
@@ -43,6 +43,7 @@ const LoginFooter = styled('div')({
   alignItems: 'center',
   justifyContent: 'center',
   color: 'rgba(0, 0, 0, 0.16)',
+  width: '100%',
 });
 
 const SoloWrapper = styled('div')({

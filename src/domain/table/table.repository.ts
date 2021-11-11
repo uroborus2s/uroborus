@@ -1,3 +1,6 @@
+import { base, EDITTABLE } from '@/domain';
+import { CREATTABLE, CREATTABLEBYFILE, READBASE } from '../domain.command';
+import { CommandOptions, TableRsp } from '../types';
 import {
   atomFamily,
   RecoilState,
@@ -5,14 +8,7 @@ import {
   selectorFamily,
   TransactionInterface_UNSTABLE,
 } from 'recoil';
-import { pureDispatcher, validator } from '../core';
-import {
-  CommandOptions,
-  CREATTABLE,
-  CREATTABLEBYFILE,
-  READBASE,
-  TableRsp,
-} from '../index';
+import { calcSort, pureDispatcher, validator } from '../core';
 
 export const table = (function () {
   class c {
@@ -55,8 +51,19 @@ function writeTables(
   }
 }
 
+function edit({ set }: TransactionInterface_UNSTABLE, options: CommandOptions) {
+  const len = options.response ? Object.keys(options.response).length : 0;
+  console.log('修改table名称', options);
+  if (len >= 0) {
+    const { name } = len > 0 ? options.response : options.request?.data;
+    const id = options.request?.path?.id;
+    if (name) set(table.name(id), name);
+  }
+}
+
 export default pureDispatcher({
   [READBASE]: writeTables,
   [CREATTABLE]: writeTables,
   [CREATTABLEBYFILE]: writeTables,
+  [EDITTABLE]: edit,
 });

@@ -1,11 +1,10 @@
 import { READBASE, useDispath } from '@/domain';
-import { createContext } from 'react';
-import BaseContainer from './content/BaseContainer';
-import BaseTopBar from './topbar/BaseTopBar';
 import CircularProgressWithNumber from '@ibr/ibr-loading/CircularProgressWithNumber';
 import makeStyles from '@mui/styles/makeStyles';
-import { RecoilRoot } from 'recoil';
+import { createContext } from 'react';
 import { useParams } from 'umi';
+import BaseContainer from './content/BaseContainer';
+import BaseTopBar from './topbar/BaseTopBar';
 
 const useStyel = makeStyles({
   root: {
@@ -58,12 +57,4 @@ const BaseMainPage = () => {
   );
 };
 
-const WarpBaseMainPage = () => {
-  return (
-    <RecoilRoot>
-      <BaseMainPage />
-    </RecoilRoot>
-  );
-};
-
-export default WarpBaseMainPage;
+export default BaseMainPage;

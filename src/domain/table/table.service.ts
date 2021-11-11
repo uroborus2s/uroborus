@@ -1,15 +1,14 @@
 import {
   api,
-  cmdDispatcher,
-  CommandOptions,
   CREATTABLE,
   CREATTABLEBYFILE,
-  DataResponse,
-  NullResponseError,
-  request,
-  ResponseCode,
-  ServiceCodeError,
-} from '@/domain';
+  EDITTABLE,
+} from '../domain.command';
+import { NullResponseError } from '../error';
+import { ServiceCodeError } from '../request/error';
+import request, { ResponseCode } from '../request/request';
+import { CommandOptions, DataResponse } from '../types';
+import { cmdDispatcher, transformResponse } from '../core';
 
 const readAllTables = async function (options: CommandOptions) {
   const [err, res] = await request(api.path.table(), {
@@ -52,7 +51,17 @@ const creatTable = (url: string) =>
     return Promise.reject(new NullResponseError());
   };
 
+const editTable = async function (options: CommandOptions) {
+  const [err, res] = await request(api.path.table(options.request?.path?.id), {
+    cancelToken: options.token,
+    method: 'put',
+    data: { ...options.request?.data },
+  });
+  return transformResponse(options, err, res);
+};
+
 export default cmdDispatcher({
   [CREATTABLE]: creatTable(api.path.table()),
   [CREATTABLEBYFILE]: creatTable(api.path.uploadTable),
+  [EDITTABLE]: editTable,
 });

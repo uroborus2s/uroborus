@@ -1,5 +1,8 @@
 import { useDispath, USERINFO } from '@/domain';
-import { createContext, Dispatch, FC, useReducer, useState } from 'react';
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
+import { createContext, Dispatch, FC, useState } from 'react';
+
 interface UserState {
   account?: string;
   id?: string;
@@ -19,9 +22,18 @@ export const UserInfoContext = createContext<{
 
 const UserContext: FC = ({ children }) => {
   const [user, setUser] = useState<UserState>({});
-  useDispath(USERINFO, { dispatch: setUser });
+  const { loading, error } = useDispath(USERINFO, { dispatch: setUser });
 
-  return (
+  return loading ? (
+    <Backdrop
+      sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+      open={loading}
+    >
+      <CircularProgress color="inherit" />
+    </Backdrop>
+  ) : error ? (
+    <div>{error}</div>
+  ) : (
     <UserInfoContext.Provider value={{ user, updateUser: setUser }}>
       {children}
     </UserInfoContext.Provider>

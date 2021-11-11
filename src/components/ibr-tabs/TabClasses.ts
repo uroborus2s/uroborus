@@ -32,6 +32,7 @@ const TabSlots = [
   'tabNode',
   'tabActive',
   'tabDisabled',
+  'moreButton',
 ] as const;
 
 export type TabsClassKey = typeof TabSlots[number];

@@ -1,25 +1,22 @@
 import {
   api,
-  BaseEntity,
-  calcSort,
-  cmdDispatcher,
-  CommandOptions,
   CREATWORKSPACE,
-  DataResponse,
   DELETEWORKSPACE,
   EDITWORKSPACE,
-  NullResponseError,
   READWORKSPACELIST,
-  request,
-  ResolvingError,
-  ResponseCode,
-  ServiceCodeError,
-  transformResponse,
-  validator,
+} from '@/domain/domain.command';
+import { NullResponseError, ResolvingError } from '@/domain/error';
+import { ServiceCodeError } from '@/domain/request/error';
+import {
+  BaseEntity,
+  CommandOptions,
+  DataResponse,
   WorkspaceEntity,
   WorkspaceListRsp,
   WorkspaceRsp,
-} from '../index';
+} from '@/domain/types';
+import { calcSort, cmdDispatcher, transformResponse, validator } from '../core';
+import request, { ResponseCode } from '../request/request';
 
 const readAllWorkspaceList = async function (options: CommandOptions) {
   const [err, res] = await request(api.path.workspace(), {

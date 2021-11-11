@@ -90,6 +90,7 @@ function getItemRect(
 ) {
   const lastMeasuredIndex = itemCacheRef.current.lastMeasuredIndex;
   const itemRects = itemCacheRef.current.rects;
+
   if (mode || index > lastMeasuredIndex) {
     let offset = 0;
     let start = 0;
@@ -107,6 +108,7 @@ function getItemRect(
     }
     itemCacheRef.current.lastMeasuredIndex = index;
   }
+
   return itemRects[index];
 }
 
@@ -138,11 +140,14 @@ function findIndexOfOffset(
   itemCacheRef: MutableRefObject<ItemRect>,
   props: VariableSizeListProps,
 ) {
+  //缓存中保存的最后的索引，从0开始计算
   const lastMeasuredIndex = itemCacheRef.current.lastMeasuredIndex;
   const itemRects = itemCacheRef.current.rects;
   const lastMeasuredItemOffset =
-    lastMeasuredIndex > 0 ? itemRects[lastMeasuredIndex].offset : 0;
-  if (lastMeasuredItemOffset >= offset) {
+    lastMeasuredIndex >= 0 ? itemRects[lastMeasuredIndex].offset : 0;
+
+  //当缓存中中保存的内容比初始偏移大
+  if (lastMeasuredIndex > 0 && lastMeasuredItemOffset >= offset) {
     return findNearestItem(
       start,
       lastMeasuredIndex,
@@ -150,7 +155,7 @@ function findIndexOfOffset(
       itemCacheRef,
       props,
     );
-  } else {
+  } /*当缓存中的内容比偏移小，先计算扩大缓存的内容，在计算*/ else {
     let startIndex = Math.max(0, lastMeasuredIndex);
     let interval = 1;
     while (startIndex < props.itemCount) {
@@ -195,7 +200,6 @@ export function getRange(
     itemCacheRef,
     props,
   );
-
   const overscanCount = props.overscanCount ?? 1;
 
   return {

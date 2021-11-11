@@ -7,11 +7,7 @@ const reducerfiles = require.context('@/domain', true, /\.repository.ts$/);
 const commandfiles = require.context('@/domain', true, /\.service.ts$/);
 
 async function getModules(files: __WebpackModuleApi.RequireContext) {
-  try {
-    return await Promise.all(files.keys().map(files));
-  } catch (e) {
-    return [];
-  }
+  return await Promise.all(files.keys().map(files));
 }
 let loadResolve: (value: string | PromiseLike<string>) => void;
 let loadReject: (value: string | PromiseLike<string>) => void;
@@ -24,13 +20,13 @@ const loadPromise = new Promise<string>((resolve, reject) => {
 const reducers = new ChainManager<ReduceFun>();
 const commands = new ChainManager<CommandFun>();
 
-const fs = [reducers, commands];
+const fs = [commands, reducers];
 
 let modulesBinded = true;
 let recoilReducer: ReduceFun | undefined = undefined;
 
 if (modulesBinded) {
-  Promise.all([getModules(reducerfiles), getModules(commandfiles)])
+  Promise.all([getModules(commandfiles), getModules(reducerfiles)])
     .then((modFiles) => {
       modFiles.forEach((mods, index) =>
         // @ts-ignore
@@ -42,8 +38,9 @@ if (modulesBinded) {
       if (loadResolve) loadResolve('加载成功！');
       modulesBinded = false;
     })
-    .catch(() => {
+    .catch((err) => {
       loadReject('函数初始化加载失败！');
+      throw err;
     });
 }
 

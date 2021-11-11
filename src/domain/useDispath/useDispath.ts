@@ -93,6 +93,7 @@ function useDispath<R extends CommandOptions>(
   const run = useCallback(
     (config?: CommandRunOptions) => {
       let currentFetch = fetcheRef.current;
+
       if (!currentFetch) {
         const newFetch = new Fetch(
           commandType,

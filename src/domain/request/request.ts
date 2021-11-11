@@ -1,14 +1,14 @@
 /**
  * ibr-request 网络请求工具
  */
-import axios, { AxiosRequestConfig } from 'axios';
-import { history } from 'umi';
+import { promiseWithError } from '@/domain/core';
 import {
-  promiseWithError,
   ServiceStatusError,
   ServiceTimeoutError,
   ServiceUnknownError,
-} from '../';
+} from './error';
+import axios, { AxiosRequestConfig } from 'axios';
+import { history } from 'umi';
 
 const codeMessage = {
   '200': '服务器成功返回请求的数据。',

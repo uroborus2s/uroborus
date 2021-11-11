@@ -18,12 +18,18 @@ const OperationNodeRoot = styled('div')({
   },
 });
 
-const OperationButton: FC<OperationProps> = ({ tabs, onTabClick, addIcon }) => {
+const OperationButton: FC<OperationProps> = ({
+  tabs,
+  onTabClick,
+  addIcon,
+  className,
+}) => {
   const { anchorElem, oppenPopover, closePopover } = usePopover();
 
   return (
     <>
       <OperationNodeRoot
+        className={className}
         onClick={(e) => {
           e.stopPropagation();
           oppenPopover(e);

@@ -1,6 +1,7 @@
-import { atom, TransactionInterface_UNSTABLE } from 'recoil';
+import { USERINFO } from '../domain.command';
+import { CommandOptions } from '../types';
+import { TransactionInterface_UNSTABLE } from 'recoil';
 import { pureDispatcher } from '../core';
-import { CommandOptions, LOGIN, LOGOUT, USERINFO } from '../index';
 
 function readUser(
   { set }: TransactionInterface_UNSTABLE,

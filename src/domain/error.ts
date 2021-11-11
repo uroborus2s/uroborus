@@ -1,5 +1,5 @@
+import { ServiceStatusError } from '@/domain/request/error';
 import { TransactionInterface_UNSTABLE } from 'recoil';
-import { ServiceStatusError } from './';
 
 export class NoTokenError extends Error {
   constructor(message?: string) {

@@ -1,8 +1,8 @@
 import { usePopover } from '@/core/hooks';
 import NewTableMenu from '@/pages/base/content/tabbar/NewTableMenu';
 import SquareAddIcon from '@ibr/ibr-icon/SquareAddIcon';
-import styled from '@mui/material/styles/styled';
-import { FC } from 'react';
+import styled from '@mui/styles/styled';
+import { FC, HTMLAttributes } from 'react';
 
 const AddRoot = styled('div')({
   display: 'flex',
@@ -20,7 +20,7 @@ const AddRoot = styled('div')({
   },
 });
 
-const AddTableInTab: FC = () => {
+const AddTableInTab: FC<HTMLAttributes<HTMLDivElement>> = (props) => {
   const { anchorElem, oppenPopover, closePopover } = usePopover();
 
   return (
@@ -30,6 +30,7 @@ const AddTableInTab: FC = () => {
           e.stopPropagation();
           oppenPopover(e);
         }}
+        {...props}
       >
         <SquareAddIcon sx={{ fontSize: '12px' }} />
       </AddRoot>

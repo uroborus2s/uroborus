@@ -59,6 +59,7 @@ export const DELETEBASE = 'DELETEBASE';
 //table
 export const CREATTABLE = 'CREATTable';
 export const CREATTABLEBYFILE = 'CREATTABLEBYFILE';
+export const EDITTABLE = 'EDITTABLE';
 
 // invite
 export const REDALLINVITE = 'REDALLINVITE';
