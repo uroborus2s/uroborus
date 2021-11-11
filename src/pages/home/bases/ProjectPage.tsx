@@ -1,23 +1,21 @@
+import { useRefFun } from '@/core/hooks';
 import { CommonProps } from '@/core/ibr-types';
+import filterSearchValue from '@/core/util/filterSearchValue';
 import { base, READWORKSPACELIST, useDispath, workspaces } from '@/domain';
 import Loading from '@/Loading';
 import { HandleFun } from '@ibr/ibr-dialog/PopDialog';
-import useAutocomplete, {
-  FilterOptionsState,
-} from '@mui/material/useAutocomplete';
+import { VirtualList } from '@ibr/ibr-virtual-list/types';
+import useAutocomplete from '@mui/material/useAutocomplete';
 import makeStyles from '@mui/styles/makeStyles';
 import classNames from 'classnames';
-import PinyinMatch from 'pinyin-match';
 import {
   FC,
   LegacyRef,
   MouseEventHandler,
   Ref,
-  useCallback,
   useEffect,
   useRef,
 } from 'react';
-import { VariableSizeList } from 'react-window';
 import { useRecoilValue } from 'recoil';
 import useBaseItemWidth from '../hooks/useBaseItemWidth';
 import {
@@ -73,18 +71,6 @@ const useStyels = makeStyles({
   },
 });
 
-const filterOptions = (
-  options: ResultDataType[],
-  { inputValue, getOptionLabel }: FilterOptionsState<ResultDataType>,
-) => {
-  if (inputValue)
-    return options.filter((option) => {
-      const candidate = getOptionLabel(option);
-      return !!PinyinMatch.match(candidate, inputValue);
-    });
-  return [...options];
-};
-
 function tranArray<T extends OriginDataType>(
   datas: T[],
   t: DataType,
@@ -110,9 +96,8 @@ const ProjectPage: FC<CommonProps> = ({ className }) => {
         ...tranArray(baseDatas, 'base'),
       ],
       id: 'home-list-of-fit',
-      filterOptions: filterOptions,
+      filterOptions: filterSearchValue,
       freeSolo: true,
-      autoSelect: true,
       open: true,
     });
 
@@ -120,7 +105,7 @@ const ProjectPage: FC<CommonProps> = ({ className }) => {
 
   const containerRef = useRef<HTMLDivElement>();
 
-  const workspaceListRef = useRef<VariableSizeList>();
+  const workspaceListRef = useRef<VirtualList>();
 
   useEffect(() => {
     console.log('初始化ProjectPage');
@@ -136,17 +121,13 @@ const ProjectPage: FC<CommonProps> = ({ className }) => {
     (item) => item.type == 'base',
   );
 
-  const handleScrollToEnd = useCallback(
-    (id: string) => {
-      if (dirty) return;
-      if (workspaceListRef.current) {
-        const index = workspacesDatas.findIndex((w) => w.id == id);
-        console.log(index);
-        workspaceListRef.current.scrollToItem(index, 'start');
-      }
-    },
-    [dirty, workspacesDatas],
-  );
+  const handleScrollToItem = useRefFun((id: string) => {
+    if (dirty) return;
+    if (workspaceListRef.current) {
+      const index = workspacesDatas.findIndex((w) => w.id == id);
+      workspaceListRef.current.scrollToItem(index);
+    }
+  });
 
   const addWorkspaceRef = useRef<HandleFun>();
 
@@ -169,10 +150,10 @@ const ProjectPage: FC<CommonProps> = ({ className }) => {
               <Loading />
             ) : (
               <WorkspaceList
-                listRef={workspaceListRef}
+                dirty={dirty}
                 workspaces={filterWorkspaces}
                 matchingValue={inputValue}
-                onClick={handleScrollToEnd}
+                onClick={handleScrollToItem}
                 addWorkspaceClick={handlerAddWorkspace}
                 ref={addWorkspaceRef as Ref<HandleFun>}
               />
@@ -191,7 +172,6 @@ const ProjectPage: FC<CommonProps> = ({ className }) => {
         ) : (
           <WorkspaceDetailsList
             ref={workspaceListRef as Ref<any>}
-            workspaces={workspacesDatas.slice()}
             addWorkspaceClick={handlerAddWorkspace}
             {...wItemRect}
           />

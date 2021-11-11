@@ -1,7 +1,7 @@
 import { useRefFun } from '@/core/hooks';
 import { BasicTarget, getTargetElement } from '@/core/util';
 import { TabsState } from '@ibr/ibr-tabs';
-import { ownerDocument } from '@mui/material';
+import ownerDocument from '@mui/material/utils/ownerDocument';
 import { KeyboardEvent } from 'react';
 
 const nextItem = (list: HTMLDivElement, item: Element | null) => {

@@ -23,29 +23,26 @@ export default defineConfig({
   nodeModulesTransform: {
     type: 'none',
   },
-  dynamicImport: {
-    loading: '@/Loading',
-  },
   webpack5: {},
   routes: [
+    {
+      path: '/desktop',
+      exact: true,
+      component: '@/pages/account/Login',
+    },
     {
       path: '/',
       component: '@/layouts/index',
       routes: [
         {
           path: '/',
-          name: 'home',
+          exact: true,
           component: '@/pages/home/HomePage',
         },
         {
-          path: '/application/:appId',
-          name: 'application',
-          component: '@/pages/application/ApplicationPage',
-        },
-        {
-          path: '/desktop',
-          name: 'account',
-          component: '@/pages/account/Login',
+          path: '/base/:baseId',
+          exact: true,
+          component: '@/pages/base/BaseMainPage',
         },
       ],
     },

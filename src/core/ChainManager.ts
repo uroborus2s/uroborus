@@ -3,22 +3,20 @@ type ConfigOption = {
   filter?: RegExp;
 };
 
-class ChainManager {
-  private readonly handlers: any[];
+class ChainManager<T> {
+  private readonly handlers: T[];
 
   constructor() {
     this.handlers = [];
   }
 
-  register(...chains: any[]) {
+  register(...chains: T[]) {
     this.handlers.push(...chains);
     return this.handlers.length - 1;
   }
 
-  eject(id: number) {
-    if (this.handlers[id]) {
-      this.handlers[id] = null;
-    }
+  returnArray() {
+    return [...this.handlers];
   }
 
   forEach(fn: (handler: any) => void) {

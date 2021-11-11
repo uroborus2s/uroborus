@@ -1,10 +1,13 @@
 import { useRefFun } from '@/core/hooks';
 import { BasicTarget, getTargetElement } from '@/core/util';
 import { TabsState } from '@ibr/ibr-tabs';
-import React from 'react';
+import { useState } from 'react';
 
-export default function ({ vertical, rtl }: TabsState, target: BasicTarget) {
-  const [inkState, setInkState] = React.useState({
+export default function (
+  { vertical, rtl, tabPosition }: TabsState,
+  target: BasicTarget,
+) {
+  const [inkState, setInkState] = useState({
     length: 0,
     top: 0,
     left: 0,
@@ -14,13 +17,32 @@ export default function ({ vertical, rtl }: TabsState, target: BasicTarget) {
 
   const updateInkbarState = useRefFun((index: number) => {
     const currentTab = (tabsList as HTMLDivElement).children[index];
-    const { left, bottom, right, top } = currentTab.getBoundingClientRect();
+    const {
+      left,
+      bottom,
+      right,
+      top,
+      height: tabHeight,
+      width: tabWidth,
+    } = currentTab.getBoundingClientRect();
     const width = currentTab.clientWidth;
     const height = currentTab.clientHeight;
     setInkState({
       length: vertical ? height : width,
-      top: vertical ? top : bottom + 2,
-      left: vertical ? (rtl ? left - 2 : right + 2) : left,
+      top: vertical
+        ? top
+        : tabPosition == 'top'
+        ? bottom - tabHeight / 4
+        : top + tabHeight / 4,
+      left: vertical
+        ? tabPosition == 'right'
+          ? rtl
+            ? left + tabWidth / 4
+            : right - tabWidth / 4
+          : rtl
+          ? right - tabWidth / 4
+          : left + tabWidth / 4
+        : left,
     });
   });
 

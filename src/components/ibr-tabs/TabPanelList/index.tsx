@@ -1,9 +1,8 @@
 import TabPane from '@ibr/ibr-tabs/TabPanelList/TabPane';
 import styled from '@mui/material/styles/styled';
-import React from 'react';
-import { useRecoilValue } from 'recoil';
+import React, { useContext } from 'react';
+import { ActiveTabKey, findTabIndex } from '../core';
 import { PaneInProps, TabsState } from '../index';
-import { activeTabKey, findTabIndex } from '../core';
 import { TabComponentName } from '../TabClasses';
 
 export interface TabPaneListProps {
@@ -42,7 +41,9 @@ const Content = styled('div', {
   name: TabComponentName,
   slot: 'FlexContent',
   overridesResolver: (props, styles) => {
-    const { paneAnimated, tabPosition } = props;
+    const {
+      ownerState: { paneAnimated, tabPosition },
+    } = props;
     return [
       styles.flexContent,
       paneAnimated && styles.contentAnimated,
@@ -70,9 +71,9 @@ const TabPaneList: React.FC<TabPaneListProps> = ({
   destroyInactiveTabPane,
 }) => {
   const classes = ownerState.classes || {};
-  const activekey = useRecoilValue(activeTabKey);
+  const { activeKey } = useContext(ActiveTabKey);
 
-  const activeIndex = findTabIndex(panes, activekey);
+  const activeIndex = findTabIndex(panes, activeKey);
 
   return (
     <Holder className={classes.holder} ownerState={ownerState}>
@@ -87,7 +88,7 @@ const TabPaneList: React.FC<TabPaneListProps> = ({
             animated={ownerState.paneAnimated}
             tabKey={pane.key}
             destroyInactiveTabPane={destroyInactiveTabPane}
-            active={activekey === pane.key}
+            active={activeKey === pane.key}
             forceRender={pane.forceRender}
             tabPosition={ownerState.tabPosition}
             classes={classes}

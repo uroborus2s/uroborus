@@ -4,6 +4,7 @@ import {
   RecoilState,
   RecoilValueReadOnly,
   selector,
+  selectorFamily,
   TransactionInterface_UNSTABLE,
 } from 'recoil';
 import {
@@ -18,13 +19,17 @@ import { pureDispatcher } from '../core';
 
 export const workspaces = (function () {
   class WorkspaceEntity {
-    readonly planId: (param: string) => RecoilState<string>;
-    readonly isEdit: (param: string) => RecoilState<boolean>;
-    readonly baseIds: (param: string) => RecoilState<Set<string>>;
-    readonly name: (param: string) => RecoilState<string>;
+    readonly planId: (workspaceId: string) => RecoilState<string>;
+    readonly isEdit: (workspaceId: string) => RecoilState<boolean>;
+    readonly baseIds: (workspaceId: string) => RecoilState<Set<string>>;
+    readonly name: (workspaceId: string) => RecoilState<string>;
     readonly ids: RecoilState<Set<string>>;
     readonly workspaces: RecoilValueReadOnly<WorkspacesData[]>;
     readonly baseIdsAll: RecoilValueReadOnly<string[]>;
+    readonly basesNumber: (workspaceId: string) => RecoilValueReadOnly<number>;
+    readonly getWorkspaceIdByBaseId: (
+      baseId: string,
+    ) => RecoilValueReadOnly<string | undefined>;
 
     constructor() {
       this.planId = atomFamily({
@@ -59,9 +64,32 @@ export const workspaces = (function () {
           return [...ids].map((id) => ({
             id: id,
             name: get(this.name(id)),
-            baseIds: [...get(this.baseIds(id))],
+            baseNumber: get(this.baseIds(id)).size,
           }));
         },
+      });
+
+      this.basesNumber = selectorFamily({
+        key: 'workspace/basesNumber',
+        get:
+          (id: string) =>
+          ({ get }) =>
+            get(this.baseIds(id)).size,
+      });
+
+      this.getWorkspaceIdByBaseId = selectorFamily({
+        key: 'workspace/getWorkspaceIdByBaseId',
+        get:
+          (baseId: string) =>
+          ({ get }) => {
+            const ids = get(this.ids);
+            return [...ids].find(
+              (wId) =>
+                [...get(this.baseIds(wId))].findIndex(
+                  (bId) => baseId == bId,
+                ) !== -1,
+            );
+          },
       });
 
       this.baseIdsAll = selector({

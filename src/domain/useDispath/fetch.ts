@@ -24,21 +24,19 @@ class Fetch<R extends CommandOptions> {
   private readonly subscribe: (data: FetchResult<R>) => void;
   private config: FetchOptions<R>;
   private readonly debounceRun:
-    | DebouncedFunc<(config: CommandRunOptions) => void>
+    | DebouncedFunc<(config?: CommandRunOptions) => void>
     | undefined;
   private readonly throttleRun:
-    | DebouncedFunc<(config: CommandRunOptions) => void>
+    | DebouncedFunc<(config?: CommandRunOptions) => void>
     | undefined;
   private readonly commandType: string;
   private reducer: (resp: CommandOptions) => void;
-  private errorReducer: (error: Error) => void;
 
   constructor(
     type: string,
     config: FetchOptions<R>,
     subscribe: (data: FetchResult<R>) => void,
     reducer: (resp: CommandOptions) => void,
-    errorReducer: (error: Error) => void,
     initState?: InitStateOptions<R>,
   ) {
     this.commandType = type;
@@ -62,7 +60,6 @@ class Fetch<R extends CommandOptions> {
     this.config = config;
     this.subscribe = subscribe;
     this.reducer = reducer;
-    this.errorReducer = errorReducer;
 
     if (initState) this.state = { ...this.state, ...initState };
 
@@ -97,7 +94,7 @@ class Fetch<R extends CommandOptions> {
     if (this.subscribe) this.subscribe(this.state);
   }
 
-  run(config: CommandRunOptions) {
+  run(config?: CommandRunOptions) {
     if (this.debounceRun) {
       this.debounceRun.call(this, config);
       return Promise.resolve(null);
@@ -111,7 +108,7 @@ class Fetch<R extends CommandOptions> {
     return this.#run.call(this, config);
   }
 
-  #run = (config: CommandRunOptions) => {
+  #run = (config?: CommandRunOptions) => {
     // 取消已有定时器
     if (this.pollingTimer) {
       clearTimeout(this.pollingTimer);
@@ -141,7 +138,7 @@ class Fetch<R extends CommandOptions> {
       });
     }
 
-    return command()
+    return command
       .then((s) => {
         return s(currentCancelSource.token)({
           request: { ...config },
@@ -192,7 +189,7 @@ class Fetch<R extends CommandOptions> {
           loading: false,
         });
 
-        this.errorReducer(reson);
+        this.reducer(reson);
 
         console.error(reson); // eslint-disable-next-line prefer-promise-reject-errors
 

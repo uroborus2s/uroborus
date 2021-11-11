@@ -2,16 +2,13 @@ import { MOVEBASE, useDispath, workspaces } from '@/domain';
 import {
   CancelButton,
   ConfimButtonGroups,
-  find,
   SelectWorksapceTitle,
 } from '@ibr/ibr-dialog/PopDialog';
-import { CircularProgress } from '@mui/material';
-import Backdrop from '@mui/material/Backdrop';
-import Button from '@mui/material/Button';
+import LoadingButton from '@ibr/ibr-loading/LoadingButton';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import Typography from '@mui/material/Typography';
-import { FC, useEffect, useMemo, useState } from 'react';
+import { FC, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 
 interface MoveDialogProps {
@@ -25,19 +22,11 @@ const MoveDialog: FC<MoveDialogProps> = ({ name, baseId, onClose }) => {
 
   const workspacesDatas = useRecoilValue(workspaces.workspaces);
 
-  const currentId = useMemo(
-    () => find(workspacesDatas, baseId),
-    [workspacesDatas, baseId],
+  const currentWorkspaceId = useRecoilValue(
+    workspaces.getWorkspaceIdByBaseId(baseId),
   );
 
-  const [sId, setSid] = useState(currentId);
-
-  useEffect(() => {
-    const res = find(workspacesDatas, baseId);
-    if (res) {
-      setSid(res);
-    }
-  }, [workspacesDatas, baseId]);
+  const [sId, setSid] = useState(currentWorkspaceId);
 
   return (
     <>
@@ -69,29 +58,22 @@ const MoveDialog: FC<MoveDialogProps> = ({ name, baseId, onClose }) => {
         <CancelButton variant="text" onClick={onClose} href="">
           取消
         </CancelButton>
-        <Button
+        <LoadingButton
+          loading={loading}
           variant="contained"
-          disabled={sId === currentId}
           onClick={() => {
             run({
               path: { id: baseId },
               data: {
                 target_workspace_id: sId,
               },
+            }).then(() => {
+              if (onClose) onClose();
             });
-            if (onClose) onClose();
           }}
-        >
-          移动数据副本到
-        </Button>
+          titleNode="移动数据副本到"
+        />
       </ConfimButtonGroups>
-      <Backdrop
-        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={loading}
-      >
-        <CircularProgress color="inherit" />
-        移动副本...
-      </Backdrop>
     </>
   );
 };

@@ -1,42 +1,27 @@
 import { CREATWORKSPACE, useDispath, workspaces } from '@/domain';
 import { CancelButton, ConfimButtonGroups } from '@ibr/ibr-dialog/PopDialog';
-import { CircularProgress } from '@mui/material';
+import LoadingButton from '@ibr/ibr-loading/LoadingButton';
 import Alert from '@mui/material/Alert';
-import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import { FC, MutableRefObject, useCallback, useEffect } from 'react';
-import { VariableSizeList } from 'react-window';
-import { useRecoilValue } from 'recoil';
+import { FC } from 'react';
+import { useRecoilCallback } from 'recoil';
 
 interface AddWorkspaceDialogProps {
   onClose?: () => void;
-  listRef: MutableRefObject<VariableSizeList | undefined>;
+  onScroll?: (id: string) => void;
 }
 
-const NewWorkspaceDialog: FC<AddWorkspaceDialogProps> = ({
+const CreatWorkspaceDialog: FC<AddWorkspaceDialogProps> = ({
   onClose,
-  listRef,
+  onScroll,
 }) => {
-  const { run, loading, data } = useDispath(CREATWORKSPACE, {
+  const { run, loading } = useDispath(CREATWORKSPACE, {
     manual: true,
   });
-  const datas = useRecoilValue(workspaces.workspaces);
 
-  const scrollToEnd = (id: string) => {
-    console.log(datas);
-    if (listRef.current) {
-      const index = datas.findIndex((w) => w.id == id);
-      console.log(index);
-      listRef.current.scrollToItem(index, 'start');
-    }
-  };
-
-  useEffect(() => {
-    if (data) scrollToEnd(data.response.workspace.id);
-  }, [data, datas]);
-
-  const handlerNewWorkspace = () => {
+  const handlerNewWorkspace = useRecoilCallback(({ snapshot }) => async () => {
     let newName = '工作区 ';
+    const datas = await snapshot.getPromise(workspaces.workspaces);
     let count = datas.length;
     // eslint-disable-next-line no-constant-condition
     while (true) {
@@ -45,10 +30,11 @@ const NewWorkspaceDialog: FC<AddWorkspaceDialogProps> = ({
       const res = datas.findIndex((data) => data.name == newName);
       if (res == -1) break;
     }
-    run({ data: { name: newName } }).then(() => {
-      if (onClose) setTimeout(onClose, 2000);
+    run({ data: { name: newName } }).then((res) => {
+      if (onClose) onClose();
+      if (onScroll) onScroll(res.response.workspace.id);
     });
-  };
+  });
 
   return (
     <>
@@ -78,26 +64,16 @@ const NewWorkspaceDialog: FC<AddWorkspaceDialogProps> = ({
         <CancelButton variant="text" onClick={onClose} href="">
           取消
         </CancelButton>
-        <Button
+        <LoadingButton
+          loading={loading}
           variant="contained"
           color="error"
           onClick={handlerNewWorkspace}
-          disabled={loading}
-        >
-          <span style={{ visibility: loading ? 'hidden' : 'visible' }}>
-            新增工作区
-          </span>
-          {loading && (
-            <CircularProgress
-              sx={{ position: 'absolute' }}
-              size={20}
-              color="inherit"
-            />
-          )}
-        </Button>
+          titleNode="新增工作区"
+        />
       </ConfimButtonGroups>
     </>
   );
 };
 
-export default NewWorkspaceDialog;
+export default CreatWorkspaceDialog;

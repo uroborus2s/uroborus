@@ -173,14 +173,12 @@ const ShareWorkspace: FC<ShareDialogProps> = ({ name }) => {
           >
             <FormControlLabel
               value="all"
-              // @ts-ignore
-              control={<Radio size="14px" />}
+              control={<Radio sx={{ fontSize: '14px' }} />}
               label="任何电子邮件地址"
             />
             <FormControlLabel
               value="range"
-              // @ts-ignore
-              control={<Radio size="14px" />}
+              control={<Radio sx={{ fontSize: '14px' }} />}
               sx={{
                 whiteSpace: 'nowrap',
               }}

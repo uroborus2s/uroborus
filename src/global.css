@@ -1,7 +1,7 @@
 @import '~normalize.css';
 
 :root {
-  --bg-color: #F5F8FA;
+  --bg-color: #f5f8fa;
   --color: hsl(0, 0%, 20%);
   --tab-font-color: #293742;
   --tab-background-color: #F5F8FA;

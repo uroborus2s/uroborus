@@ -13,81 +13,51 @@ async function getModules(files: __WebpackModuleApi.RequireContext) {
     return [];
   }
 }
+let loadResolve: (value: string | PromiseLike<string>) => void;
+let loadReject: (value: string | PromiseLike<string>) => void;
 
-const reducers = new ChainManager();
-const commands = new ChainManager();
+const loadPromise = new Promise<string>((resolve, reject) => {
+  loadResolve = resolve;
+  loadReject = reject;
+});
+
+const reducers = new ChainManager<ReduceFun>();
+const commands = new ChainManager<CommandFun>();
 
 const fs = [reducers, commands];
-let modulesBinded = false;
 
-function reducer() {
-  const compose_reoilstate = (rfs: ReduceFun[]) => {
-    return rfs.reduce((f1, f2) => (inter, action) => f1(...f2(inter, action)));
-  };
-  const rfs: ReduceFun[] = [];
-  reducers.forEach((r) => {
-    rfs.push(r);
-  });
-  return compose_reoilstate(rfs);
-}
+let modulesBinded = true;
+let recoilReducer: ReduceFun | undefined = undefined;
 
-let loadPromise: Promise<any> | undefined = undefined;
-
-async function preLoad() {
-  let loadResolve: (value: any) => void = () => {
-    return;
-  };
-  if (!modulesBinded) {
-    if (loadPromise === undefined) {
-      loadPromise = new Promise<string>((resolve) => {
-        loadResolve = resolve;
-      });
-      await Promise.all([getModules(reducerfiles), getModules(commandfiles)])
-        .then((modFiles) => {
-          modFiles.forEach((mods, index) =>
-            // @ts-ignore
-            mods.forEach((mod) => fs[index].register(mod.default)),
-          );
-        })
-        .catch(() => {
-          console.error('domain 模块读取错误');
-        });
+if (modulesBinded) {
+  Promise.all([getModules(reducerfiles), getModules(commandfiles)])
+    .then((modFiles) => {
+      modFiles.forEach((mods, index) =>
+        // @ts-ignore
+        mods.forEach((mod) => fs[index].register(mod.default)),
+      );
+      recoilReducer = reducers
+        .returnArray()
+        .reduce((f1, f2) => (inter, action) => f1(...f2(inter, action)));
       if (loadResolve) loadResolve('加载成功！');
-      loadPromise = undefined;
-      modulesBinded = true;
-      return;
-    }
-    console.log('预加载进行中');
-  }
-}
-
-async function command() {
-  if (!modulesBinded) {
-    console.log('执行加载domain');
-    if (loadPromise === undefined) {
-      console.log('预加载未启动，此时执行预加载');
-      await preLoad();
-    } else {
-      console.log('预加载未完成，等待预加载完成');
-      await loadPromise;
-    }
-  }
-  return (token: CancelToken) => {
-    const compose_commands = (cmds: CommandFun[]) => {
-      return cmds.reduce((f1, f2) => (options: CommandOptions) => {
-        return f1(options).then((res) => {
-          if (token) token.throwIfRequested();
-          return f2(res);
-        });
-      });
-    };
-
-    const coms: CommandFun[] = [promiseWithCancelToken(token)];
-    commands.forEach((r) => {
-      coms.push(r);
+      modulesBinded = false;
+    })
+    .catch(() => {
+      loadReject('函数初始化加载失败！');
     });
-    return compose_commands(coms);
-  };
 }
 
-export { reducer, command, preLoad };
+const command = loadPromise.then(() => {
+  return (token: CancelToken) => {
+    const newComs = commands.returnArray();
+    newComs.unshift(promiseWithCancelToken(token));
+    return newComs.reduce((f1, f2) => (options: CommandOptions) => {
+      return f1(options).then((res) => {
+        if (token) token.throwIfRequested();
+        return f2(res);
+      });
+    });
+  };
+});
+
+export { recoilReducer, command };

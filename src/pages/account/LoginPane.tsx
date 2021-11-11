@@ -1,4 +1,5 @@
 import { LOGIN, useDispath } from '@/domain';
+import { UserInfoContext } from '@/layouts/UserContext';
 import {
   AlibabaIcon,
   DingTalkIcon,
@@ -12,11 +13,11 @@ import InputBase from '@mui/material/InputBase';
 import styled from '@mui/material/styles/styled';
 import Typography from '@mui/material/Typography';
 import makeStyles from '@mui/styles/makeStyles';
-import React, { FC, useRef, useState } from 'react';
+import React, { FC, useContext, useRef, useState } from 'react';
 import MailSharpIcon from '@mui/icons-material/MailSharp';
 import PhoneIcon from '@mui/icons-material/Phone';
 import LockSharpIcon from '@mui/icons-material/LockSharp';
-import { useHistory } from 'umi';
+import { history } from 'umi';
 
 const ContainerRoot = styled('div')({
   borderBottom: 'solid 1px #edeff1',
@@ -100,9 +101,12 @@ const LoginInput: FC<{
   const accountRef = useRef<HTMLInputElement>();
   const passwordRef = useRef<HTMLInputElement>();
 
-  const history = useHistory();
+  const { updateUser } = useContext(UserInfoContext);
 
-  const { run: login, loading } = useDispath(LOGIN, { manual: true });
+  const { run: login, loading } = useDispath(LOGIN, {
+    manual: true,
+    dispatch: updateUser,
+  });
 
   return (
     <LoginInputRoot>
@@ -165,7 +169,7 @@ const LoginInput: FC<{
               password: passwordRef.current?.value,
             },
           }).then(() => {
-            history.goBack();
+            history.push('/');
           });
         }}
       >

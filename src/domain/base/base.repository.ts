@@ -1,4 +1,4 @@
-import { BaseIconType, ColorType } from '@/core/util';
+import { BaseIconType, BlankIcon, ColorType } from '@/core/util';
 import {
   atomFamily,
   RecoilState,
@@ -6,12 +6,15 @@ import {
   selectorFamily,
   TransactionInterface_UNSTABLE,
 } from 'recoil';
-import { pureDispatcher } from '../core';
+import { calcSort, pureDispatcher } from '../core';
 import {
   BaseEntity,
   CommandOptions,
+  CREATTABLE,
+  CREATTABLEBYFILE,
   CREATWORKSPACE,
   EDITBASE,
+  READBASE,
   READWORKSPACELIST,
 } from '../index';
 
@@ -40,7 +43,7 @@ export const base = (function () {
 
       this.icon = atomFamily<BaseIconType, string>({
         key: 'base/icon',
-        default: 'null',
+        default: BlankIcon,
       });
 
       this.desc = atomFamily<string, string>({
@@ -91,17 +94,36 @@ function init({ set }: TransactionInterface_UNSTABLE, options: CommandOptions) {
 }
 
 function edit({ set }: TransactionInterface_UNSTABLE, options: CommandOptions) {
-  if (options.response) {
-    const { color, name, icon, id, desc } = options.response;
+  const len = options.response ? Object.keys(options.response).length : 0;
+  if (len >= 0) {
+    const { color, name, icon, desc, tables, selected_table_id } =
+      len > 0 ? options.response : options.request?.data;
+    const id = options.request?.path?.id;
     if (color) set(base.color(id), color);
     if (name) set(base.name(id), name);
     if (icon) set(base.icon(id), icon);
     if (desc) set(base.desc(id), desc);
+    if (selected_table_id) set(base.lastUsedTableId(id), selected_table_id);
+    if (Array.isArray(tables)) {
+      set(base.tableIds(id), calcSort(tables));
+    }
   }
+}
+
+function updateTableIds(
+  { set }: TransactionInterface_UNSTABLE,
+  options: CommandOptions,
+) {
+  const baseId = options.request?.params?.base_id;
+  const ids = calcSort(options.response.tables);
+  if (baseId && ids) set(base.tableIds(baseId), ids);
 }
 
 export default pureDispatcher({
   [READWORKSPACELIST]: init,
   [CREATWORKSPACE]: init,
   [EDITBASE]: edit,
+  [READBASE]: edit,
+  [CREATTABLE]: updateTableIds,
+  [CREATTABLEBYFILE]: updateTableIds,
 });

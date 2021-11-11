@@ -1,10 +1,4 @@
-import {
-  CommandOptions,
-  CommandRunOptions,
-  DispathOptions,
-  DispathResult,
-  FetchResult,
-} from '../types';
+import { useRefFun } from '@/core/hooks';
 import {
   useCallback,
   useEffect,
@@ -12,11 +6,16 @@ import {
   useRef,
   useState,
 } from 'react';
-import { useRefFun } from '@/core/hooks';
-import { Fetch } from './fetch';
 import { useRecoilTransaction_UNSTABLE } from 'recoil';
-import { reducer } from '../store';
-import { errorReducer } from '@/domain/error';
+import { recoilReducer } from '../store';
+import {
+  CommandOptions,
+  CommandRunOptions,
+  DispathOptions,
+  DispathResult,
+  FetchResult,
+} from '../types';
+import { Fetch } from './fetch';
 
 function useDispath<R extends CommandOptions>(
   commandType: string,
@@ -51,6 +50,7 @@ function useDispath<R extends CommandOptions>(
     // 默认的 data
     initialData,
     request,
+    dispatch,
   } = _options;
 
   const [fetchResult, setFetchResult] = useState<FetchResult<R>>();
@@ -66,14 +66,11 @@ function useDispath<R extends CommandOptions>(
   const onErrorPersist = useRefFun(onError);
   const formatResultPersist = useRefFun(formatResult);
 
-  const rReducer = useRecoilTransaction_UNSTABLE(
-    (inter) => (result: CommandOptions) => {
-      reducer()(inter, result);
+  const reducer = useRecoilTransaction_UNSTABLE(
+    (transactionInterface) => (action: CommandOptions) => {
+      if (recoilReducer)
+        recoilReducer(transactionInterface, { ...action, dispatch });
     },
-  );
-
-  const eReducer = useRecoilTransaction_UNSTABLE((inter) =>
-    errorReducer(inter),
   );
 
   const fetchConfig = {
@@ -94,15 +91,14 @@ function useDispath<R extends CommandOptions>(
   fetcheRef.current = fetchResult;
 
   const run = useCallback(
-    (config: CommandRunOptions) => {
+    (config?: CommandRunOptions) => {
       let currentFetch = fetcheRef.current;
       if (!currentFetch) {
         const newFetch = new Fetch(
           commandType,
           fetchConfig,
           subscribe as (data: FetchResult<R>) => void,
-          rReducer,
-          eReducer,
+          reducer,
           {
             data: initialData,
           },

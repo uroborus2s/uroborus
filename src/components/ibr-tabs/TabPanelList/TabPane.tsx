@@ -42,16 +42,18 @@ const TabPaneRoot = styled('div', {
   name: TabComponentName,
   slot: 'Pane',
   overridesResolver: (props, styles) => {
-    const { active } = props;
-    return [styles.pane, active && styles.paneActive];
+    const { ownerState } = props;
+    return [styles.pane, ownerState.active && styles.paneActive];
   },
-})<{ ownerState: TabPosition }>(({ ownerState }) => ({
-  flex: 'none',
-  width: '100%',
-  outline: 'none',
-  paddingRight: ownerState == 'left' ? '24px' : 0,
-  paddingLeft: ownerState == 'right' ? '24px' : 0,
-}));
+})<{ ownerState: { tabPosition: TabPosition; active: boolean } }>(
+  ({ ownerState: { tabPosition } }) => ({
+    flex: 'none',
+    width: '100%',
+    outline: 'none',
+    paddingRight: tabPosition == 'left' ? '24px' : 0,
+    paddingLeft: tabPosition == 'right' ? '24px' : 0,
+  }),
+);
 
 const TabPane: React.FC<TabPaneProps> = ({
   forceRender = false,
@@ -66,6 +68,8 @@ const TabPane: React.FC<TabPaneProps> = ({
   className,
 }) => {
   const classes = usePaneClasses(classesProp, active);
+
+  const paneClassName = [...new Set(classes.pane.split(' '))].join(' ');
 
   const mergedStyle: CSSProperties = {};
 
@@ -86,8 +90,8 @@ const TabPane: React.FC<TabPaneProps> = ({
       tabIndex={active ? 0 : -1}
       aria-labelledby={id && `${id}-panel-${tabKey}`}
       aria-hidden={!active}
-      className={classNames(classes.pane, className)}
-      ownerState={tabPosition}
+      className={classNames(paneClassName, className)}
+      ownerState={{ tabPosition, active }}
     >
       {(active || destroyInactiveTabPane || forceRender) && children}
     </TabPaneRoot>

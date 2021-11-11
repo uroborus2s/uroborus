@@ -1,8 +1,6 @@
-import { iconColors } from '@/core/util';
-import { base } from '@/domain/base/base.repository';
 import { workspaces } from '@/domain/workspace/workspace.repository';
 import EditBaseDialog from '@/pages/editBaseDialog/EditBaseDialog';
-import NewBaseDialog, { getFristName } from './NewBaseDialog';
+import useBaseInfo from '@/pages/editBaseDialog/useBaseInfo';
 import { maxScreen, middleScreen, minScreen } from '@/pages/home/types';
 import AddIcon from '@ibr/ibr-icon/AddIcon';
 import BaseIcon from '@ibr/ibr-icon/BaseIcon';
@@ -13,6 +11,7 @@ import classNames from 'classnames';
 import { FC, memo, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import { Link } from 'umi';
+import NewBaseDialog from './NewBaseDialog';
 
 interface stytelProps {
   color?: string;
@@ -99,16 +98,13 @@ const BaseItem: FC<{ baseId: string; rootClassName: string }> = ({
   baseId,
   rootClassName,
 }) => {
-  const name = useRecoilValue(base.name(baseId));
-  const color = useRecoilValue(base.color(baseId));
-  const icon = useRecoilValue(base.icon(baseId));
+  const { baseName, baseIcon, baseColor, fontColor, fristChar } =
+    useBaseInfo(baseId);
 
   const classes = useStytel({
-    color: iconColors[color],
-    fontColor: color.trim().endsWith('Light') ? 'hsl(0,0%,20%)' : '#fff',
+    color: baseColor,
+    fontColor: fontColor,
   });
-
-  const fristChar = getFristName(name);
 
   const [openDialog, setOpen] = useState(false);
 
@@ -116,14 +112,13 @@ const BaseItem: FC<{ baseId: string; rootClassName: string }> = ({
     <div className={rootClassName}>
       <div className={classes.hoverContainer}>
         <div className={classes.icon}>
-          <Link to={`/application/${baseId}`} className={classes.link}>
-            <div className={classes.linkIcon}>
-              {icon == 'null' ? (
-                <span>{fristChar}</span>
-              ) : (
-                <BaseIcon sx={{ fontSize: '48px' }} icon={icon} />
-              )}
-            </div>
+          <Link to={`/base/${baseId}`} className={classes.link}>
+            <BaseIcon
+              icon={baseIcon}
+              fristChar={fristChar}
+              className={classes.linkIcon}
+              iconProps={{ sx: { fontSize: 48 } }}
+            />
           </Link>
           <div
             className={classNames(classes.moreButton, 'base-item-more-button')}
@@ -141,7 +136,7 @@ const BaseItem: FC<{ baseId: string; rootClassName: string }> = ({
             baseId={baseId}
           />
         </div>
-        <div className={classes.title}>{name}</div>
+        <div className={classes.title}>{baseName}</div>
       </div>
     </div>
   );
@@ -216,7 +211,11 @@ const BaseList: FC<{ workspaceId: string }> = ({ workspaceId }) => {
           <div className={classes.text}>新建数据副本</div>
         </div>
       </div>
-      <NewBaseDialog anchorEl={anchorEl} setAnchorEl={setAnchorEl} />
+      <NewBaseDialog
+        anchorEl={anchorEl}
+        setAnchorEl={setAnchorEl}
+        workspaceId={workspaceId}
+      />
     </>
   );
 };

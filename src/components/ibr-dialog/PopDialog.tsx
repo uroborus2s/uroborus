@@ -1,4 +1,3 @@
-import { WorkspacesData } from '@/domain';
 import CloseIcon from '@mui/icons-material/Close';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -13,14 +12,6 @@ import {
   useImperativeHandle,
   useState,
 } from 'react';
-
-export function find(datas: WorkspacesData[], baseId: string) {
-  const res = datas.find((data) => {
-    return !!data.baseIds.find((id) => id == baseId);
-  });
-  if (res) return res.id;
-  else return '';
-}
 
 interface PopDialogProps {
   paperStyel?: SxProps<Theme>;

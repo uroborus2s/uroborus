@@ -67,12 +67,14 @@ export function promiseWithError<T, U = any>(
 export function transformResponse(options: CommandOptions, err: any, res: any) {
   if (err != null) return Promise.reject(err);
   if (res) {
-    const { code } = res.data as DataResponse;
+    const { code, data } = res.data as DataResponse;
     if (code == ResponseCode.Failure)
       return Promise.reject(new ServiceCodeError(code));
     return Promise.resolve({
       ...options,
-      response: { id: options.request?.path?.id, ...options.request?.data },
+      response: {
+        ...data,
+      },
     });
   }
   return Promise.reject(new NullResponseError());

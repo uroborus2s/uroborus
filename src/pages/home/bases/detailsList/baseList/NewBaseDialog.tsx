@@ -1,23 +1,18 @@
+import { BlankIcon, iconColors, IconColorTypeArr } from '@/core/util';
+import { CREATBASE, useDispath } from '@/domain';
+import useUploadBaseFile from '@/pages/home/bases/detailsList/baseList/useUploadBaseFile';
+import UploadFilePanel from '@ibr/ibr-upload-file/UploadFilePanel';
 import PopDialog, { HandleFun } from '@ibr/ibr-dialog/PopDialog';
 import AddPhotoAlternateOutlinedIcon from '@mui/icons-material/AddPhotoAlternateOutlined';
 import CreateOutlinedIcon from '@mui/icons-material/CreateOutlined';
 import FileUploadOutlinedIcon from '@mui/icons-material/FileUploadOutlined';
+import CircularProgress from '@mui/material/CircularProgress';
+import Backdrop from '@mui/material/Backdrop';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import styled from '@mui/styles/styled';
 import { Dispatch, FC, Ref, SetStateAction, useRef } from 'react';
-
-export const getFristName = (name: string) => {
-  let fristChar = '';
-  if (name.length > 0) {
-    if (/[\u4e00-\u9fa5]/.test(name[1])) {
-      fristChar = name.substr(0, 1);
-    } else {
-      fristChar = name.substr(0, 2);
-    }
-  }
-  return fristChar;
-};
+import { history } from 'umi';
 
 const BaseMenuItem = styled(MenuItem)({
   padding: '0.5rem',
@@ -32,80 +27,101 @@ const BaseMenuItemText = styled('div')({
 interface NewBaseDialogProps {
   anchorEl: null | Element;
   setAnchorEl: Dispatch<SetStateAction<Element | null>>;
+  workspaceId: string;
 }
 
-const NewBaseDialog: FC<NewBaseDialogProps> = ({ anchorEl, setAnchorEl }) => {
-  const blankRef = useRef<HandleFun>();
+const NewBaseDialog: FC<NewBaseDialogProps> = ({
+  anchorEl,
+  setAnchorEl,
+  workspaceId,
+}) => {
   const templateRef = useRef<HandleFun>();
   const fileRef = useRef<HandleFun>();
 
+  const { run, loading } = useDispath(CREATBASE, { manual: true });
+
+  const handleCreatBase = () => {
+    run({
+      data: {
+        workspace_id: workspaceId,
+        name: '新建数据应用',
+        color: iconColors[IconColorTypeArr[Math.round(Math.random() * 20)]],
+        icon: BlankIcon,
+      },
+    }).then((res) => history.push(`/application/${res.response.id}`));
+    setAnchorEl(null);
+  };
+
+  const { loading: upLoadFileLoading, onDrop } = useUploadBaseFile(
+    workspaceId,
+    fileRef.current?.close,
+  );
+
   return (
     <>
-      <Menu
-        open={!!anchorEl}
-        anchorEl={anchorEl}
-        onClose={() => {
-          setAnchorEl(null);
-        }}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
-        }}
-        transformOrigin={{ vertical: 'top', horizontal: 'left' }}
-        sx={{
-          '& .MuiMenu-list': {
-            borderRadius: '6px',
-            overflow: 'hidden',
-            color: '#fff',
-            backgroundColor: 'hsl(0,0%,20%)',
-            width: '200px',
-            padding: 0,
-          },
-        }}
-      >
-        <BaseMenuItem
-          disableRipple
-          disableTouchRipple
-          onClick={() => {
-            if (blankRef.current) blankRef.current.open();
+      {loading ? (
+        <Backdrop
+          sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          open={loading}
+        >
+          <CircularProgress color="inherit" />
+        </Backdrop>
+      ) : (
+        <Menu
+          open={!!anchorEl}
+          anchorEl={anchorEl}
+          onClose={() => {
             setAnchorEl(null);
           }}
-        >
-          <CreateOutlinedIcon sx={{ fontSize: 18 }} />
-          <BaseMenuItemText>创建新的数据副本</BaseMenuItemText>
-        </BaseMenuItem>
-        <BaseMenuItem
-          disableRipple
-          disableTouchRipple
-          onClick={(e) => {
-            if (templateRef.current) templateRef.current.open();
-            setAnchorEl(null);
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'left',
+          }}
+          transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+          sx={{
+            '& .MuiMenu-list': {
+              borderRadius: '6px',
+              overflow: 'hidden',
+              color: '#fff',
+              backgroundColor: 'hsl(0,0%,20%)',
+              width: '200px',
+              padding: 0,
+            },
           }}
         >
-          <AddPhotoAlternateOutlinedIcon sx={{ fontSize: 18 }} />
-          <BaseMenuItemText>从模版创建</BaseMenuItemText>
-        </BaseMenuItem>
-        <BaseMenuItem
-          disableRipple
-          disableTouchRipple
-          onClick={() => {
-            if (fileRef.current) fileRef.current.open();
-            setAnchorEl(null);
-          }}
-        >
-          <FileUploadOutlinedIcon sx={{ fontSize: 18 }} />
-          <BaseMenuItemText>从cvs或excel导入</BaseMenuItemText>
-        </BaseMenuItem>
-      </Menu>
-      <PopDialog
-        ref={blankRef as Ref<HandleFun>}
-        paperStyel={{
-          height: 'calc(90% - 64px)',
-          maxWidth: 'calc(100% - 64px)',
-          borderRadius: '6px',
-        }}
-        allowClose
-      ></PopDialog>
+          <BaseMenuItem
+            disableRipple
+            disableTouchRipple
+            onClick={handleCreatBase}
+          >
+            <CreateOutlinedIcon sx={{ fontSize: 18 }} />
+            <BaseMenuItemText>新建一个空的数据副本</BaseMenuItemText>
+          </BaseMenuItem>
+          <BaseMenuItem
+            disableRipple
+            disableTouchRipple
+            onClick={() => {
+              if (templateRef.current) templateRef.current.open();
+              setAnchorEl(null);
+            }}
+          >
+            <AddPhotoAlternateOutlinedIcon sx={{ fontSize: 18 }} />
+            <BaseMenuItemText>从模版创建</BaseMenuItemText>
+          </BaseMenuItem>
+          <BaseMenuItem
+            disableRipple
+            disableTouchRipple
+            onClick={() => {
+              if (fileRef.current) fileRef.current.open();
+              setAnchorEl(null);
+            }}
+          >
+            <FileUploadOutlinedIcon sx={{ fontSize: 18 }} />
+            <BaseMenuItemText>从cvs或excel导入</BaseMenuItemText>
+          </BaseMenuItem>
+        </Menu>
+      )}
+
       <PopDialog
         disabledCloseButton
         ref={templateRef as Ref<HandleFun>}
@@ -117,19 +133,21 @@ const NewBaseDialog: FC<NewBaseDialogProps> = ({ anchorEl, setAnchorEl }) => {
           fontWeight: 500,
           boxShadow: '0 0 0 2px rgb(0 0 0 / 10%)',
         }}
-      ></PopDialog>
+      />
       <PopDialog
-        disabledCloseButton
         ref={fileRef as Ref<HandleFun>}
         paperStyel={{
-          width: '260px',
           borderRadius: '6px',
           padding: '1rem',
           margin: 0,
           fontWeight: 500,
+          width: '480px',
+          height: '360px',
           boxShadow: '0 0 0 2px rgb(0 0 0 / 10%)',
         }}
-      ></PopDialog>
+      >
+        <UploadFilePanel loading={upLoadFileLoading} onDrop={onDrop} />
+      </PopDialog>
     </>
   );
 };

@@ -1,4 +1,5 @@
-import { generateUtilityClass, generateUtilityClasses } from '@mui/core';
+import generateUtilityClass from '@mui/core/generateUtilityClass';
+import generateUtilityClasses from '@mui/core/generateUtilityClasses';
 
 const TabSlots = [
   /** 应用于根元素的样式。*/

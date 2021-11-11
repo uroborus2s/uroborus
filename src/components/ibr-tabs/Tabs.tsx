@@ -2,14 +2,21 @@ import composeClasses from '@mui/core/composeClasses';
 import styled from '@mui/material/styles/styled';
 import useThemeProps from '@mui/material/styles/useThemeProps';
 import classNames from 'classnames';
-import React, { ForwardRefRenderFunction, useMemo } from 'react';
+import {
+  Children,
+  forwardRef,
+  ForwardRefRenderFunction,
+  isValidElement,
+  ReactElement,
+  useMemo,
+  useState,
+} from 'react';
 import {
   DragDropContext,
   DropResult,
   ResponderProvided,
 } from 'react-beautiful-dnd';
-import { MutableSnapshot, RecoilRoot } from 'recoil';
-import { activeTabKey } from './core';
+import { ActiveTabKey } from './core';
 import {
   PaneInProps,
   Tab,
@@ -27,8 +34,8 @@ function parseTabList(children: any): TabsInProps {
   const tabs: TabInProps[] = [];
   const panes: PaneInProps[] = [];
   if (children) {
-    React.Children.forEach(children, (node, index) => {
-      if (React.isValidElement<TabProps>(node) && node.type === Tab) {
+    Children.forEach(children, (node, index) => {
+      if (isValidElement<TabProps>(node) && node.type === Tab) {
         const key = node.key !== undefined ? String(node.key) : String(index);
         const tab = {
           key: key,
@@ -71,6 +78,8 @@ const useUtilityClasses = (ownerState: TabsState) => {
     tabActive: ['tabActive'],
     tabDisabled: ['tabDisabled'],
     tabNode: ['tabNode'],
+    pane: ['pane'],
+    paneActive: ['paneActive'],
   };
   return composeClasses(slots, getTabsUtilityClass, classes);
 };
@@ -87,7 +96,6 @@ const TabRoot = styled('div', {
   overflow: 'hidden',
   WebkitOverflowScrolling: 'touch',
   boxSizing: 'border-box',
-  minHeight: 48,
   fontSize: '0.9rem',
   fontWeight: 500,
   fontVariant: 'tabular-nums',
@@ -107,7 +115,6 @@ const ForwardTabs: ForwardRefRenderFunction<
   Omit<
     TabsProps,
     | 'children'
-    | 'activeKey'
     | 'defaultActiveKey'
     | 'direction'
     | 'tabPosition'
@@ -129,10 +136,10 @@ const ForwardTabs: ForwardRefRenderFunction<
     renderTabBar,
     tabBarExtraContent,
     tabBarGutter,
-    moreIcon,
-    type = 'line',
     hideAdd = false,
     addIcon,
+    moreAddIcon,
+    activeKey: activeKeyProp,
     ...other
   },
   ref,
@@ -141,15 +148,16 @@ const ForwardTabs: ForwardRefRenderFunction<
     console.log(result, provided);
   };
 
-  let TabNav: React.ReactElement;
+  const [activeKey, setActiveKey] = useState(activeKeyProp || '');
+
+  let TabNav: ReactElement;
   const tabNavProps = {
     ownerState: ownerState,
     tabBarExtraContent: tabBarExtraContent,
     tabs: tabs,
     hideAdd: hideAdd,
     addIcon: addIcon,
-    moreIcon: moreIcon,
-    type: type,
+    moreAddIcon: moreAddIcon,
     onTabClick: onTabClick,
     onTabScroll: onTabScroll,
     tabBarGutter: tabBarGutter,
@@ -159,25 +167,29 @@ const ForwardTabs: ForwardRefRenderFunction<
   } else TabNav = <TabNavList {...tabNavProps} />;
 
   return (
-    <DragDropContext onDragEnd={handleDragEnd}>
-      <TabRoot
-        className={classNames(ownerState.classes?.root, className)}
-        ownerState={ownerState}
-        ref={ref}
-        {...other}
-      >
-        {TabNav}
-        <TabPaneList
-          panes={panes}
+    <ActiveTabKey.Provider
+      value={{ activeKey: activeKey, setActiveKey: setActiveKey }}
+    >
+      <DragDropContext onDragEnd={handleDragEnd}>
+        <TabRoot
+          className={classNames(ownerState.classes?.root, className)}
           ownerState={ownerState}
-          destroyInactiveTabPane={destroyInactiveTabPane}
-        />
-      </TabRoot>
-    </DragDropContext>
+          ref={ref}
+          {...other}
+        >
+          {TabNav}
+          <TabPaneList
+            panes={panes}
+            ownerState={ownerState}
+            destroyInactiveTabPane={destroyInactiveTabPane}
+          />
+        </TabRoot>
+      </DragDropContext>
+    </ActiveTabKey.Provider>
   );
 };
 
-const Tabs = React.forwardRef(ForwardTabs);
+const Tabs = forwardRef(ForwardTabs);
 
 const RecoilTabs: ForwardRefRenderFunction<HTMLDivElement, TabsProps> = (
   inProps,
@@ -198,6 +210,7 @@ const RecoilTabs: ForwardRefRenderFunction<HTMLDivElement, TabsProps> = (
     tabPosition = 'top',
     id,
     centered = false,
+    type = 'line',
     ...tabsProps
   } = props;
 
@@ -237,32 +250,29 @@ const RecoilTabs: ForwardRefRenderFunction<HTMLDivElement, TabsProps> = (
     classes,
     id: mergedId,
     centered,
+    type,
   };
   const inClasses = useUtilityClasses(ownerState);
 
   ownerState = { ...ownerState, classes: inClasses };
 
-  const initActiveKey = ({ set }: MutableSnapshot) => {
-    let newActiveKey = activeKey ?? defaultActiveKey;
-    const activeIndex = tabs.findIndex((tab) => tab.key == newActiveKey);
-    if (activeIndex == -1) {
-      newActiveKey = tabs[0]?.key;
-    }
-    set(activeTabKey, newActiveKey);
-  };
+  let newActiveKey = activeKey ?? defaultActiveKey ?? '';
+  const activeIndex = tabs.findIndex((tab) => tab.key == newActiveKey);
+  if (activeIndex == -1) {
+    newActiveKey = tabs[0]?.key;
+  }
 
   if (tabs.length == 0) return null;
   return (
-    <RecoilRoot initializeState={initActiveKey}>
-      <Tabs
-        ref={ref}
-        tabs={tabs}
-        panes={panes}
-        ownerState={ownerState}
-        {...tabsProps}
-      />
-    </RecoilRoot>
+    <Tabs
+      ref={ref}
+      tabs={tabs}
+      panes={panes}
+      ownerState={ownerState}
+      activeKey={newActiveKey}
+      {...tabsProps}
+    />
   );
 };
 
-export default React.forwardRef(RecoilTabs);
+export default forwardRef(RecoilTabs);

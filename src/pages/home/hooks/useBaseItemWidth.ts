@@ -62,7 +62,7 @@ export default function (ref: BasicTarget): WorkspaceItemRect {
 
   useSize(ref, onResize, {
     type: 'throttle',
-    wait: 300,
+    wait: 500,
   });
 
   return resRef.current;

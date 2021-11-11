@@ -1,30 +1,28 @@
 import { useRefFun, useSize } from '@/core/hooks';
-import { scroll } from '../core';
 import useEffectNomount from '@hooks/useEffectNomount';
 import {
   windowScrollBarHeight,
   windowScrollBarWidth,
 } from '@ibr/ibr-scrollbar-size/ScrollbarSize';
-import { activeTabKey, findTabIndex } from '@ibr/ibr-tabs/core';
-import TabNode from '@ibr/ibr-tabs/TabNavList/TabNode';
-import useMoveInkbar from '@ibr/ibr-tabs/TabNavList/useMoveInkbar';
-import useScrollButton from '@ibr/ibr-tabs/TabNavList/useScrollButton';
-import useScrollTurnPage from '@ibr/ibr-tabs/TabNavList/useScrollTurnPage';
-import useTabKeyboard from '@ibr/ibr-tabs/TabNavList/useTabKeyboard';
-import { ownerWindow } from '@mui/material';
 import styled from '@mui/material/styles/styled';
+import ownerWindow from '@mui/material/utils/ownerWindow';
 import classNames from 'classnames';
 import debounce from 'lodash.debounce';
-import React, {
+import {
+  FC,
+  forwardRef,
   ForwardRefRenderFunction,
+  isValidElement,
   LegacyRef,
   MouseEvent,
-  Ref,
+  ReactNode,
+  useContext,
   useEffect,
   useMemo,
   useRef,
 } from 'react';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilValue } from 'recoil';
+import { ActiveTabKey, findTabIndex, scroll } from '../core';
 import {
   TabBarExtraContent,
   TabBarExtraPosition,
@@ -32,8 +30,12 @@ import {
   TabsState,
 } from '../index';
 import { TabComponentName, TabsClasses } from '../TabClasses';
-import AddButton from './AddButton';
 import OperationNode from './OperationButton';
+import TabNode from './TabNode';
+import useMoveInkbar from './useMoveInkbar';
+import useScrollButton from './useScrollButton';
+import useScrollTurnPage from './useScrollTurnPage';
+import useTabKeyboard from './useTabKeyboard';
 
 const ExtraNode = styled('div', {
   name: TabComponentName,
@@ -44,28 +46,26 @@ const ExtraNode = styled('div', {
   alignItems: 'center',
 });
 
-const ExtraContent: React.FC<{
+const ExtraContent: FC<{
   position: 'left' | 'right';
   extra: TabBarExtraContent;
   classes?: Partial<TabsClasses>;
 }> = ({ position, extra, classes }) => {
-  let content: React.ReactNode; // Parse extra
+  let content: ReactNode; // Parse extra
 
-  const assertExtra: Record<TabBarExtraPosition, React.ReactNode> = {
+  const assertExtra: Record<TabBarExtraPosition, ReactNode> = {
     right: null,
     left: null,
   };
 
   if (extra && typeof extra === 'object') {
-    if (React.isValidElement(extra)) {
+    if (isValidElement(extra)) {
       assertExtra.right = extra;
     } else {
       assertExtra.right = (
-        extra as Record<TabBarExtraPosition, React.ReactNode>
+        extra as Record<TabBarExtraPosition, ReactNode>
       ).right;
-      assertExtra.left = (
-        extra as Record<TabBarExtraPosition, React.ReactNode>
-      ).left;
+      assertExtra.left = (extra as Record<TabBarExtraPosition, ReactNode>).left;
     }
   }
 
@@ -73,23 +73,23 @@ const ExtraContent: React.FC<{
 
   if (position === 'right') content = assertExtra.right;
 
-  return content
-    ? React.createElement(ExtraNode, { className: classes?.extra }, content)
-    : null;
+  return content ? (
+    <ExtraNode className={classes?.extra}>{content}</ExtraNode>
+  ) : null;
 };
 
 const TabHeader = styled('div', {
   name: TabComponentName,
   slot: 'tabHeader',
   overridesResolver: (props, styles) => styles.tabHeader,
-})({
-  boxShadow: 'rgb(0 0 0 / 3%) 0px 2px 0px 0px',
+})<{ ownerState: TabsState }>(({ ownerState: { type } }) => ({
+  boxShadow: type == 'line' ? 'rgb(0 0 0 / 3%) 0px 2px 0px 0px' : 'none',
   width: '100%',
   flex: 'none',
   backgroundColor: '#fff',
   paddingLeft: '1rem',
   paddingRight: '1rem',
-});
+}));
 
 const TabNavListRoot = styled('div', {
   name: TabComponentName,
@@ -121,7 +121,7 @@ const TabNavWrap = styled('div', {
   name: TabComponentName,
   slot: 'navWrap',
   overridesResolver: (props, styles) => {
-    return [styles.navWrap, props.centered && styles.centered];
+    return [styles.navWrap, props.ownerState.centered && styles.centered];
   },
 })<{ ownerState: TabsState }>(({ ownerState: { centered, vertical } }) => ({
   position: 'relative',
@@ -129,6 +129,7 @@ const TabNavWrap = styled('div', {
   flex: 'auto',
   overflow: 'hidden',
   whiteSpace: 'nowrap',
+  height: '100%',
   ...(vertical && {
     flexDirection: 'column',
   }),
@@ -229,10 +230,9 @@ const TabNavList: ForwardRefRenderFunction<HTMLDivElement, TabNavListProps> = (
     tabBarExtraContent,
     tabs,
     hideAdd,
-    type,
     tabBarGutter,
     addIcon,
-    moreIcon,
+    moreAddIcon,
     onTabClick,
     onTabScroll,
     ...other
@@ -248,14 +248,12 @@ const TabNavList: ForwardRefRenderFunction<HTMLDivElement, TabNavListProps> = (
     return vertical ? scrollBarWidth : scrollBarHeight;
   }, [vertical, scrollBarHeight, scrollBarWidth]);
 
-  const [activeKey, setActiveKey] = useRecoilState(activeTabKey);
+  const { activeKey, setActiveKey } = useContext(ActiveTabKey);
 
   const activeIndex = useRef(findTabIndex(tabs, activeKey));
 
-  const operationsRef = useRef<HTMLDivElement>();
-  const innerAddButtonRef = useRef<HTMLDivElement>();
   const tabsRef = useRef<HTMLDivElement>();
-  const tabListRef = React.useRef<HTMLDivElement>();
+  const tabListRef = useRef<HTMLDivElement>();
 
   const { updateScrollButtonState, displayScroll } = useScrollButton(
     ownerState,
@@ -358,11 +356,11 @@ const TabNavList: ForwardRefRenderFunction<HTMLDivElement, TabNavListProps> = (
     />
   ));
 
-  const hideButton = type !== 'editable-card' || hideAdd;
-  const hideInkbar = type !== 'line';
+  const hideButton = ownerState.type !== 'editable-card' || hideAdd;
+  const hideInkbar = ownerState.type !== 'line';
 
   return (
-    <TabHeader className={classes?.tabHeader}>
+    <TabHeader className={classes?.tabHeader} ownerState={ownerState}>
       <TabNavListRoot
         ref={ref}
         className={classNames(classes?.tabNav, className)}
@@ -376,7 +374,11 @@ const TabNavList: ForwardRefRenderFunction<HTMLDivElement, TabNavListProps> = (
         />
         <TabNavWrap ownerState={ownerState} className={classes?.navWrap}>
           {!hideButton && (
-            <OperationNode ref={operationsRef as Ref<HTMLDivElement>} />
+            <OperationNode
+              tabs={tabs}
+              onTabClick={onInternalTabClick}
+              addIcon={moreAddIcon}
+            />
           )}
           <TabsScroller
             ownerState={{ ...ownerState, scrollBarSize }}
@@ -410,9 +412,7 @@ const TabNavList: ForwardRefRenderFunction<HTMLDivElement, TabNavListProps> = (
               />
             )}
           </TabsScroller>
-          {!hideButton && (
-            <AddButton ref={innerAddButtonRef as Ref<HTMLDivElement>} />
-          )}
+          {!hideButton && addIcon}
         </TabNavWrap>
         <ExtraContent
           position="right"
@@ -424,4 +424,4 @@ const TabNavList: ForwardRefRenderFunction<HTMLDivElement, TabNavListProps> = (
   );
 };
 
-export default React.forwardRef(TabNavList);
+export default forwardRef(TabNavList);

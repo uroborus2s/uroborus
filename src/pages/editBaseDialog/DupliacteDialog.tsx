@@ -1,20 +1,17 @@
 import { DUPLIACTEBASE, useDispath, workspaces } from '@/domain';
+import {
+  CancelButton,
+  ConfimButtonGroups,
+  SelectWorksapceTitle,
+} from '@ibr/ibr-dialog/PopDialog';
+import LoadingButton from '@ibr/ibr-loading/LoadingButton';
 import IosSwitch from '@ibr/ibr-switch/IosSwitch';
-import { CircularProgress } from '@mui/material';
-import Backdrop from '@mui/material/Backdrop';
-import Button from '@mui/material/Button';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import Typography from '@mui/material/Typography';
-import { FC, useEffect, useState } from 'react';
+import { FC, useState } from 'react';
 import { useRecoilValue } from 'recoil';
-import {
-  CancelButton,
-  ConfimButtonGroups,
-  find,
-  SelectWorksapceTitle,
-} from '@ibr/ibr-dialog/PopDialog';
 
 interface DupliacteDialogProps {
   name: string;
@@ -31,18 +28,15 @@ const DupliacteDialog: FC<DupliacteDialogProps> = ({
 
   const workspacesDatas = useRecoilValue(workspaces.workspaces);
 
-  const [sId, setSid] = useState(() => find(workspacesDatas, baseId));
+  const currentWorkspaceId = useRecoilValue(
+    workspaces.getWorkspaceIdByBaseId(baseId),
+  );
+
+  const [sId, setSid] = useState(currentWorkspaceId);
 
   const [record, setRecords] = useState(true);
 
   const [comment, setComment] = useState(false);
-
-  useEffect(() => {
-    const res = find(workspacesDatas, baseId);
-    if (res) {
-      setSid(res);
-    }
-  }, [workspacesDatas, baseId]);
 
   return (
     <>
@@ -117,7 +111,8 @@ const DupliacteDialog: FC<DupliacteDialogProps> = ({
         <CancelButton variant="text" onClick={onClose} href="">
           取消
         </CancelButton>
-        <Button
+        <LoadingButton
+          loading={loading}
           variant="contained"
           onClick={() => {
             run({
@@ -128,20 +123,13 @@ const DupliacteDialog: FC<DupliacteDialogProps> = ({
                 copy_records: record,
                 target_workspace_id: sId,
               },
+            }).then(() => {
+              if (onClose) onClose();
             });
-            if (onClose) onClose();
           }}
-        >
-          复制一份
-        </Button>
+          titleNode="复制一份"
+        />
       </ConfimButtonGroups>
-      <Backdrop
-        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={loading}
-      >
-        <CircularProgress color="inherit" />
-        复制数据副本中...
-      </Backdrop>
     </>
   );
 };

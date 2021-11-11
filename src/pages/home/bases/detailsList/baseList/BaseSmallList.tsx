@@ -1,19 +1,16 @@
-import { iconColors } from '@/core/util';
-import { base, workspaces } from '@/domain';
+import { workspaces } from '@/domain';
 import EditBaseDialog from '@/pages/editBaseDialog/EditBaseDialog';
-import NewBaseDialog, {
-  getFristName,
-} from '@/pages/home/bases/detailsList/baseList/NewBaseDialog';
+import useBaseInfo from '@/pages/editBaseDialog/useBaseInfo';
 import { middleScreen, minScreen } from '@/pages/home/types';
 import AddIcon from '@ibr/ibr-icon/AddIcon';
 import BaseIcon from '@ibr/ibr-icon/BaseIcon';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import styled from '@mui/material/styles/styled';
 import makeStyles from '@mui/styles/makeStyles';
 import classNames from 'classnames';
 import { FC, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import { Link } from 'umi';
+import NewBaseDialog from './NewBaseDialog';
 
 const useListStyel = makeStyles({
   itemRoot: {
@@ -73,10 +70,13 @@ const useListStyel = makeStyles({
       backgroundColor: 'rgba(0,0,0,0.5)',
     },
   },
-});
-
-const IconRoot = styled('div')<{ backgroundColor?: string; color?: string }>(
-  ({ backgroundColor, color }) => ({
+  iconFrame: ({
+    backgroundColor,
+    color,
+  }: {
+    backgroundColor?: string;
+    color?: string;
+  }) => ({
     width: '40px',
     height: '40px',
     borderRadius: '10px',
@@ -88,33 +88,29 @@ const IconRoot = styled('div')<{ backgroundColor?: string; color?: string }>(
     color: color,
     marginRight: '0.5rem',
   }),
-);
+});
 
 const BaseItem: FC<{ baseId: string }> = ({ baseId }) => {
-  const name = useRecoilValue(base.name(baseId));
-  const color = useRecoilValue(base.color(baseId));
-  const icon = useRecoilValue(base.icon(baseId));
+  const { baseName, baseIcon, baseColor, fontColor, fristChar } =
+    useBaseInfo(baseId);
 
-  const classes = useListStyel();
-
-  const fristChar = getFristName(name);
+  const classes = useListStyel({
+    backgroundColor: baseColor,
+    color: fontColor,
+  });
 
   const [openDialog, setOpen] = useState(false);
 
   return (
     <>
-      <Link to={`/application/${baseId}`} className={classes.addButtonRoot}>
-        <IconRoot
-          backgroundColor={iconColors[color]}
-          color={color.trim().endsWith('Light') ? 'hsl(0,0%,20%)' : '#fff'}
-        >
-          {icon == 'null' ? (
-            <span>{fristChar}</span>
-          ) : (
-            <BaseIcon sx={{ fontSize: '20px' }} icon={icon} />
-          )}
-        </IconRoot>
-        <div className={classes.text}>{name}</div>
+      <Link to={`/base/${baseId}`} className={classes.addButtonRoot}>
+        <BaseIcon
+          classes={{ root: classes.iconFrame }}
+          icon={baseIcon}
+          fristChar={fristChar}
+          iconProps={{ sx: { fontSize: 20 } }}
+        />
+        <div className={classes.text}>{baseName}</div>
         <div
           className={classNames(classes.moreButton, 'base-item-more-button')}
           onClick={(e) => {
@@ -139,7 +135,7 @@ const BaseItem: FC<{ baseId: string }> = ({ baseId }) => {
 
 const BaseSmallList: FC<{ workspaceId: string }> = ({ workspaceId }) => {
   const baseIds = useRecoilValue(workspaces.baseIds(workspaceId));
-  const classes = useListStyel();
+  const classes = useListStyel({ backgroundColor: 'rgba(0,0,0,0.05)' });
   const [anchorEl, setAnchorEl] = useState<Element | null>(null);
 
   return (
@@ -157,7 +153,7 @@ const BaseSmallList: FC<{ workspaceId: string }> = ({ workspaceId }) => {
         }}
       >
         <div className={classes.addButtonRoot}>
-          <IconRoot backgroundColor="rgba(0,0,0,0.05)">
+          <div className={classes.iconFrame}>
             <AddIcon
               viewBox="0 0 16 16"
               sx={{
@@ -167,11 +163,15 @@ const BaseSmallList: FC<{ workspaceId: string }> = ({ workspaceId }) => {
                 shapeRendering: 'geometricPrecision',
               }}
             />
-          </IconRoot>
+          </div>
           <div className={classes.text}>新建数据副本</div>
         </div>
       </div>
-      <NewBaseDialog anchorEl={anchorEl} setAnchorEl={setAnchorEl} />
+      <NewBaseDialog
+        anchorEl={anchorEl}
+        setAnchorEl={setAnchorEl}
+        workspaceId={workspaceId}
+      />
     </>
   );
 };

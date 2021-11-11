@@ -1,4 +1,4 @@
-const IconColorTypeArr = [
+export const IconColorTypeArr = [
   'red',
   'orange',
   'yellow',

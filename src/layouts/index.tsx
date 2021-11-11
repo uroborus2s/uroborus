@@ -1,11 +1,14 @@
 import GlobalTipInfo from '@/layouts/GlobalTipInfo';
+import UserContext from '@/layouts/UserContext';
 import ScrollBarSize from '@ibr/ibr-scrollbar-size/ScrollbarSize';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { StylesProvider } from '@mui/styles';
-import React from 'react';
+import { FC, StrictMode } from 'react';
 import { RecoilRoot } from 'recoil';
 import ErrorBoundary from './ErrorBoundary';
 import DebugObserver from './RecoilDebugObserver';
+
+import('@/domain/store');
 
 const theme = createTheme({
   components: {
@@ -96,28 +99,35 @@ const theme = createTheme({
   },
 });
 
-const EntryNode: React.FC = ({ children }) => {
-  return (
-    <StylesProvider>
-      <ThemeProvider theme={theme}>
-        {children}
-        <GlobalTipInfo />
-        <ScrollBarSize />
-      </ThemeProvider>
-    </StylesProvider>
-  );
-};
-const WarpEntryNode: React.FC = (props) => (
-  <React.StrictMode>
+// const EntryNode: React.FC = ({ children }) => {
+//   return (
+//     <StylesProvider>
+//       <ThemeProvider theme={theme}>
+//         <UserContext>{children}</UserContext>
+//         <GlobalTipInfo />
+//         <ScrollBarSize />
+//       </ThemeProvider>
+//     </StylesProvider>
+//   );
+// };
+
+const WarpEntryNode: FC = ({ children }) => (
+  <StrictMode>
     <ErrorBoundary>
       <RecoilRoot>
         <div className="baymax">
-          <EntryNode {...props} />
+          <StylesProvider>
+            <ThemeProvider theme={theme}>
+              <UserContext>{children}</UserContext>
+              <GlobalTipInfo />
+              <ScrollBarSize />
+            </ThemeProvider>
+          </StylesProvider>
           <DebugObserver />
         </div>
       </RecoilRoot>
     </ErrorBoundary>
-  </React.StrictMode>
+  </StrictMode>
 );
 
 export default WarpEntryNode;

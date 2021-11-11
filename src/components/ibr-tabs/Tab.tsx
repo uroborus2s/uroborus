@@ -1,7 +1,7 @@
+import { FC } from 'react';
 import { TabProps } from './index';
-import React from 'react';
 
-const Tab: React.FC<TabProps> = () => {
+const Tab: FC<TabProps> = () => {
   return <></>;
 };
 

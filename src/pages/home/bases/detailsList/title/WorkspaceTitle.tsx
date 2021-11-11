@@ -7,7 +7,7 @@ import PopDialog, { HandleFun } from '@ibr/ibr-dialog/PopDialog';
 import DeleteIcon from '@ibr/ibr-icon/DeleteIcon';
 import EditIcon from '@ibr/ibr-icon/EditIcon';
 import ShareIcon from '@ibr/ibr-icon/ShareIcon';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import ShareIconOrgin from '@mui/icons-material/Share';
 import ArrowDropDownRoundedIcon from '@mui/icons-material/ArrowDropDownRounded';
 import CircularProgress from '@mui/material/CircularProgress';
 import InputBase from '@mui/material/InputBase';
@@ -36,15 +36,8 @@ const useStyel = makeStyles({
     marginLeft: '1rem',
     cursor: 'pointer',
   },
-  role: {
-    flex: 'none',
-    marginLeft: '-12px',
-    marginBottom: '-4px',
-    alignItems: 'center',
-    zIndex: 999,
-    display: 'inline-block',
-  },
   share: {
+    display: 'flex',
     borderRadius: '9999px',
     flex: 'none',
     alignItems: 'center',
@@ -264,19 +257,18 @@ const WorkspaceTitle: FC<{ data: OriginDataType }> = ({ data }) => {
         )}
       </Title>
       <div className={classes.end}>
-        <div className={classes.role}>
-          <AccountCircleIcon sx={{ color: '#20c933' }} />
-        </div>
         <div
           className={classes.share}
           onClick={() => {
             if (shareRef.current) shareRef.current.open();
           }}
         >
+          <ShareIconOrgin sx={{ fontSize: '13px', marginRight: '0.5rem' }} />
           分享
         </div>
       </div>
     </>
   );
 };
+
 export default memo(WorkspaceTitle);

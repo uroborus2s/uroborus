@@ -1,10 +1,14 @@
-import { BaseIconType, ColorType, iconColors, icons } from '@/core/util';
-import { base, DELETEBASE, EDITBASE, useDispath } from '@/domain';
+import {
+  BaseIconType,
+  BlankIcon,
+  ColorType,
+  iconColors,
+  icons,
+} from '@/core/util';
+import { DELETEBASE, EDITBASE, useDispath } from '@/domain';
+import useBaseInfo from '@/pages/editBaseDialog/useBaseInfo';
 import DeleteDialog from '@ibr/ibr-dialog/DeleteDialog';
-import DupliacteDialog from './DupliacteDialog';
-import MoveDialog from './MoveDialog';
 import PopDialog, { HandleFun } from '@ibr/ibr-dialog/PopDialog';
-import ShareDialog from './ShareDialog';
 import SVGIcon from '@ibr/ibr-icon/BaseIcon';
 import CheckIcon from '@mui/icons-material/Check';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
@@ -19,7 +23,9 @@ import styled from '@mui/material/styles/styled';
 import makeStyles from '@mui/styles/makeStyles';
 import classNames from 'classnames';
 import { FC, memo, Ref, useRef } from 'react';
-import { useRecoilValue } from 'recoil';
+import DupliacteDialog from './DupliacteDialog';
+import MoveDialog from './MoveDialog';
+import ShareDialog from './ShareDialog';
 
 interface EditBaseDialogProps {
   open: boolean;
@@ -104,7 +110,7 @@ const IconItem = styled('div')<{ selected: boolean }>(({ selected }) => ({
 }));
 
 const allIcons: Array<BaseIconType> = Object.keys(icons) as BaseIconType[];
-allIcons.unshift('null');
+allIcons.unshift(BlankIcon);
 
 const MenuText = styled('span')({
   marginLeft: '0.5rem',
@@ -118,23 +124,10 @@ const TextIcon = styled('span')({
 const EditBaseDialog: FC<EditBaseDialogProps> = ({ open, onClose, baseId }) => {
   const { run } = useDispath(EDITBASE, { manual: true });
 
-  const nameProp = useRecoilValue(base.name(baseId));
-  const colorProp = useRecoilValue(base.color(baseId));
-  const iconProp = useRecoilValue(base.icon(baseId));
-  const fontColor = colorProp.trim().endsWith('Light')
-    ? 'hsl(0,0%,20%)'
-    : '#fff';
+  const { baseName, baseIcon, baseColor, fontColor, fristChar } =
+    useBaseInfo(baseId);
 
-  let fristChar = '';
-  if (nameProp.length > 0) {
-    if (/[\u4e00-\u9fa5]/.test(nameProp[1])) {
-      fristChar = nameProp.substr(0, 1);
-    } else {
-      fristChar = nameProp.substr(0, 2);
-    }
-  }
-
-  const newName = useRef(nameProp);
+  const newName = useRef(baseName);
 
   const shareBaseRef = useRef<HandleFun>();
   const duplicateBaseRef = useRef<HandleFun>();
@@ -142,6 +135,7 @@ const EditBaseDialog: FC<EditBaseDialogProps> = ({ open, onClose, baseId }) => {
   const deleteBaseRef = useRef<HandleFun>();
 
   const classes = useStyel();
+
   return (
     <>
       <Dialog
@@ -159,7 +153,7 @@ const EditBaseDialog: FC<EditBaseDialogProps> = ({ open, onClose, baseId }) => {
               fontSize: '13px',
               color: 'hsl(0,0%,30%)',
             }}
-            defaultValue={nameProp}
+            defaultValue={baseName}
             onChange={(event) => {
               console.log(event.target.value);
               newName.current = event.target.value;
@@ -172,18 +166,18 @@ const EditBaseDialog: FC<EditBaseDialogProps> = ({ open, onClose, baseId }) => {
                   data: {
                     name: newName.current,
                   },
-                });
+                }).then();
                 if (onClose) onClose();
               }
             }}
           />
           <div className={classes.container}>
             <div className={classes.colorContainer}>
-              {Object.keys(iconColors).map((color, index) => (
+              {Object.keys(iconColors).map((colorKey, index) => (
                 <ColorItem
                   key={index}
-                  color={iconColors[color as ColorType]}
-                  data-color={color}
+                  color={iconColors[colorKey as ColorType]}
+                  data-color={iconColors[colorKey as ColorType]}
                   onClick={(e) => {
                     e.stopPropagation();
                     run({
@@ -192,10 +186,10 @@ const EditBaseDialog: FC<EditBaseDialogProps> = ({ open, onClose, baseId }) => {
                         color: (e.currentTarget as HTMLDivElement).dataset
                           .color,
                       },
-                    });
+                    }).then();
                   }}
                 >
-                  {colorProp == color && (
+                  {baseColor == iconColors[colorKey as ColorType] && (
                     <CheckIcon sx={{ fontSize: '16px', color: fontColor }} />
                   )}
                 </ColorItem>
@@ -206,7 +200,7 @@ const EditBaseDialog: FC<EditBaseDialogProps> = ({ open, onClose, baseId }) => {
                 {allIcons.map((icon, index) => (
                   <IconItem
                     key={index}
-                    selected={icon == iconProp}
+                    selected={icon == baseIcon}
                     data-icon={icon}
                     onClick={(e) => {
                       e.stopPropagation();
@@ -217,10 +211,10 @@ const EditBaseDialog: FC<EditBaseDialogProps> = ({ open, onClose, baseId }) => {
                           icon: (e.currentTarget as HTMLDivElement).dataset
                             .icon,
                         },
-                      });
+                      }).then();
                     }}
                   >
-                    {icon == 'null' ? (
+                    {icon == BlankIcon ? (
                       <TextIcon>{fristChar}</TextIcon>
                     ) : (
                       <SVGIcon icon={icon} />
@@ -291,7 +285,7 @@ const EditBaseDialog: FC<EditBaseDialogProps> = ({ open, onClose, baseId }) => {
         }}
         allowClose
       >
-        <ShareDialog name={nameProp} />
+        <ShareDialog name={baseName} />
       </PopDialog>
 
       <PopDialog
@@ -305,7 +299,7 @@ const EditBaseDialog: FC<EditBaseDialogProps> = ({ open, onClose, baseId }) => {
         }}
       >
         <DupliacteDialog
-          name={nameProp}
+          name={baseName}
           baseId={baseId}
           onClose={duplicateBaseRef.current?.close}
         />
@@ -321,7 +315,7 @@ const EditBaseDialog: FC<EditBaseDialogProps> = ({ open, onClose, baseId }) => {
         }}
       >
         <MoveDialog
-          name={nameProp}
+          name={baseName}
           baseId={baseId}
           onClose={moveBaseRef.current?.close}
         />
@@ -339,7 +333,7 @@ const EditBaseDialog: FC<EditBaseDialogProps> = ({ open, onClose, baseId }) => {
         }}
       >
         <DeleteDialog
-          name={nameProp}
+          name={baseName}
           id={baseId}
           onClose={deleteBaseRef.current?.close}
           masterTitle="数据副本"

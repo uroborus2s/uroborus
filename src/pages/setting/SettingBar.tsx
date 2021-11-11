@@ -1,16 +1,19 @@
+import AccountDialog from '@/pages/setting/AccountDialog';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import HelpIcon from '@mui/icons-material/Help';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import Tooltip from '@mui/material/Tooltip';
 import makeStyles from '@mui/styles/makeStyles';
-import React, { memo } from 'react';
+import classNames from 'classnames';
+import * as React from 'react';
+import { FC, memo, useState } from 'react';
 
 const useStyel = makeStyles({
-  root: {
+  root: ({ color }: { color?: string }) => ({
     display: 'flex',
     alignItems: 'center',
-    color: 'hsl(0,0%,30%)',
-  },
+    color: color || 'hsl(0,0%,30%)',
+  }),
   help: {
     opacity: 0.75,
     cursor: 'pointer',
@@ -37,31 +40,47 @@ const useStyel = makeStyles({
   },
 });
 
-const SettingBar: React.FC = () => {
-  const classes = useStyel();
+const SettingBar: FC<JSX.IntrinsicElements['div']> = ({
+  className,
+  color,
+  ...other
+}) => {
+  const classes = useStyel({ color });
+
+  const [anchorEl, setAnchorEl] = useState<Element | null>(null);
+
   return (
-    <div className={classes.root}>
-      <div className={classes.help}>
-        <div className={classes.helpText}>HELP</div>
-        <HelpIcon sx={{ fontSize: 18 }} />
+    <>
+      <div className={classNames(classes.root, className)} {...other}>
+        <div className={classes.help}>
+          <div className={classes.helpText}>HELP</div>
+          <HelpIcon sx={{ fontSize: 18 }} />
+        </div>
+        <Tooltip
+          className={classes.notice}
+          title="消息"
+          placeholder="bottom"
+          disableFocusListener
+        >
+          <NotificationsIcon sx={{ fontSize: 18 }} />
+        </Tooltip>
+        <Tooltip
+          className={classes.account}
+          title="账户"
+          placeholder="bottom-start"
+          disableFocusListener
+        >
+          <AccountCircleIcon
+            sx={{ fontSize: 28 }}
+            onClick={(e) => {
+              e.stopPropagation();
+              setAnchorEl(e.currentTarget);
+            }}
+          />
+        </Tooltip>
       </div>
-      <Tooltip
-        className={classes.notice}
-        title="消息"
-        placeholder="bottom"
-        disableFocusListener
-      >
-        <NotificationsIcon sx={{ fontSize: 18 }} />
-      </Tooltip>
-      <Tooltip
-        className={classes.account}
-        title="账户"
-        placeholder="bottom-start"
-        disableFocusListener
-      >
-        <AccountCircleIcon sx={{ fontSize: 28 }} />
-      </Tooltip>
-    </div>
+      <AccountDialog anchorEl={anchorEl} setAnchorEl={setAnchorEl} />
+    </>
   );
 };
 

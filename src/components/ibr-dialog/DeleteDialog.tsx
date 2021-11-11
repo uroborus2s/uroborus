@@ -1,7 +1,7 @@
-import { DELETEBASE, useDispath } from '@/domain';
-import Alert from '@mui/material/Alert';
+import { useDispath } from '@/domain';
 import { CancelButton, ConfimButtonGroups } from '@ibr/ibr-dialog/PopDialog';
-import Button from '@mui/material/Button';
+import LoadingButton from '@ibr/ibr-loading/LoadingButton';
+import Alert from '@mui/material/Alert';
 import Typography from '@mui/material/Typography';
 import { FC } from 'react';
 
@@ -22,7 +22,7 @@ const DeleteDialog: FC<DeleteDialogProps> = ({
   masterTitle,
   secTitle,
 }) => {
-  const { run } = useDispath(commandType, { manual: true });
+  const { run, loading } = useDispath(commandType, { manual: true });
 
   return (
     <>
@@ -52,18 +52,19 @@ const DeleteDialog: FC<DeleteDialogProps> = ({
         <CancelButton variant="text" onClick={onClose} href="">
           取消
         </CancelButton>
-        <Button
+        <LoadingButton
+          loading={loading}
           variant="contained"
           color="error"
           onClick={() => {
             run({
               path: { id: id },
+            }).then(() => {
+              if (onClose) onClose();
             });
-            if (onClose) onClose();
           }}
-        >
-          确认删除
-        </Button>
+          titleNode="确认删除"
+        />
       </ConfimButtonGroups>
     </>
   );

@@ -1,19 +1,20 @@
-import { WorkspacesData } from '@/domain';
+import { workspaces as workspacesObject } from '@/domain';
 import { WorkspaceItemRect } from '@/pages/home/hooks/useBaseItemWidth';
+import { VirtualList } from '@ibr/ibr-virtual-list/types';
+import VariableSizeList from '@ibr/ibr-virtual-list/VariableSizeList';
+import AddIcon from '@mui/icons-material/Add';
 import makeStyles from '@mui/styles/makeStyles';
-import classNames from 'classnames';
 import trimEnd from 'lodash.trimend';
 import {
   FC,
   forwardRef,
   ForwardRefRenderFunction,
-  LegacyRef,
   memo,
   MouseEventHandler,
+  Ref,
   useCallback,
   useEffect,
 } from 'react';
-import { VariableSizeList } from 'react-window';
 import { useRecoilValue } from 'recoil';
 import {
   maxScreen,
@@ -25,7 +26,6 @@ import { alignmentState } from '../itemList/SearchInput';
 import BaseList from './baseList/BaseList';
 import BaseSmallList from './baseList/BaseSmallList';
 import WorkspaceTitle from './title/WorkspaceTitle';
-import AddIcon from '@mui/icons-material/Add';
 
 const calcWorkspaceItemHeightOfGrid = (
   listWidth: number,
@@ -78,7 +78,6 @@ const calcWorkspaceItemHeightOfList = (
 };
 
 interface WorkspaceDetailsListProps extends WorkspaceItemRect {
-  workspaces: WorkspacesData[];
   addWorkspaceClick: MouseEventHandler<HTMLElement>;
 }
 
@@ -137,11 +136,6 @@ const WorkspaceDetailsItem: FC<ItemProps> = (props) => {
 };
 
 const useListStyel = makeStyles({
-  wrapList: {
-    '& > div': {
-      position: 'relative',
-    },
-  },
   addWorkspaceButton: {
     padding: '0.5rem 0',
     marginBottom: '8rem',
@@ -163,14 +157,15 @@ const useListStyel = makeStyles({
 });
 
 const WorkspaceDetailsList: ForwardRefRenderFunction<
-  HTMLElement,
+  any,
   WorkspaceDetailsListProps
 > = (
-  { workspaces, itemWidth, itemLeft, listWidth, listHeight, addWorkspaceClick },
+  { itemWidth, itemLeft, listWidth, listHeight, addWorkspaceClick },
   ref,
 ) => {
   const alignment = useRecoilValue(alignmentState);
   const classes = useListStyel();
+  const workspaces = useRecoilValue(workspacesObject.workspaces);
 
   const getItemSize = useCallback(
     (index: number) => {
@@ -186,13 +181,13 @@ const WorkspaceDetailsList: ForwardRefRenderFunction<
       } else if (alignment === 'grid') {
         height = calcWorkspaceItemHeightOfGrid(
           listWidth,
-          workspaces[index].baseIds.length,
+          workspaces[index].baseNumber,
           globalFontSize,
         );
       } else {
         height = calcWorkspaceItemHeightOfList(
           listWidth,
-          workspaces[index].baseIds.length,
+          workspaces[index].baseNumber,
           globalFontSize,
         );
       }
@@ -212,38 +207,42 @@ const WorkspaceDetailsList: ForwardRefRenderFunction<
   return (
     <VariableSizeList
       key={alignment}
-      ref={ref as LegacyRef<any>}
+      ref={ref as Ref<VirtualList>}
       height={listHeight}
       itemCount={itemCount}
       itemSize={getItemSize}
       width={listWidth}
-      style={{ paddingTop: '2rem' }}
-      className={classNames('scrollbar', classes.wrapList)}
+      className="scrollbar"
+      sx={{
+        overflowX: 'hidden',
+        overflowY: 'auto',
+        '& .IuiVirtualList-content': {
+          marginTop: '2rem',
+          position: 'relative',
+        },
+        '& .IuiVirtualList-item': {
+          left: itemLeft,
+          width: itemWidth,
+        },
+      }}
     >
-      {({ index, style }) => (
-        <div
-          style={{
-            ...style,
-            left: itemLeft,
-            width: itemWidth,
-          }}
-        >
-          {index == itemCount - 1 ? (
-            <div
-              className={classes.addWorkspaceButton}
-              onClick={addWorkspaceClick}
-            >
-              <AddIcon sx={{ marginRight: '0.5rem' }} />
-              新建工作区
-            </div>
-          ) : (
-            <WorkspaceDetailsItem
-              workspace={workspaces[index]}
-              alignment={alignment}
-            />
-          )}
-        </div>
-      )}
+      {({ index }) =>
+        index == itemCount - 1 ? (
+          <div
+            className={classes.addWorkspaceButton}
+            onClick={addWorkspaceClick}
+          >
+            <AddIcon sx={{ marginRight: '0.5rem' }} />
+            新建工作区
+          </div>
+        ) : (
+          <WorkspaceDetailsItem
+            key={workspaces[index].id}
+            workspace={workspaces[index]}
+            alignment={alignment}
+          />
+        )
+      }
     </VariableSizeList>
   );
 };

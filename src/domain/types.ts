@@ -1,7 +1,8 @@
 import { BaseIconType, ColorType } from '@/core/util';
 import { CancelToken } from 'axios';
-import { DependencyList } from 'react';
+import { DependencyList, Dispatch, SetStateAction } from 'react';
 import { TransactionInterface_UNSTABLE } from 'recoil';
+
 /********************************************************************/
 /********          useDispath                             **********/
 /******************************************************************/
@@ -22,6 +23,8 @@ export type CommandOptions<T = any> = {
   token?: CancelToken;
   response?: T;
   message?: string;
+  dispatch?: (action: Dispatch<SetStateAction<any>>) => void;
+  [key: string]: any;
 } & {
   request?: CommandRunOptions;
 };
@@ -44,7 +47,7 @@ export interface FetchResult<R> {
   cancel: NoopFun;
   refresh: NoopFun;
   mutate: (data: R | undefined | ((data: R) => R)) => void;
-  run: (config: CommandRunOptions) => Promise<any>;
+  run: (config?: CommandRunOptions) => Promise<any>;
   unmount: NoopFun;
 }
 
@@ -69,8 +72,8 @@ export declare type DispathOptions<R extends CommandOptions> = {
   //如果设置为 true，则需要手动调用 run 触发执行。
   //默认false
   manual?: boolean;
-  onSuccess?: (data: R, params: CommandRunOptions) => void;
-  onError?: (e: Error, params: CommandRunOptions) => void;
+  onSuccess?: (data: R, params?: CommandRunOptions) => void;
+  onError?: (e: Error, params?: CommandRunOptions) => void;
   //设置显示 loading 的延迟时间，避免闪烁
   loadingDelay?: number;
   //轮询间隔，单位为毫秒。设置后，将进入轮询模式，定时触发 run
@@ -90,6 +93,7 @@ export declare type DispathOptions<R extends CommandOptions> = {
   //节流间隔, 单位为毫秒，设置后，请求进入节流模式。
   throttleInterval?: number;
   initialData?: R;
+  dispatch?: Dispatch<SetStateAction<any>>;
 };
 
 export declare type FetchOptions<R extends CommandOptions> = Pick<
@@ -186,7 +190,9 @@ export type WorkspaceEntity = Omit<WorkspaceRsp, 'bases'> & {
   baseIds: string[];
 };
 
-export type WorkspacesData = Pick<WorkspaceEntity, 'id' | 'name' | 'baseIds'>;
+export type WorkspacesData = Pick<WorkspaceEntity, 'id' | 'name'> & {
+  baseNumber: number;
+};
 
 /********************************************************************/
 /********          base response                          **********/

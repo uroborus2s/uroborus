@@ -1,10 +1,13 @@
 import animate from '@/core/util/animate';
 import { PaneInProps, TabInProps } from '@ibr/ibr-tabs/index';
+import { createContext, SetStateAction } from 'react';
 import { atom } from 'recoil';
 
-export const activeTabKey = atom<string | undefined>({
-  key: 'activeTabKey',
-  default: undefined,
+export const ActiveTabKey = createContext({
+  activeKey: '',
+  setActiveKey: (v: SetStateAction<string>) => {
+    console.log('error', v);
+  },
 });
 
 export function findTabIndex(

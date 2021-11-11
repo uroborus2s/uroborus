@@ -15,15 +15,14 @@ import {
   MouseEventHandler,
   MutableRefObject,
 } from 'react';
-import { VariableSizeList } from 'react-window';
-import NewWorkspaceDialog from '../NewWorkspaceDialog';
+import CreatWorkspaceDialog from '../CreatWorkspaceDialog';
 
 interface WorkspaceListProps extends CommonProps {
   workspaces: OriginDataType[];
   matchingValue: string;
   onClick?: (id: string) => void;
   addWorkspaceClick: MouseEventHandler<HTMLElement>;
-  listRef: MutableRefObject<VariableSizeList | undefined>;
+  dirty: boolean;
 }
 
 const ItemBox = styled('div')({
@@ -49,7 +48,7 @@ const ItemIcon = styled(ListItemIcon)({
 });
 
 const WorkspaceList: ForwardRefRenderFunction<HandleFun, WorkspaceListProps> = (
-  { workspaces, matchingValue, onClick, addWorkspaceClick, listRef },
+  { workspaces, matchingValue, onClick, addWorkspaceClick, dirty },
   ref,
 ) => {
   const header = '工作空间'.concat(
@@ -100,7 +99,12 @@ const WorkspaceList: ForwardRefRenderFunction<HandleFun, WorkspaceListProps> = (
         <ItemBox>
           {workspaces.length > 0 &&
             workspaces.map((workspace) => (
-              <Item key={workspace.id} id={workspace.id} onClick={handlerClick}>
+              <Item
+                key={workspace.id}
+                id={workspace.id}
+                onClick={handlerClick}
+                disabled={dirty}
+              >
                 <ItemIcon>
                   <WorkspacesRoundedIcon
                     sx={{ color: 'rgba(0, 0, 0, 0.87)', fontSize: '16px' }}
@@ -139,8 +143,8 @@ const WorkspaceList: ForwardRefRenderFunction<HandleFun, WorkspaceListProps> = (
           boxShadow: '0 0 0 2px rgb(0 0 0 / 10%)',
         }}
       >
-        <NewWorkspaceDialog
-          listRef={listRef}
+        <CreatWorkspaceDialog
+          onScroll={onClick}
           onClose={() => {
             const addWorkRef = ref as MutableRefObject<HandleFun>;
             if (addWorkRef) addWorkRef.current?.close();

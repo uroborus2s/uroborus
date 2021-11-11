@@ -19,7 +19,7 @@ import CloseSharpIcon from '@mui/icons-material/CloseSharp';
 import IosShareOutlinedIcon from '@mui/icons-material/IosShareOutlined';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
-interface ShareDialogProps {
+interface ShareBaseDialogProps {
   name: string;
 }
 
@@ -141,7 +141,7 @@ const useStyel = makeStyles({
   },
 });
 
-const ShareDialog: FC<ShareDialogProps> = ({ name }) => {
+const ShareDialog: FC<ShareBaseDialogProps> = ({ name }) => {
   const classes = useStyel();
 
   const [roleState, setRole] = useState(0);
@@ -174,14 +174,12 @@ const ShareDialog: FC<ShareDialogProps> = ({ name }) => {
           >
             <FormControlLabel
               value="all"
-              // @ts-ignore
-              control={<Radio size="14px" />}
+              control={<Radio sx={{ fontSize: '14px' }} />}
               label="任何电子邮件地址"
             />
             <FormControlLabel
               value="range"
-              // @ts-ignore
-              control={<Radio size="14px" />}
+              control={<Radio sx={{ fontSize: '14px' }} />}
               sx={{
                 whiteSpace: 'nowrap',
               }}
