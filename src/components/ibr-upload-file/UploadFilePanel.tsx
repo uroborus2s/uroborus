@@ -1,4 +1,4 @@
-import CircularProgressWithNumber from '@ibr/ibr-loading/CircularProgressWithNumber';
+import CircularProgressWithNumber from '@ibr/ibr-loading/LoadingWithNumber';
 import DesktopMacIcon from '@mui/icons-material/DesktopMac';
 import { DefaultTheme } from '@mui/styles/defaultTheme';
 import makeStyles from '@mui/styles/makeStyles';

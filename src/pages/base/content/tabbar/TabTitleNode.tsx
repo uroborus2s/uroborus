@@ -82,6 +82,10 @@ const ShowNode: FC<TabTitleNodeProps> = ({ name, active }) => {
             padding: 0,
           },
         }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
       >
         <TableMenuItem disableRipple disableTouchRipple>
           <EditIcon sx={{ fontSize: 16 }} />

@@ -97,6 +97,7 @@ const useStytel = makeStyles({
       display: 'flex',
       padding: '0.5rem 0',
       alignItems: 'center',
+      width: '100%',
     },
   },
   baseContainer: {

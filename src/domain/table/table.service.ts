@@ -3,12 +3,32 @@ import {
   CREATTABLE,
   CREATTABLEBYFILE,
   EDITTABLE,
+  READTABLE,
 } from '../domain.command';
 import { NullResponseError } from '../error';
 import { ServiceCodeError } from '../request/error';
 import request, { ResponseCode } from '../request/request';
-import { CommandOptions, DataResponse } from '../types';
+import { CommandOptions, DataResponse, TableRsp } from '../types';
 import { cmdDispatcher, transformResponse } from '../core';
+
+const readTable = async function (options: CommandOptions) {
+  const [err, res] = await request(api.path.table(options.request?.path?.id), {
+    cancelToken: options.token,
+  });
+  if (err != null) return Promise.reject(err);
+  if (res) {
+    const { code, data } = res.data as DataResponse<TableRsp>;
+    if (code == ResponseCode.Failure)
+      return Promise.reject(new ServiceCodeError(code));
+    return Promise.resolve({
+      ...options,
+      response: {
+        ...data,
+      },
+    });
+  }
+  return Promise.reject(new NullResponseError());
+};
 
 const readAllTables = async function (options: CommandOptions) {
   const [err, res] = await request(api.path.table(), {
@@ -64,4 +84,5 @@ export default cmdDispatcher({
   [CREATTABLE]: creatTable(api.path.table()),
   [CREATTABLEBYFILE]: creatTable(api.path.uploadTable),
   [EDITTABLE]: editTable,
+  [READTABLE]: readTable,
 });

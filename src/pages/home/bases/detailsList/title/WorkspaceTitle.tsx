@@ -49,6 +49,7 @@ const Title = styled('div')({
   display: 'flex',
   flex: 'auto',
   cursor: 'pointer',
+  overflow: 'hidden',
   '& > .title': {
     fontSize: '2rem',
     fontWeight: 500,

@@ -228,10 +228,25 @@ export type TableRsp = IDEntity &
   LogEntity &
   PermissionEntity & {
     base_id: string;
-    columnIds: string[];
-    viewIds: string[];
+    views: ViewRsp[];
     rowIds: string[];
     selected_view_id?: string;
     collaborators: Collaborators[] | null;
     relate_rows: Record<string, any> | null;
   };
+
+export type ViewRsp = IDEntity &
+  NameEntity &
+  OrderEntity &
+  LogEntity &
+  PermissionEntity & {
+    table_id: string;
+    type: ViewSchemaType;
+  };
+
+export type ViewSchemaType =
+  | 'grid'
+  | 'calendar'
+  | 'kanban'
+  | 'gallery'
+  | 'form';

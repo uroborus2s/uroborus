@@ -6,6 +6,7 @@ import {
   QQIcon,
   WeixinIcon,
 } from '@ibr/ibr-icon/LoginIcon';
+import LoadingButton from '@ibr/ibr-loading/LoadingButton';
 import Tabs, { Tab } from '@ibr/ibr-tabs';
 import CircularProgress from '@mui/material/CircularProgress';
 import Button from '@mui/material/Button';
@@ -158,8 +159,8 @@ const LoginInput: FC<{
           获取验证码
         </Button>
       </PasswordItem>
-      <Button
-        disabled={loading}
+      <LoadingButton
+        loading={loading}
         variant="contained"
         sx={{ opacity: 0.6, padding: '0.75rem', fontSize: '15px' }}
         onClick={() => {
@@ -172,9 +173,8 @@ const LoginInput: FC<{
             history.push('/');
           });
         }}
-      >
-        {loading ? <CircularProgress /> : isLogin ? '登录' : '登录/注册'}
-      </Button>
+        titleNode={isLogin ? '登录' : '登录/注册'}
+      />
       <Typography
         sx={{
           marginTop: '0.2rem',
@@ -202,6 +202,7 @@ const LoginInput: FC<{
 const LoginPane: FC = () => {
   const classes = useStyle();
 
+  //切换是登录模式还是登录/注册模式
   const [isLogin, setIslogin] = useState(true);
 
   const handleClickLogin = (login: boolean) => {

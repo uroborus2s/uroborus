@@ -43,7 +43,12 @@ export function validator(data: any): boolean {
   return !!(
     Array.isArray(data) &&
     data.every(
-      (d) => typeof d.id === 'string' && d.id && typeof d.order === 'number',
+      (d) =>
+        d.id &&
+        typeof d.id === 'string' &&
+        d.order !== null &&
+        d.order !== undefined &&
+        (typeof d.order === 'number' || typeof d.order === 'string'),
     )
   );
 }

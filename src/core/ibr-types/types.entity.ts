@@ -31,12 +31,6 @@ export type ColumnsType =
   | 'collaborator';
 
 /**************TableViewSchema*******************/
-export type ViewSchemaType =
-  | 'grid'
-  | 'calendar'
-  | 'kanban'
-  | 'gallery'
-  | 'form';
 
 export type UserRecordProps = Pick<IDEntity, 'id'> &
   Pick<NameEntity, 'name' | 'desc'> & {

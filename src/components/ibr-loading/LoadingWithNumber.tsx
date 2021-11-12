@@ -1,11 +1,13 @@
+import { CommonProps } from '@/core/ibr-types';
 import useAnimate from '@hooks/useAnimate';
 import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
 import { DefaultTheme } from '@mui/styles/defaultTheme';
 import makeStyles from '@mui/styles/makeStyles';
+import classNames from 'classnames';
 import { FC, useEffect } from 'react';
 
-interface CircularProgressWithNumber {
+interface LoadingWithNumber extends CommonProps {
   loading: boolean;
   duration?: number;
 }
@@ -19,11 +21,19 @@ const useStyel = makeStyles<DefaultTheme, { loading: boolean }>({
   fspLoadingText: ({ loading }) => ({
     display: loading ? 'inline-block' : 'none',
   }),
+  root: ({ loading }) => ({
+    display: loading ? 'flex' : 'none',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    height: '100%',
+  }),
 });
 
-const CircularProgressWithNumber: FC<CircularProgressWithNumber> = ({
+const CircularProgressWithNumber: FC<LoadingWithNumber> = ({
   loading,
   duration = 3000,
+  className,
 }) => {
   const classes = useStyel({ loading: loading });
 
@@ -40,7 +50,7 @@ const CircularProgressWithNumber: FC<CircularProgressWithNumber> = ({
   }, [loading]);
 
   return (
-    <>
+    <div className={classNames(className, classes.root)}>
       <CircularProgress
         classes={{ root: classes.fspLoading }}
         value={progress}
@@ -53,7 +63,7 @@ const CircularProgressWithNumber: FC<CircularProgressWithNumber> = ({
       >
         {`${Math.round(progress)}%`}
       </Typography>
-    </>
+    </div>
   );
 };
 

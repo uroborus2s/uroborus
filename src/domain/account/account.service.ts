@@ -4,7 +4,6 @@ import { CommandOptions } from '../types';
 import { cmdDispatcher, transformResponse } from '../core';
 
 const login = async function (options: CommandOptions) {
-  console.log('异步执行 7', options);
   const [err, res] = await request(api.path.login, {
     cancelToken: options.token,
     method: 'post',

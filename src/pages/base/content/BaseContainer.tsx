@@ -1,6 +1,7 @@
 import { iconColors } from '@/core/util';
 import { base } from '@/domain';
 import { table } from '@/domain/table/table.repository';
+import TablePage from '@/pages/base/content/table/TablePage';
 import AddTableInList from './tabbar/AddTableInList';
 import AddTableInTab from './tabbar/AddTableInTab';
 import { BaseIdContext } from '../BaseMainPage';
@@ -53,12 +54,15 @@ const ShareButton: FC<ShareButtonProps> = (props) => {
   return <ShareButtonRoot {...props}>分享</ShareButtonRoot>;
 };
 
+//表格页面的主内容页面
 const BaseContainer: FC = () => {
   const baseId = useContext(BaseIdContext);
 
   const tableIds = useRecoilValue(base.tableIds(baseId));
   const allTables = useRecoilValue(table.allTables(tableIds));
   const color = useRecoilValue(base.color(baseId));
+  const lastUsedTableId = useRecoilValue(base.lastUsedTableId(baseId));
+
   const isLight = Object.entries(iconColors)
     .find(([, value]) => value == color)![0]
     .trim()
@@ -68,6 +72,7 @@ const BaseContainer: FC = () => {
 
   return (
     <Tabs
+      activeKey={lastUsedTableId}
       sx={getStyled({ backgroundColor: color, color: fontColor })}
       type="editable-card"
       tabBarGutter={3}
@@ -83,7 +88,9 @@ const BaseContainer: FC = () => {
         <Tab
           key={tableInfo.id}
           tab={<TabTitleNode id={tableInfo.id} name={tableInfo.name} active />}
-        />
+        >
+          <TablePage tableId={tableInfo.id} />
+        </Tab>
       ))}
     </Tabs>
   );

@@ -1,5 +1,5 @@
 import { READBASE, useDispath } from '@/domain';
-import CircularProgressWithNumber from '@ibr/ibr-loading/CircularProgressWithNumber';
+import CircularProgressWithNumber from '@ibr/ibr-loading/LoadingWithNumber';
 import makeStyles from '@mui/styles/makeStyles';
 import { createContext } from 'react';
 import { useParams } from 'umi';

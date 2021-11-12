@@ -144,8 +144,12 @@ function savaByNewWorksapce(
 }
 
 function edit({ set }: TransactionInterface_UNSTABLE, options: CommandOptions) {
-  if (options.response) {
-    const { name, plan_id, id } = options.response;
+  const len = options.response ? Object.keys(options.response).length : 0;
+  if (len >= 0) {
+    const { plan_id, name } =
+      len > 0 ? options.response : options.request?.data;
+    const id = options.request?.path?.id;
+
     if (plan_id) set(workspaces.planId(id), plan_id);
     if (name) set(workspaces.name(id), name);
   }
