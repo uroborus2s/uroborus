@@ -20,7 +20,7 @@ export const table = (function () {
     readonly name: (param: string) => RecoilState<string>;
     readonly desc: (param: string) => RecoilState<string>;
     readonly lastUsedViewId: (param: string) => RecoilState<string>;
-    readonly viewIds: (param: string) => RecoilState<string[] | null>;
+    readonly viewIds: (param: string) => RecoilState<string[]>;
 
     readonly allTables: (
       param: string[],
@@ -42,9 +42,9 @@ export const table = (function () {
         default: '',
       });
 
-      this.viewIds = atomFamily<string[] | null, string>({
+      this.viewIds = atomFamily<string[], string>({
         key: 'table/viewIds',
-        default: null,
+        default: [],
       });
 
       this.allTables = selectorFamily({

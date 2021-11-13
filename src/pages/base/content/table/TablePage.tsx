@@ -1,10 +1,10 @@
 import { READTABLE, useDispath } from '@/domain';
+import ViewContainer from '@/pages/base/content/table/viewcontainer/ViewContainer';
 import LoadingWithNumber from '@ibr/ibr-loading/LoadingWithNumber';
 import styled from '@mui/styles/styled';
 import { FC } from 'react';
 import { TableIdContext } from './TableContext';
 import ViewBar from './viewbar/ViewBar';
-import { ViewContainer } from './viewcontainer/ViewContainer';
 
 interface TablePageProps {
   tableId: string;
@@ -27,8 +27,8 @@ const TablePage: FC<TablePageProps> = ({ tableId }) => {
   ) : (
     <TableIdContext.Provider value={tableId}>
       <TablePageRoot id="table">
-        <ViewBar />
-        <ViewContainer id="view-container"></ViewContainer>
+        <ViewBar id="view-bar" />
+        <ViewContainer id="view-container" />
       </TablePageRoot>
     </TableIdContext.Provider>
   );

@@ -48,7 +48,7 @@ const NewBaseDialog: FC<NewBaseDialogProps> = ({
         color: iconColors[IconColorTypeArr[Math.round(Math.random() * 20)]],
         icon: BlankIcon,
       },
-    }).then((res) => history.push(`/application/${res.response.id}`));
+    }).then((res) => history.push(`/base/${res.response.id}`));
     setAnchorEl(null);
   };
 

@@ -45,6 +45,7 @@ const TabNodeRoot = styled('div', {
     border: 0,
     outline: 'none',
     fontWeight: 500,
+    userSelect: 'none',
     opacity: active ? 1 : 0.75,
     [`margin${
       vertical ? 'Bottom' : rtl ? 'Right' : 'Left'

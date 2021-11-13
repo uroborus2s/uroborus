@@ -1,11 +1,14 @@
 import { table } from '@/domain';
 import { view } from '@/domain/view/view.repository';
-import { TableIdContext, ViewSiderToggleState } from '../TableContext';
-import EditIcon from '@ibr/ibr-icon/EditIcon';
+import Typography from '@mui/material/Typography';
+import CollaborationEndIcon from './CollaborationEndIcon';
+import { CollapseIcon, SpreadIcon } from '@ibr/ibr-icon/SpreadAndCollapse';
+import ViewIcon from '@ibr/ibr-icon/ViewIcon';
 import Button from '@mui/material/Button';
 import styled from '@mui/styles/styled';
-import { useContext } from 'react';
+import { FC, HTMLAttributes, useContext } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
+import { TableIdContext, ViewSiderToggleState } from '../TableContext';
 
 export const ViewBarRoot = styled('div')({
   display: 'flex',
@@ -33,19 +36,44 @@ export const ViewSidebarToggleButton = styled(Button)({
   border: '2px solid transparent',
   color: 'hsl(0,0%,20%)',
   fontWeight: 400,
+  marginRight: '0.5rem',
+  '& .MuiButton-startIcon': {
+    marginRight: '4px',
+    '&> *:nth-of-type(1)': {
+      fontSize: '14px',
+    },
+  },
   '&:hover': {
     border: '2px solid rgba(0,0,0,0.1)',
   },
 });
 
-export const ViewCollaborationButton = styled(Button)({});
+export const ViewCollaborationButton = styled(Button)({
+  padding: '0 0.5rem',
+  height: '30px',
+  margin: '0 0.5rem',
+  border: 'none',
+  color: 'hsl(0,0%,20%)',
+  fontSize: '15px',
+  '&:hover': {
+    backgroundColor: 'rgba(0,0,0,0.05)',
+    border: 'none',
+  },
+  '& .MuiButton-startIcon': {
+    marginRight: '4px',
+    '&> *:nth-of-type(1)': {
+      fontSize: '18px',
+    },
+  },
+});
 
 export const ViewConfigContainer = styled('div')({});
 
 export const SearchButton = styled('div')({});
 
-const ViewBar = () => {
+const ViewBar: FC<HTMLAttributes<HTMLDivElement>> = (props) => {
   const tableId = useContext(TableIdContext);
+
   const [toggle, setToggle] = useRecoilState(ViewSiderToggleState);
 
   const viewId = useRecoilValue(table.lastUsedViewId(tableId));
@@ -57,16 +85,34 @@ const ViewBar = () => {
   if (!viewName) return null;
 
   return (
-    <ViewBarRoot id="view-bar">
+    <ViewBarRoot {...props}>
       <ViewSwitcherContainer id="switcher-view">
         <ViewSidebarToggleButton
+          disableRipple
+          onClick={() => {
+            setToggle((prevState) => !prevState);
+          }}
           id="view-toggle-button"
           variant="outlined"
-          startIcon={<EditIcon />}
+          startIcon={toggle ? <SpreadIcon /> : <CollapseIcon />}
         >
-          折叠
+          {toggle ? '折叠' : '展开'}
         </ViewSidebarToggleButton>
-        <ViewCollaborationButton>{viewName}</ViewCollaborationButton>
+        <ViewCollaborationButton
+          variant="outlined"
+          startIcon={<ViewIcon type={viewType} />}
+          endIcon={<CollaborationEndIcon />}
+        >
+          <Typography
+            sx={{
+              maxWidth: '8rem',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
+          >
+            {viewName}
+          </Typography>
+        </ViewCollaborationButton>
       </ViewSwitcherContainer>
       <ViewConfigContainer></ViewConfigContainer>
       <SearchButton></SearchButton>

@@ -250,3 +250,5 @@ export type ViewSchemaType =
   | 'kanban'
   | 'gallery'
   | 'form';
+
+export type ViewData = Pick<ViewRsp, 'id' | 'name' | 'type' | 'desc'>;

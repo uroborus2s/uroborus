@@ -1,13 +1,20 @@
-import { atomFamily, RecoilState, TransactionInterface_UNSTABLE } from 'recoil';
+import {
+  atomFamily,
+  RecoilState,
+  RecoilValueReadOnly,
+  selectorFamily,
+  TransactionInterface_UNSTABLE,
+} from 'recoil';
 import { pureDispatcher, validator } from '../core';
 import { READTABLE } from '../domain.command';
-import { CommandOptions, ViewRsp, ViewSchemaType } from '../types';
+import { CommandOptions, ViewData, ViewRsp, ViewSchemaType } from '../types';
 
 export const view = (function () {
   class c {
     readonly name: (param: string) => RecoilState<string>;
     readonly desc: (param: string) => RecoilState<string>;
     readonly type: (param: string) => RecoilState<ViewSchemaType>;
+    readonly views: (param: string[]) => RecoilValueReadOnly<ViewData[]>;
 
     constructor() {
       this.name = atomFamily<string, string>({
@@ -24,6 +31,18 @@ export const view = (function () {
         key: 'view/type',
         default: 'grid',
       });
+
+      this.views = selectorFamily({
+        key: 'view/views',
+        get:
+          (ids: string[]) =>
+          ({ get }) =>
+            ids.map((id) => ({
+              id: id,
+              name: get(this.name(id)),
+              type: get(this.type(id)),
+            })),
+      });
     }
   }
 
@@ -34,15 +53,15 @@ function writeViews(
   { set }: TransactionInterface_UNSTABLE,
   options: CommandOptions,
 ) {
-  console.log(options.response);
   if (options.response && options.response.views) {
     const views = options.response.views;
     if (validator(views)) {
       views.forEach((v: ViewRsp) => {
-        const { id, name, desc } = v;
+        const { id, name, desc, type } = v;
         if (id) {
           if (name) set(view.name(id), name);
           if (desc) set(view.desc(id), desc);
+          if (type) set(view.desc(id), type);
         }
       });
     }
