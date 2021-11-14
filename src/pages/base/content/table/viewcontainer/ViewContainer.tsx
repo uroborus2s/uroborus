@@ -1,17 +1,12 @@
-import ViewListInSide from './ViewListInSide';
-import Accordion from '@mui/material/Accordion';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import AccordionSummary from '@mui/material/AccordionSummary';
-
-import Typography from '@mui/material/Typography';
+import CreatView from '@/pages/base/content/table/viewcontainer/CreatView';
 import makeStyles from '@mui/styles/makeStyles';
 import { Property } from 'csstype';
-import { FC, HTMLAttributes, useEffect } from 'react';
+import React, { FC, HTMLAttributes, useEffect } from 'react';
 import { useRecoilValue } from 'recoil';
 import { ViewSiderToggleState } from '../../table/TableContext';
 import useDragResizeLine from './useDragResizeLine';
 import useSuspendedBlock from './useSuspendedBlock';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ViewListInSide from './ViewListInSide';
 
 interface StylesProps {
   width: Property.Width;
@@ -96,22 +91,7 @@ const ViewContainer: FC<HTMLAttributes<HTMLDivElement>> = (props) => {
         <div className={classes.viewSide} id="view-side">
           <div className={classes.viewSideBar}>
             <ViewListInSide />
-            <Accordion>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="panel1a-content"
-                id="panel1a-header"
-              >
-                <Typography>Accordion 1</Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <Typography>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Suspendisse malesuada lacus ex, sit amet blandit leo lobortis
-                  eget.
-                </Typography>
-              </AccordionDetails>
-            </Accordion>
+            <CreatView />
           </div>
           <div
             className={classes.sideResizeBar}

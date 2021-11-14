@@ -77,16 +77,23 @@ const ViewListInSide = () => {
           groupedOptions.length > 0 &&
           (groupedOptions as ViewData[]).map((viewItem) => (
             <ListItemButton
-              sx={{ padding: '0.5rem' }}
+              sx={{
+                padding: '0.5rem',
+                borderRadius: '3px',
+              }}
               key={viewItem.id}
               disableRipple
               selected={lastUsedViewId === viewItem.id}
             >
-              <ViewIcon
-                sx={{ flex: 'none', marginRigth: '0.5rem' }}
-                type={viewItem.type}
-              />
-              <Typography sx={{ flex: 'auto', textOverflow: 'ellipsis' }}>
+              <ViewIcon type={viewItem.type} sx={{ marginRight: '0.5rem' }} />
+              <Typography
+                sx={{
+                  flex: 'auto',
+                  textOverflow: 'ellipsis',
+                  fontSize: '14px',
+                  lineHeight: 1,
+                }}
+              >
                 {viewItem.name}
               </Typography>
               {lastUsedViewId === viewItem.id && (

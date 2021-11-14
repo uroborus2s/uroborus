@@ -78,10 +78,13 @@ function edit({ set }: TransactionInterface_UNSTABLE, options: CommandOptions) {
   const len = options.response ? Object.keys(options.response).length : 0;
   console.log('修改table名称', options);
   if (len >= 0) {
-    const { name } = len > 0 ? options.response : options.request?.data;
+    const { name, desc, selected_view_id } = (
+      len > 0 ? options.response : options.request?.data
+    ) as TableRsp;
     const id = options.request?.path?.id;
     if (id) {
       if (name) set(table.name(id), name);
+      if (desc) set(table.desc(id), desc);
     }
   }
 }

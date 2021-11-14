@@ -11,6 +11,8 @@ export default function ({ vertical, rtl }: TabsState, target: BasicTarget) {
     next: false,
   });
 
+  console.log(displayScroll);
+
   const updateScrollButtonState = useRefFun(() => {
     if (elem) {
       const {
@@ -35,6 +37,8 @@ export default function ({ vertical, rtl }: TabsState, target: BasicTarget) {
           ? scrollLeft > 1
           : scrollLeft < scrollWidth - clientWidth - 1;
       }
+
+      console.log(displayScroll);
 
       if (
         showStartScroll !== displayScroll.prev ||

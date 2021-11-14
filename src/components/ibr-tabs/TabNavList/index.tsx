@@ -1,5 +1,6 @@
 import { useRefFun, useSize } from '@/core/hooks';
 import useEffectNomount from '@hooks/useEffectNomount';
+import ScrollButtonIcon from '@ibr/ibr-icon/ScrollButtonIcon';
 import {
   windowScrollBarHeight,
   windowScrollBarWidth,
@@ -359,6 +360,8 @@ const TabNavList: ForwardRefRenderFunction<HTMLDivElement, TabNavListProps> = (
   const hideButton = ownerState.type !== 'editable-card' || hideAdd;
   const hideInkbar = ownerState.type !== 'line';
 
+  console.log(displayScroll);
+
   return (
     <TabHeader className={classes?.tabHeader} ownerState={ownerState}>
       <TabNavListRoot
@@ -388,10 +391,12 @@ const TabNavList: ForwardRefRenderFunction<HTMLDivElement, TabNavListProps> = (
             ref={tabsRef as LegacyRef<HTMLDivElement>}
           >
             <ScrollButton
-              ownerState={displayScroll.next}
+              ownerState={displayScroll.prev}
               className={classes?.scrollButtons}
               onClick={handleStartScrollClick}
-            />
+            >
+              <ScrollButtonIcon />
+            </ScrollButton>
             <TabContainer
               ownerState={ownerState}
               className={classes?.tabContainer}
@@ -405,7 +410,9 @@ const TabNavList: ForwardRefRenderFunction<HTMLDivElement, TabNavListProps> = (
               ownerState={displayScroll.next}
               className={classes?.scrollButtons}
               onClick={handleEndScrollClick}
-            />
+            >
+              <ScrollButtonIcon direction="right" />
+            </ScrollButton>
             {!hideInkbar && (
               <TabsInkbar
                 ownerState={{ ...ownerState, ...inkState }}

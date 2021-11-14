@@ -20,20 +20,23 @@ export const api = {
       baseId && baseId != '' ? `/base/${baseId}` : '/base',
     copyBase: (baseId: string) => `/base/${baseId}/copy`,
     moveBase: (baseId: string) => `/base/${baseId}/move`,
+    //通过上传文件创建base
+    uploadBase: '/upload/base',
+
     /***************Account************************/
-    login: `/account/login`,
-    logout: `/account/logout`,
+    login: `/account/login`, //登录
+    logout: `/account/logout`, //注销
     /***************Account************************/
     userInfo: '/user/info',
-    /***************upload************************/
-    uploadBase: '/upload/base',
-    uploadTable: '/upload/table',
 
     /***************table************************/
     table: (tableId?: string) =>
       tableId && tableId != '' ? `/table/${tableId}` : '/table',
-    view: (viewId: string) => `/view/${viewId}`,
-    /***************table************************/
+    //通过上传文件创建table
+    uploadTable: '/upload/table',
+
+    /***************view************************/
+    view: (viewId?: string) => `/view${viewId && `/${viewId}`}`,
     listTable: '/table',
     getViewOfTable: (tableId: string, viewId: string) =>
       `/table/${tableId}/view/${viewId}`,
@@ -57,10 +60,13 @@ export const MOVEBASE = 'MOVEBASE';
 export const DELETEBASE = 'DELETEBASE';
 
 //table
-export const CREATTABLE = 'CREATTable';
+export const CREATTABLE = 'CREATTABLE';
 export const CREATTABLEBYFILE = 'CREATTABLEBYFILE';
 export const EDITTABLE = 'EDITTABLE';
 export const READTABLE = 'READTABLE';
+
+//view
+export const CREATVIEW = 'CREATVIEW';
 
 // invite
 export const REDALLINVITE = 'REDALLINVITE';

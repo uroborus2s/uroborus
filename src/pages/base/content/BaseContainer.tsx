@@ -1,16 +1,16 @@
 import { iconColors } from '@/core/util';
-import { base } from '@/domain';
+import { base, EDITBASE, useDispath } from '@/domain';
 import { table } from '@/domain/table/table.repository';
 import TablePage from '@/pages/base/content/table/TablePage';
-import AddTableInList from './tabbar/AddTableInList';
-import AddTableInTab from './tabbar/AddTableInTab';
-import { BaseIdContext } from '../BaseMainPage';
-import TabTitleNode from './tabbar/TabTitleNode';
 import { Tab } from '@ibr/ibr-tabs';
 import Tabs from '@ibr/ibr-tabs/Tabs';
 import styled from '@mui/material/styles/styled';
 import React, { FC, useContext } from 'react';
 import { useRecoilValue } from 'recoil';
+import { BaseIdContext } from '../BaseMainPage';
+import AddTableInList from './tabbar/AddTableInList';
+import AddTableInTab from './tabbar/AddTableInTab';
+import TabTitleNode from './tabbar/TabTitleNode';
 
 interface StyledProps {
   backgroundColor: string;
@@ -70,6 +70,8 @@ const BaseContainer: FC = () => {
   const fontColor = isLight ? 'hsl(0,0%,20%)' : '#fff';
   const shareTextColor = isLight ? '#d1f7c4' : '#7c39ed';
 
+  const { run } = useDispath(EDITBASE, { manual: true });
+
   return (
     <Tabs
       activeKey={lastUsedTableId}
@@ -83,6 +85,12 @@ const BaseContainer: FC = () => {
       }
       addIcon={<AddTableInTab style={{ color: fontColor }} />}
       moreAddIcon={<AddTableInList />}
+      onTabClick={(activeKey) => {
+        run({
+          path: { id: baseId },
+          data: { selected_table_id: activeKey },
+        }).then();
+      }}
     >
       {allTables.map((tableInfo) => (
         <Tab

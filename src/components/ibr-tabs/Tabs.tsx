@@ -258,7 +258,9 @@ const RecoilTabs: ForwardRefRenderFunction<HTMLDivElement, TabsProps> = (
   ownerState = { ...ownerState, classes: inClasses };
 
   let newActiveKey = activeKey ?? defaultActiveKey ?? '';
+
   const activeIndex = tabs.findIndex((tab) => tab.key == newActiveKey);
+
   if (activeIndex == -1) {
     newActiveKey = tabs[0]?.key;
   }

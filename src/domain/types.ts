@@ -244,6 +244,8 @@ export type ViewRsp = IDEntity &
     type: ViewSchemaType;
   };
 
+export type ViewData = Pick<ViewRsp, 'id' | 'name' | 'type' | 'desc'>;
+
 export type ViewSchemaType =
   | 'grid'
   | 'calendar'
@@ -251,4 +253,15 @@ export type ViewSchemaType =
   | 'gallery'
   | 'form';
 
-export type ViewData = Pick<ViewRsp, 'id' | 'name' | 'type' | 'desc'>;
+export const ViewType: Record<ViewSchemaType, ViewSchemaType> = {
+  //表格视图
+  grid: 'grid',
+  //  日历视图
+  calendar: 'calendar',
+  //看板视图
+  kanban: 'kanban',
+  //相册视图
+  gallery: 'gallery',
+  //收集表单
+  form: 'form',
+};

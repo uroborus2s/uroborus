@@ -7,7 +7,7 @@ import {
   READBASE,
   READWORKSPACELIST,
 } from '../domain.command';
-import { BaseEntity, CommandOptions } from '../types';
+import { BaseEntity, BaseRsp, CommandOptions } from '../types';
 import {
   atomFamily,
   RecoilState,
@@ -95,14 +95,17 @@ function init({ set }: TransactionInterface_UNSTABLE, options: CommandOptions) {
 function edit({ set }: TransactionInterface_UNSTABLE, options: CommandOptions) {
   const len = options.response ? Object.keys(options.response).length : 0;
   if (len >= 0) {
-    const { color, name, icon, desc, tables, selected_table_id } =
-      len > 0 ? options.response : options.request?.data;
+    const { color, name, icon, desc, tables, selected_table_id } = (
+      len > 0 ? options.response : options.request?.data
+    ) as BaseRsp;
     const id = options.request?.path?.id;
     if (color) set(base.color(id), color);
     if (name) set(base.name(id), name);
     if (icon) set(base.icon(id), icon);
     if (desc) set(base.desc(id), desc);
-    if (selected_table_id) set(base.lastUsedTableId(id), selected_table_id);
+    //当前选择的table 以本地选择的为主，点击后仅上传服务器当前tableid变更，但是不进行本地更新
+    if (selected_table_id && options.name !== EDITBASE)
+      set(base.lastUsedTableId(id), selected_table_id);
     if (Array.isArray(tables)) {
       set(base.tableIds(id), calcSort(tables));
     }
