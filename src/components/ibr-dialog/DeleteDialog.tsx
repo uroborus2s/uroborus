@@ -6,7 +6,7 @@ import Typography from '@mui/material/Typography';
 import { FC } from 'react';
 
 interface DeleteDialogProps {
-  id: string;
+  path?: Record<string, any>;
   onClose?: () => void;
   name: string;
   commandType: string;
@@ -15,7 +15,7 @@ interface DeleteDialogProps {
 }
 
 const DeleteDialog: FC<DeleteDialogProps> = ({
-  id,
+  path,
   commandType,
   onClose,
   name,
@@ -58,7 +58,7 @@ const DeleteDialog: FC<DeleteDialogProps> = ({
           color="error"
           onClick={() => {
             run({
-              path: { id: id },
+              path: path,
             }).then(() => {
               if (onClose) onClose();
             });

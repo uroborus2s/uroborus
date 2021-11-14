@@ -5,7 +5,7 @@ import {
   iconColors,
   icons,
 } from '@/core/util';
-import { DELETEBASE, EDITBASE, useDispath } from '@/domain';
+import { DELETEBASE, EDITBASE, useDispath, workspaces } from '@/domain';
 import useBaseInfo from '@/pages/editBaseDialog/useBaseInfo';
 import DeleteDialog from '@ibr/ibr-dialog/DeleteDialog';
 import PopDialog, { HandleFun } from '@ibr/ibr-dialog/PopDialog';
@@ -23,6 +23,7 @@ import styled from '@mui/material/styles/styled';
 import makeStyles from '@mui/styles/makeStyles';
 import classNames from 'classnames';
 import { FC, memo, Ref, useRef } from 'react';
+import { useRecoilValue } from 'recoil';
 import DupliacteDialog from './DupliacteDialog';
 import MoveDialog from './MoveDialog';
 import ShareDialog from './ShareDialog';
@@ -126,6 +127,8 @@ const EditBaseDialog: FC<EditBaseDialogProps> = ({ open, onClose, baseId }) => {
 
   const { baseName, baseIcon, baseColor, fontColor, fristChar } =
     useBaseInfo(baseId);
+
+  const workspaceId = useRecoilValue(workspaces.getWorkspaceIdByBaseId(baseId));
 
   const newName = useRef(baseName);
 
@@ -334,7 +337,7 @@ const EditBaseDialog: FC<EditBaseDialogProps> = ({ open, onClose, baseId }) => {
       >
         <DeleteDialog
           name={baseName}
-          id={baseId}
+          path={{ id: baseId, workspaceId: workspaceId }}
           onClose={deleteBaseRef.current?.close}
           masterTitle="数据副本"
           secTitle="最近删除的数据副本可以从垃圾桶中恢复。"

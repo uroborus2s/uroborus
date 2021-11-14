@@ -59,7 +59,7 @@ const TabNodeRoot = styled('div', {
       borderTopLeftRadius: '3px',
       borderTopRightRadius: '3px',
       padding: '0 1rem',
-      backgroundColor: active ? 'var(--bg-color)' : 'inherit',
+      backgroundColor: active ? 'var(--bg-color)' : 'rgba(0,0,0,0.1)',
     }),
   }),
 );

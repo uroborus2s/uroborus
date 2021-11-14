@@ -152,7 +152,6 @@ const VariableSizeList: ForwardRefRenderFunction<
       );
     }
   }
-
   return (
     <ListContainer
       as={component}

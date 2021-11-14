@@ -153,6 +153,7 @@ const TabsScroller = styled('div', {
     display: 'flex',
     whiteSpace: 'nowrap',
     scrollbarWidth: 'none',
+    flex: 'auto',
     [`margin${
       vertical ? (rtl ? 'Left' : 'Right') : 'Bottom'
     }`]: `-${scrollBarSize}px`,
@@ -173,6 +174,17 @@ const TabsScroller = styled('div', {
   }),
 );
 
+const TabsScrollerContainer = styled('div', {
+  name: TabComponentName,
+  slot: 'tabScrollerContainer',
+  overridesResolver: (props, styles) => styles.tabContainer,
+})({
+  position: 'relative',
+  display: 'flex',
+  flex: 'auto',
+  overflow: 'hidden',
+});
+
 const TabContainer = styled('div', {
   name: TabComponentName,
   slot: 'tabContainer',
@@ -190,12 +202,19 @@ const ScrollButton = styled('div', {
   name: TabComponentName,
   slot: 'scrollButtons',
   overridesResolver: (props, styles) => styles.scrollButton,
-})<{ ownerState: boolean }>(({ ownerState }) => ({
-  position: 'absolute',
-  left: 0,
-  right: 0,
-  opacity: ownerState ? 0 : 0.8,
-}));
+})<{ ownerState: { display: boolean; direction?: 'start' | 'end' } }>(
+  ({ ownerState }) => ({
+    position: 'absolute',
+    alignItems: 'center',
+    display: ownerState.display ? 'flex' : 'none',
+    top: 0,
+    height: '100%',
+    width: '60px',
+    justifyContent: 'center',
+    zIndex: 9999,
+    ...(ownerState.direction !== 'end' ? { left: 0 } : { right: 0 }),
+  }),
+);
 
 type TabsInkbarProps = TabsState & {
   length: number;
@@ -360,8 +379,6 @@ const TabNavList: ForwardRefRenderFunction<HTMLDivElement, TabNavListProps> = (
   const hideButton = ownerState.type !== 'editable-card' || hideAdd;
   const hideInkbar = ownerState.type !== 'line';
 
-  console.log(displayScroll);
-
   return (
     <TabHeader className={classes?.tabHeader} ownerState={ownerState}>
       <TabNavListRoot
@@ -384,34 +401,36 @@ const TabNavList: ForwardRefRenderFunction<HTMLDivElement, TabNavListProps> = (
               className={classes?.moreButton}
             />
           )}
-          <TabsScroller
-            ownerState={{ ...ownerState, scrollBarSize }}
-            className={classes?.scroller}
-            onScroll={handleTabsScroll}
-            ref={tabsRef as LegacyRef<HTMLDivElement>}
-          >
+          <TabsScrollerContainer>
             <ScrollButton
-              ownerState={displayScroll.prev}
+              ownerState={{ display: displayScroll.prev }}
               className={classes?.scrollButtons}
               onClick={handleStartScrollClick}
             >
               <ScrollButtonIcon />
             </ScrollButton>
-            <TabContainer
-              ownerState={ownerState}
-              className={classes?.tabContainer}
-              ref={tabListRef as LegacyRef<HTMLDivElement>}
-              onKeyDown={handleKeyDown}
-              role="tablist"
+            <TabsScroller
+              ownerState={{ ...ownerState, scrollBarSize }}
+              className={classes?.scroller}
+              onScroll={handleTabsScroll}
+              ref={tabsRef as LegacyRef<HTMLDivElement>}
             >
-              {tabNodes}
-            </TabContainer>
+              <TabContainer
+                ownerState={ownerState}
+                className={classes?.tabContainer}
+                ref={tabListRef as LegacyRef<HTMLDivElement>}
+                onKeyDown={handleKeyDown}
+                role="tablist"
+              >
+                {tabNodes}
+              </TabContainer>
+            </TabsScroller>
             <ScrollButton
-              ownerState={displayScroll.next}
+              ownerState={{ display: displayScroll.next, direction: 'end' }}
               className={classes?.scrollButtons}
               onClick={handleEndScrollClick}
             >
-              <ScrollButtonIcon direction="right" />
+              <ScrollButtonIcon direction="end" />
             </ScrollButton>
             {!hideInkbar && (
               <TabsInkbar
@@ -419,7 +438,7 @@ const TabNavList: ForwardRefRenderFunction<HTMLDivElement, TabNavListProps> = (
                 className={classes?.inkBar}
               />
             )}
-          </TabsScroller>
+          </TabsScrollerContainer>
           {!hideButton && addIcon}
         </TabNavWrap>
         <ExtraContent

@@ -75,7 +75,12 @@ export default function (
   useEffectNomount(() => {
     const lastMeasuredIndex = itemRectCache.current.lastMeasuredIndex;
     if (lastMeasuredIndex >= 0)
-      getItemRect(lastMeasuredIndex, itemRectCache, props, true);
+      getItemRect(
+        Math.min(lastMeasuredIndex, itemCount - 1),
+        itemRectCache,
+        props,
+        true,
+      );
     force({});
   }, [itemCount, outSize, itemSize]);
 
@@ -88,7 +93,10 @@ function getItemRect(
   props: VariableSizeListProps,
   mode = false,
 ) {
-  const lastMeasuredIndex = itemCacheRef.current.lastMeasuredIndex;
+  const lastMeasuredIndex = Math.min(
+    itemCacheRef.current.lastMeasuredIndex,
+    props.itemCount - 1,
+  );
   const itemRects = itemCacheRef.current.rects;
 
   if (mode || index > lastMeasuredIndex) {
@@ -141,7 +149,10 @@ function findIndexOfOffset(
   props: VariableSizeListProps,
 ) {
   //缓存中保存的最后的索引，从0开始计算
-  const lastMeasuredIndex = itemCacheRef.current.lastMeasuredIndex;
+  const lastMeasuredIndex = Math.min(
+    itemCacheRef.current.lastMeasuredIndex,
+    props.itemCount - 1,
+  );
   const itemRects = itemCacheRef.current.rects;
   const lastMeasuredItemOffset =
     lastMeasuredIndex >= 0 ? itemRects[lastMeasuredIndex].offset : 0;

@@ -33,6 +33,16 @@ const getStyled = ({ backgroundColor, color }: StyledProps) => ({
   },
   '& .IuiTabs-tabActive': { color: 'hsl(0,0%,20%)' },
   '& .IuiTabs-moreButton': { color: color },
+  '& .IuiTabs-scrollButtons': {
+    backgroundImage: `linear-gradient(to left, rgba(255,234,182,0), ${backgroundColor})`,
+    '& > svg': {
+      color: color,
+      opacity: color === '#fff' ? 0.75 : 0.5,
+      '&:hover': {
+        opacity: 1,
+      },
+    },
+  },
 });
 
 const ShareButtonRoot = styled('div')<ShareButtonProps>(({ ownerState }) => ({

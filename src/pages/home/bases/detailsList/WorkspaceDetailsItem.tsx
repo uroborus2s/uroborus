@@ -177,6 +177,7 @@ const WorkspaceDetailsList: ForwardRefRenderFunction<
         ).trim(),
       );
       let height;
+
       if (index === workspaces.length) {
         height = 180;
       } else if (alignment === 'grid') {

@@ -1,6 +1,9 @@
 import {
   CREATWORKSPACE,
+  DELETEBASE,
+  DELETEWORKSPACE,
   EDITWORKSPACE,
+  READBASE,
   READWORKSPACELIST,
 } from '@/domain/domain.command';
 import {
@@ -120,7 +123,6 @@ function saveByAll(
       const { id, name, plan_id, baseIds } = entity;
       set(workspaces.name(id), name);
       set(workspaces.planId(id), plan_id);
-      set(workspaces.isEdit(id), false);
       set(workspaces.baseIds(id), new Set(baseIds));
     });
     set(workspaces.ids, new Set(ids));
@@ -135,7 +137,6 @@ function savaByNewWorksapce(
     const { id, name, plan_id, baseIds } = options.response
       .workspace as WorkspaceEntity;
     set(workspaces.planId(id), plan_id);
-    set(workspaces.isEdit(id), true);
     set(workspaces.baseIds(id), new Set(baseIds));
     set(workspaces.name(id), name);
     const ids = get(workspaces.ids);
@@ -155,8 +156,50 @@ function edit({ set }: TransactionInterface_UNSTABLE, options: CommandOptions) {
   }
 }
 
+function deleteWorkspace(
+  { set }: TransactionInterface_UNSTABLE,
+  options: CommandOptions,
+) {
+  const id = options.request?.path?.id;
+  if (id) {
+    set(workspaces.ids, (ids) => {
+      ids.delete(id);
+      return new Set([...ids]);
+    });
+  }
+}
+
+function deleteBase(
+  { set }: TransactionInterface_UNSTABLE,
+  options: CommandOptions,
+) {
+  const id = options.request?.path?.id;
+  const workspaceId = options.request?.path?.workspaceId;
+  if (id && workspaceId) {
+    set(workspaces.baseIds(workspaceId), (ids) => {
+      ids.delete(id);
+      return new Set([...ids]);
+    });
+  }
+}
+
+function readBaseFromId(
+  { set }: TransactionInterface_UNSTABLE,
+  options: CommandOptions,
+) {
+  const id = options.request?.path?.id;
+  const workspaceId = options.response.workspace_id;
+  if (id && workspaceId) {
+    set(workspaces.ids, (ids) => new Set([...ids.add(workspaceId)]));
+    set(workspaces.baseIds(workspaceId), (ids) => new Set([...ids.add(id)]));
+  }
+}
+
 export default pureDispatcher({
   [READWORKSPACELIST]: saveByAll,
   [CREATWORKSPACE]: savaByNewWorksapce,
   [EDITWORKSPACE]: edit,
+  [DELETEWORKSPACE]: deleteWorkspace,
+  [DELETEBASE]: deleteBase,
+  [READBASE]: readBaseFromId,
 });

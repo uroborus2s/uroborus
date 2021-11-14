@@ -101,6 +101,8 @@ const WorkspaceTitle: FC<{ data: OriginDataType }> = ({ data }) => {
   const shareRef = useRef<HandleFun>();
   const deleteRef = useRef<HandleFun>();
 
+  console.log(isEdit);
+
   const { handleKeyboardEnter, handleToEdit, handleDoubleClick } =
     useDoubleClickToEdit(data.id, data.name, editName, isEdit, setIsEdit);
 
@@ -126,6 +128,7 @@ const WorkspaceTitle: FC<{ data: OriginDataType }> = ({ data }) => {
               borderRadius: '6px',
               padding: '0.25px 0.5px',
               color: '#444',
+              width: '50%',
             }}
             onKeyUp={handleKeyboardEnter}
           />
@@ -219,7 +222,7 @@ const WorkspaceTitle: FC<{ data: OriginDataType }> = ({ data }) => {
             >
               <DeleteDialog
                 name={data.name}
-                id={data.id}
+                path={{ id: data.id }}
                 onClose={deleteRef.current?.close}
                 masterTitle="工作区"
                 secTitle="最近删除的工作区可以从垃圾桶中恢复。"

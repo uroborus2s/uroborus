@@ -3,16 +3,16 @@ import styled from '@mui/styles/styled';
 
 const ScrollButtonIcon = styled(
   ({ direction, ...props }: SvgIconProps): JSX.Element => (
-    <SvgIcon viewBox="0 0 12 12" {...props}>
+    <SvgIcon viewBox="0 0 24 24" {...props}>
       <path
         fill="currentColor"
-        d="M7.53 7.97a.75.75 0 0 1-1.06 1.06l-2.5-2.5a.75.75 0 0 1 0-1.06l2.5-2.5a.75.75 0 0 1 1.06 1.06L5.56 6l1.97 1.97z"
+        d="M22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2A10,10 0 0,1 22,12M14,7L9,12L14,17V7Z"
       />
     </SvgIcon>
   ),
 )({
-  transform: (props) =>
-    props.direction !== 'right' ? 'none' : 'rotate(180deg)',
+  transform: (props) => (props.direction !== 'end' ? 'none' : 'rotate(180deg)'),
+  fontSize: '14px',
 });
 
 export default ScrollButtonIcon;
