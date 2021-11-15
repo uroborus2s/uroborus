@@ -2,15 +2,15 @@ import { iconColors } from '@/core/util';
 import { base, EDITBASE, useDispath } from '@/domain';
 import { table } from '@/domain/table/table.repository';
 import TablePage from '@/pages/base/content/table/TablePage';
-import { Tab } from '@ibr/ibr-tabs';
+import { Tab, TabHandle } from '@ibr/ibr-tabs';
 import Tabs from '@ibr/ibr-tabs/Tabs';
 import styled from '@mui/material/styles/styled';
-import React, { FC, useContext } from 'react';
-import { useRecoilValue } from 'recoil';
+import React, { FC, Ref, useContext, useRef } from 'react';
+import { useRecoilCallback, useRecoilValue } from 'recoil';
 import { BaseIdContext } from '../BaseMainPage';
 import AddTableInList from './tabbar/AddTableInList';
 import AddTableInTab from './tabbar/AddTableInTab';
-import TabTitleNode from './tabbar/TabTitleNode';
+import TabTitleNode, { getTableEditState } from './tabbar/TabTitleNode';
 
 interface StyledProps {
   backgroundColor: string;
@@ -69,7 +69,8 @@ const BaseContainer: FC = () => {
   const baseId = useContext(BaseIdContext);
 
   const tableIds = useRecoilValue(base.tableIds(baseId));
-  const allTables = useRecoilValue(table.allTables(tableIds));
+
+  const allTables = useRecoilValue(table.allTables([...tableIds]));
   const color = useRecoilValue(base.color(baseId));
   const lastUsedTableId = useRecoilValue(base.lastUsedTableId(baseId));
 
@@ -82,8 +83,21 @@ const BaseContainer: FC = () => {
 
   const { run } = useDispath(EDITBASE, { manual: true });
 
+  const tableActiveHandle = useRef<TabHandle>();
+
+  const activateTabAndEdit = useRecoilCallback(
+    ({ set }) =>
+      (id: string) => {
+        if (id && tableActiveHandle.current)
+          tableActiveHandle.current.activeTab(id);
+        if (id) set(getTableEditState(id), true);
+      },
+    [],
+  );
+
   return (
     <Tabs
+      ref={tableActiveHandle as Ref<TabHandle>}
       activeKey={lastUsedTableId}
       sx={getStyled({ backgroundColor: color, color: fontColor })}
       type="editable-card"
@@ -93,8 +107,15 @@ const BaseContainer: FC = () => {
           ownerState={{ color: fontColor, textColor: shareTextColor }}
         />
       }
-      addIcon={<AddTableInTab style={{ color: fontColor }} />}
-      moreAddIcon={<AddTableInList />}
+      addIcon={
+        <AddTableInTab
+          style={{ color: fontColor }}
+          activateTabAndEditFun={activateTabAndEdit}
+        />
+      }
+      moreAddIcon={
+        <AddTableInList activateTabAndEditFun={activateTabAndEdit} />
+      }
       onTabClick={(activeKey) => {
         run({
           path: { id: baseId },
@@ -105,7 +126,14 @@ const BaseContainer: FC = () => {
       {allTables.map((tableInfo) => (
         <Tab
           key={tableInfo.id}
-          tab={<TabTitleNode id={tableInfo.id} name={tableInfo.name} active />}
+          tab={
+            <TabTitleNode
+              id={tableInfo.id}
+              name={tableInfo.name}
+              active
+              activateTabAndEditFun={activateTabAndEdit}
+            />
+          }
         >
           <TablePage tableId={tableInfo.id} />
         </Tab>

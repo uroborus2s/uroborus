@@ -20,7 +20,11 @@ const AddRoot = styled('div')({
   },
 });
 
-const AddTableInTab: FC<HTMLAttributes<HTMLDivElement>> = (props) => {
+const AddTableInTab: FC<
+  HTMLAttributes<HTMLDivElement> & {
+    activateTabAndEditFun: (id: string) => void;
+  }
+> = ({ activateTabAndEditFun, ...props }) => {
   const { anchorElem, oppenPopover, closePopover } = usePopover();
 
   return (
@@ -34,7 +38,11 @@ const AddTableInTab: FC<HTMLAttributes<HTMLDivElement>> = (props) => {
       >
         <SquareAddIcon sx={{ fontSize: '12px' }} />
       </AddRoot>
-      <NewTableMenu anchor={anchorElem} onClose={closePopover} />
+      <NewTableMenu
+        anchor={anchorElem}
+        onClose={closePopover}
+        activateTabAndEditFun={activateTabAndEditFun}
+      />
     </>
   );
 };

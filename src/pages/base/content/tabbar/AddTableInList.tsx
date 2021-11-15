@@ -1,12 +1,13 @@
 import { usePopover } from '@/core/hooks';
 import NewTableMenu from '@/pages/base/content/tabbar/NewTableMenu';
 import AddIcon from '@ibr/ibr-icon/AddIcon';
+import { TabHandle } from '@ibr/ibr-tabs';
 import ArrowRightRoundedIcon from '@mui/icons-material/ArrowRightRounded';
 import { ListItem } from '@mui/material';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import styled from '@mui/material/styles/styled';
 import Typography from '@mui/material/Typography';
-import { FC } from 'react';
+import { FC, MutableRefObject } from 'react';
 
 const ItemIcon = styled(ListItemIcon)({
   padding: '0 0.5rem',
@@ -15,7 +16,9 @@ const ItemIcon = styled(ListItemIcon)({
   fontSize: '16px',
 });
 
-const AddTableInList: FC = () => {
+const AddTableInList: FC<{
+  activateTabAndEditFun: (id: string) => void;
+}> = ({ activateTabAndEditFun }) => {
   const { anchorElem, oppenPopover, closePopover } = usePopover();
 
   return (
@@ -42,7 +45,11 @@ const AddTableInList: FC = () => {
           <ArrowRightRoundedIcon />
         </ItemIcon>
       </ListItem>
-      <NewTableMenu anchor={anchorElem} onClose={closePopover} />
+      <NewTableMenu
+        anchor={anchorElem}
+        onClose={closePopover}
+        activateTabAndEditFun={activateTabAndEditFun}
+      />
     </>
   );
 };

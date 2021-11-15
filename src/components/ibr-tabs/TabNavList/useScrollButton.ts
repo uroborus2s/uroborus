@@ -3,37 +3,39 @@ import { BasicTarget, getTargetElement } from '@/core/util';
 import { useState } from 'react';
 import { TabsState } from '../index';
 
-export default function ({ vertical, rtl }: TabsState, target: BasicTarget) {
-  const elem = getTargetElement(target);
-
+export default function (
+  { vertical, rtl }: TabsState,
+  outer: BasicTarget,
+  inline: BasicTarget,
+) {
   const [displayScroll, setDisplayScroll] = useState({
     prev: false,
     next: false,
   });
 
   const updateScrollButtonState = useRefFun(() => {
-    if (elem) {
-      const {
-        scrollTop,
-        scrollHeight,
-        clientHeight,
-        scrollWidth,
-        clientWidth,
-        scrollLeft,
-      } = elem as HTMLDivElement;
+    const outerElem = getTargetElement(outer);
+    const inlineElem = getTargetElement(inline) as HTMLDivElement;
+
+    if (outerElem && inlineElem) {
+      const { scrollTop, clientHeight, clientWidth, scrollLeft } =
+        outerElem as HTMLDivElement;
+
+      const { clientHeight: listHeight, clientWidth: listWidth } =
+        inlineElem as HTMLDivElement;
       let showStartScroll;
       let showEndScroll;
 
       if (vertical) {
         showStartScroll = scrollTop > 1;
-        showEndScroll = scrollTop < scrollHeight - clientHeight - 1;
+        showEndScroll = scrollTop < listHeight - clientHeight - 1;
       } else {
         showStartScroll = rtl
-          ? scrollLeft < scrollWidth - clientWidth - 1
+          ? scrollLeft < listWidth - clientWidth - 1
           : scrollLeft > 1;
         showEndScroll = rtl
           ? scrollLeft > 1
-          : scrollLeft < scrollWidth - clientWidth - 1;
+          : scrollLeft < listWidth - clientWidth - 1;
       }
 
       if (

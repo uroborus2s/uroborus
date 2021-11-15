@@ -8,6 +8,7 @@ import {
   ForwardRefRenderFunction,
   isValidElement,
   ReactElement,
+  useImperativeHandle,
   useMemo,
   useState,
 } from 'react';
@@ -20,6 +21,7 @@ import { ActiveTabKey } from './core';
 import {
   PaneInProps,
   Tab,
+  TabHandle,
   TabInProps,
   TabProps,
   TabsInProps,
@@ -112,7 +114,7 @@ const TabRoot = styled('div', {
 let uuid = 0;
 
 const ForwardTabs: ForwardRefRenderFunction<
-  HTMLDivElement,
+  TabHandle,
   Omit<
     TabsProps,
     | 'children'
@@ -148,8 +150,17 @@ const ForwardTabs: ForwardRefRenderFunction<
   const handleDragEnd = (result: DropResult, provided: ResponderProvided) => {
     console.log(result, provided);
   };
-
   const [activeKey, setActiveKey] = useState(activeKeyProp || '');
+
+  useImperativeHandle(ref, () => ({
+    activeTab: (activeKey: string) => {
+      const activeIndex = tabs.findIndex((tab) => tab.key == activeKey);
+
+      if (activeIndex !== -1) {
+        setActiveKey(activeKey);
+      }
+    },
+  }));
 
   let TabNav: ReactElement;
   const tabNavProps = {
@@ -175,7 +186,6 @@ const ForwardTabs: ForwardRefRenderFunction<
         <TabRoot
           className={classNames(ownerState.classes?.root, className)}
           ownerState={ownerState}
-          ref={ref}
           {...other}
         >
           {TabNav}
@@ -192,7 +202,7 @@ const ForwardTabs: ForwardRefRenderFunction<
 
 const Tabs = forwardRef(ForwardTabs);
 
-const RecoilTabs: ForwardRefRenderFunction<HTMLDivElement, TabsProps> = (
+const RecoilTabs: ForwardRefRenderFunction<TabHandle, TabsProps> = (
   inProps,
   ref,
 ) => {

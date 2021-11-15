@@ -22,13 +22,13 @@ const CreatWorkspaceDialog: FC<AddWorkspaceDialogProps> = ({
   const handlerNewWorkspace = useRecoilCallback(
     ({ snapshot, set }) =>
       async () => {
-        let newName = '工作区 ';
+        let newName = '';
         const datas = await snapshot.getPromise(workspaces.workspaces);
         let count = datas.length;
         // eslint-disable-next-line no-constant-condition
         while (true) {
           count += 1;
-          newName = newName.concat(String(count));
+          newName = '工作区 '.concat(String(count));
           const res = datas.findIndex((data) => data.name == newName);
           if (res == -1) break;
         }
@@ -36,7 +36,6 @@ const CreatWorkspaceDialog: FC<AddWorkspaceDialogProps> = ({
           const id = res.response.workspace?.id;
           if (onClose) onClose();
           if (onScroll) onScroll(res.response.workspace.id);
-          console.log('新建应用成功后', id, res);
           if (id) set(workspaces.isEdit(id), true);
         });
       },

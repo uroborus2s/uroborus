@@ -1,36 +1,41 @@
 import { base, CREATTABLE, useDispath } from '@/domain';
 import { table } from '@/domain/table/table.repository';
 import { BaseIdContext } from '@/pages/base/BaseMainPage';
-import useUploadTableFile from '@/pages/base/content/tabbar/useUploadTableFile';
 import PopDialog, { HandleFun } from '@ibr/ibr-dialog/PopDialog';
 import ExeclIcon from '@ibr/ibr-icon/ExeclIcon';
 import NewFileIcon from '@ibr/ibr-icon/NewFileIcon';
 import UploadFilePanel from '@ibr/ibr-upload-file/UploadFilePanel';
-import CircularProgress from '@mui/material/CircularProgress';
 import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import styled from '@mui/styles/styled';
 import { FC, Ref, useContext, useRef } from 'react';
 import { useRecoilValue } from 'recoil';
+import useUploadTableFile from './useUploadTableFile';
 
 interface NewTableMenuProps {
   anchor: HTMLElement | null;
   onClose?: () => void;
+  activateTabAndEditFun: (id: string) => void;
 }
 
 const Item = styled(MenuItem)({
   padding: '0.5rem 0.75rem',
 });
 
-const NewTableMenu: FC<NewTableMenuProps> = ({ anchor, onClose }) => {
+const NewTableMenu: FC<NewTableMenuProps> = ({
+  anchor,
+  onClose,
+  activateTabAndEditFun,
+}) => {
   const { run, loading: creatTableLoading } = useDispath(CREATTABLE, {
     manual: true,
   });
   const baseId = useContext(BaseIdContext);
   const tableIds = useRecoilValue(base.tableIds(baseId));
-  const tables = useRecoilValue(table.allTables(tableIds));
+  const tables = useRecoilValue(table.allTables([...tableIds]));
 
   const fileRef = useRef<HandleFun>();
 
@@ -45,8 +50,11 @@ const NewTableMenu: FC<NewTableMenuProps> = ({ anchor, onClose }) => {
       const res = tables.findIndex((table) => table.name == newName);
       if (res == -1) break;
     }
-    run({ data: { base_id: baseId, name: newName } }).then();
-    if (onClose) onClose();
+    run({ data: { base_id: baseId, name: newName } }).then((res) => {
+      const id = res.request.params.tableId;
+      if (onClose) onClose();
+      if (activateTabAndEditFun) activateTabAndEditFun(id);
+    });
   };
 
   const { loading, onDrop } = useUploadTableFile(baseId, () => {

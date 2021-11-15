@@ -1,7 +1,6 @@
 import animate from '@/core/util/animate';
 import { PaneInProps, TabInProps } from '@ibr/ibr-tabs/index';
 import { createContext, SetStateAction } from 'react';
-import { atom } from 'recoil';
 
 export const ActiveTabKey = createContext({
   activeKey: '',
@@ -22,6 +21,7 @@ export function findTabIndex(
   return index;
 }
 
+//滑动的距离
 export function scroll(
   scrollValue: number,
   element: Element,

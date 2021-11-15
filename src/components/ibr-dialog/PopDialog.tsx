@@ -27,6 +27,7 @@ export interface HandleFun {
 export const CancelButton = styled(Button)({
   color: 'hsl(0,0%,20%)',
   opacity: '0.75',
+  padding: '0.25rem 0.5rem',
 });
 
 export const SelectWorksapceTitle = styled('div')({

@@ -118,7 +118,7 @@ const DupliacteDialog: FC<DupliacteDialogProps> = ({
             run({
               path: { id: baseId },
               data: {
-                name: name,
+                name: name.concat(' 备份'),
                 copy_comments: comment,
                 copy_records: record,
                 target_workspace_id: sId,

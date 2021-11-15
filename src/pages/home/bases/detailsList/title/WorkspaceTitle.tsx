@@ -101,8 +101,6 @@ const WorkspaceTitle: FC<{ data: OriginDataType }> = ({ data }) => {
   const shareRef = useRef<HandleFun>();
   const deleteRef = useRef<HandleFun>();
 
-  console.log(isEdit);
-
   const { handleKeyboardEnter, handleToEdit, handleDoubleClick } =
     useDoubleClickToEdit(data.id, data.name, editName, isEdit, setIsEdit);
 

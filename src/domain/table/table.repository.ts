@@ -9,6 +9,7 @@ import { calcSort, pureDispatcher, validator } from '../core';
 import {
   CREATTABLE,
   CREATTABLEBYFILE,
+  DUPLIACTETABLE,
   EDITTABLE,
   READBASE,
   READTABLE,
@@ -121,4 +122,6 @@ export default pureDispatcher({
   [CREATTABLE]: writeTables,
   [CREATTABLEBYFILE]: writeTables,
   [EDITTABLE]: edit,
+  //拷贝表格，1、请求api，2、获取所有表格，3、写入表格数据，4、写入base里的tableIds数据
+  [DUPLIACTETABLE]: writeTables,
 });

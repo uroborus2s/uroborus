@@ -34,6 +34,7 @@ export const api = {
       tableId && tableId != '' ? `/table/${tableId}` : '/table',
     //通过上传文件创建table
     uploadTable: '/upload/table',
+    copyTable: (tableId?: string) => `/table/${tableId}/copy`,
 
     /***************view************************/
     view: (viewId?: string) => `/view${viewId && `/${viewId}`}`,
@@ -64,6 +65,8 @@ export const CREATTABLE = 'CREATTABLE';
 export const CREATTABLEBYFILE = 'CREATTABLEBYFILE';
 export const EDITTABLE = 'EDITTABLE';
 export const READTABLE = 'READTABLE';
+export const DELETETABLE = 'DELETETABLE';
+export const DUPLIACTETABLE = 'DUPLIACTETABLE';
 
 //view
 export const CREATVIEW = 'CREATVIEW';

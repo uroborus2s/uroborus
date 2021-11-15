@@ -7,6 +7,7 @@ import {
   ReactElement,
   ReactNode,
   ReactText,
+  useImperativeHandle,
 } from 'react';
 import { TabsClasses } from './TabClasses';
 import Tabs from './Tabs';
@@ -174,3 +175,5 @@ export type TabNodeElementProps = { name: ReactText } & Record<string, unknown>;
 
 export default Tabs;
 export { default as Tab } from './Tab';
+
+export type TabHandle = { activeTab: (activeKey: string) => void };

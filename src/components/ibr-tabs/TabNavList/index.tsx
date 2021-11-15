@@ -181,7 +181,6 @@ const TabsScrollerContainer = styled('div', {
 })({
   position: 'relative',
   display: 'flex',
-  flex: 'auto',
   overflow: 'hidden',
 });
 
@@ -278,6 +277,7 @@ const TabNavList: ForwardRefRenderFunction<HTMLDivElement, TabNavListProps> = (
   const { updateScrollButtonState, displayScroll } = useScrollButton(
     ownerState,
     tabsRef,
+    tabListRef,
   );
 
   const { handleStartScrollClick, handleEndScrollClick } = useScrollTurnPage(
@@ -288,6 +288,7 @@ const TabNavList: ForwardRefRenderFunction<HTMLDivElement, TabNavListProps> = (
 
   const { updateInkbarState, inkState } = useMoveInkbar(ownerState, tabListRef);
 
+  //删除tab时，key被删除后重置索引
   useEffectNomount(() => {
     const index = findTabIndex(tabs, activeKey, activeIndex.current);
     const newActiveKey = tabs[index]?.key;
@@ -322,11 +323,11 @@ const TabNavList: ForwardRefRenderFunction<HTMLDivElement, TabNavListProps> = (
 
       if (tabsRect[start] > tabRect[start]) {
         const nextScrollStart =
-          container[scrollStart] + (tabRect[start] - tabsRect[start]);
+          container[scrollStart] + Math.floor(tabRect[start] - tabsRect[start]);
         scroll(nextScrollStart, container, scrollStart);
       } else if (tabsRect[end] < tabRect[end]) {
         const nextScrollStart =
-          container[scrollStart] + (tabRect[end] - tabsRect[end]);
+          container[scrollStart] + Math.floor(tabRect[end] - tabsRect[end]);
         scroll(nextScrollStart, container, scrollStart);
       }
     }
@@ -334,7 +335,7 @@ const TabNavList: ForwardRefRenderFunction<HTMLDivElement, TabNavListProps> = (
 
   useEffect(() => {
     if (scrollSelectedIntoView) scrollSelectedIntoView();
-  }, [activeKey, scrollSelectedIntoView]);
+  }, [activeKey, scrollSelectedIntoView, tabListRef.current?.clientWidth]);
 
   useEffect(
     () => () => {

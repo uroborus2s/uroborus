@@ -1,15 +1,5 @@
 import { BaseIconType, BlankIcon, ColorType } from '@/core/util';
 import {
-  CREATTABLE,
-  CREATTABLEBYFILE,
-  CREATWORKSPACE,
-  DELETEBASE,
-  EDITBASE,
-  READBASE,
-  READWORKSPACELIST,
-} from '../domain.command';
-import { BaseEntity, BaseRsp, CommandOptions } from '../types';
-import {
   atomFamily,
   RecoilState,
   RecoilValueReadOnly,
@@ -17,6 +7,17 @@ import {
   TransactionInterface_UNSTABLE,
 } from 'recoil';
 import { calcSort, pureDispatcher } from '../core';
+import {
+  CREATTABLE,
+  CREATTABLEBYFILE,
+  CREATWORKSPACE,
+  DELETETABLE,
+  DUPLIACTETABLE,
+  EDITBASE,
+  READBASE,
+  READWORKSPACELIST,
+} from '../domain.command';
+import { BaseEntity, BaseRsp, CommandOptions } from '../types';
 
 export const base = (function () {
   class c {
@@ -25,7 +26,7 @@ export const base = (function () {
     readonly icon: (param: string) => RecoilState<BaseIconType>;
     readonly desc: (param: string) => RecoilState<string>;
     readonly lastUsedTableId: (param: string) => RecoilState<string>;
-    readonly tableIds: (param: string) => RecoilState<string[]>;
+    readonly tableIds: (param: string) => RecoilState<Set<string>>;
     readonly bases: (
       param: string[],
     ) => RecoilValueReadOnly<{ name: string; id: string }[]>;
@@ -56,9 +57,9 @@ export const base = (function () {
         default: '',
       });
 
-      this.tableIds = atomFamily<string[], string>({
+      this.tableIds = atomFamily<Set<string>, string>({
         key: 'base/tableids',
-        default: [],
+        default: new Set(),
       });
 
       this.bases = selectorFamily({
@@ -88,7 +89,7 @@ function init({ set }: TransactionInterface_UNSTABLE, options: CommandOptions) {
       set(base.icon(id), icon);
       if (desc) set(base.desc(id), desc);
       if (selected_table_id) set(base.lastUsedTableId(id), selected_table_id);
-      set(base.tableIds(id), tableIds ?? []);
+      set(base.tableIds(id), new Set(tableIds ?? []));
     });
   }
 }
@@ -108,7 +109,7 @@ function edit({ set }: TransactionInterface_UNSTABLE, options: CommandOptions) {
     if (selected_table_id && options.name !== EDITBASE)
       set(base.lastUsedTableId(id), selected_table_id);
     if (Array.isArray(tables)) {
-      set(base.tableIds(id), calcSort(tables));
+      set(base.tableIds(id), new Set(calcSort(tables)));
     }
   }
 }
@@ -117,9 +118,22 @@ function updateTableIds(
   { set }: TransactionInterface_UNSTABLE,
   options: CommandOptions,
 ) {
-  const baseId = options.request?.params?.base_id;
+  const baseId = options.request?.params?.baseId;
   const ids = calcSort(options.response.tables);
-  if (baseId && ids) set(base.tableIds(baseId), ids);
+  if (baseId && ids) set(base.tableIds(baseId), new Set(ids));
+}
+
+function deleteOneTable(
+  { set }: TransactionInterface_UNSTABLE,
+  options: CommandOptions,
+) {
+  const baseId = options.request?.path?.baseId;
+  const id = options.request?.path?.id;
+  if (baseId && id)
+    set(base.tableIds(baseId), (ids) => {
+      ids.delete(id);
+      return new Set([...ids]);
+    });
 }
 
 export default pureDispatcher({
@@ -129,4 +143,7 @@ export default pureDispatcher({
   [READBASE]: edit,
   [CREATTABLE]: updateTableIds,
   [CREATTABLEBYFILE]: updateTableIds,
+  [DELETETABLE]: deleteOneTable,
+  //拷贝表格，1、请求api，2、获取所有表格，3、写入表格数据，4、写入base里的tableIds数据
+  [DUPLIACTETABLE]: updateTableIds,
 });
