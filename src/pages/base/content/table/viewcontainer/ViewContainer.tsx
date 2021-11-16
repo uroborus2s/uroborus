@@ -1,4 +1,4 @@
-import CreatView from '@/pages/base/content/table/viewcontainer/CreatView';
+import CreatView from '@/pages/base/content/table/viewcontainer/side/CreatView';
 import makeStyles from '@mui/styles/makeStyles';
 import { Property } from 'csstype';
 import React, { FC, HTMLAttributes, useEffect } from 'react';
@@ -6,7 +6,7 @@ import { useRecoilValue } from 'recoil';
 import { ViewSiderToggleState } from '../../table/TableContext';
 import useDragResizeLine from './useDragResizeLine';
 import useSuspendedBlock from './useSuspendedBlock';
-import ViewListInSide from './ViewListInSide';
+import ViewListInSide from './side/ViewListInSide';
 
 interface StylesProps {
   width: Property.Width;

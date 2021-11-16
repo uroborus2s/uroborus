@@ -34,7 +34,12 @@ const getStyled = ({ backgroundColor, color }: StyledProps) => ({
   '& .IuiTabs-tabActive': { color: 'hsl(0,0%,20%)' },
   '& .IuiTabs-moreButton': { color: color },
   '& .IuiTabs-scrollButtons': {
-    backgroundImage: `linear-gradient(to left, rgba(255,234,182,0), ${backgroundColor})`,
+    '&.IuiTabs-scrollButton-start': {
+      backgroundImage: `linear-gradient(to left, rgba(255,234,182,0), ${backgroundColor})`,
+    },
+    '&.IuiTabs-scrollButton-end': {
+      backgroundImage: `linear-gradient(to right, rgba(255,234,182,0), ${backgroundColor})`,
+    },
     '& > svg': {
       color: color,
       opacity: color === '#fff' ? 0.75 : 0.5,
@@ -116,11 +121,12 @@ const BaseContainer: FC = () => {
       moreAddIcon={
         <AddTableInList activateTabAndEditFun={activateTabAndEdit} />
       }
-      onTabClick={(activeKey) => {
-        run({
-          path: { id: baseId },
-          data: { selected_table_id: activeKey },
-        }).then();
+      onTabClick={(activeKey, prevActiveKey) => {
+        if (activeKey !== prevActiveKey)
+          run({
+            path: { id: baseId },
+            data: { selected_table_id: activeKey },
+          }).then();
       }}
     >
       {allTables.map((tableInfo) => (

@@ -7,7 +7,8 @@ import BaseIcon from '@ibr/ibr-icon/BaseIcon';
 import LogoIcon from '@ibr/ibr-icon/LogoIcon';
 import Typography from '@mui/material/Typography';
 import makeStyles from '@mui/styles/makeStyles';
-import { FC, memo, useContext, useState } from 'react';
+import { FC, memo, useContext, useEffect, useRef, useState } from 'react';
+import { atom, useRecoilState, useRecoilValue } from 'recoil';
 import { Link } from 'umi';
 
 const useStyel = makeStyles({
@@ -48,6 +49,11 @@ const useStyel = makeStyles({
   topBarSetting: { flex: 'none' },
 });
 
+export const OpenEditOnNewBase = atom({
+  key: 'PpenEditOnNewBase',
+  default: false,
+});
+
 const BaseTopBar: FC = () => {
   const baseId = useContext(BaseIdContext);
 
@@ -55,7 +61,13 @@ const BaseTopBar: FC = () => {
 
   const classes = useStyel({ backgroundColor: baseColor, color: fontColor });
 
-  const [openDialog, setOpen] = useState(false);
+  const [openDialog, setOpen] = useRecoilState(OpenEditOnNewBase);
+
+  const fouceFrist = useRef(true);
+
+  useEffect(() => {
+    fouceFrist.current = false;
+  }, []);
 
   return (
     <div className={classes.topBar}>
@@ -90,6 +102,7 @@ const BaseTopBar: FC = () => {
       </div>
       <SettingBar className={classes.topBarSetting} color={fontColor} />
       <EditBaseDialog
+        autoFocus={fouceFrist.current}
         open={openDialog}
         onClose={() => {
           setOpen(false);

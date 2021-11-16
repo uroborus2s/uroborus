@@ -2,6 +2,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import IconButton from '@mui/material/IconButton';
+import Menu from '@mui/material/Menu';
 import { Theme } from '@mui/material/styles';
 import styled from '@mui/material/styles/styled';
 import { SxProps } from '@mui/system';
@@ -72,6 +73,14 @@ const PopDialog: ForwardRefRenderFunction<
       open={openDialog}
       PaperProps={{
         sx: paperStyel,
+      }}
+      onClick={(e) => {
+        e.stopPropagation();
+        e.preventDefault();
+      }}
+      onDoubleClick={(e) => {
+        e.stopPropagation();
+        e.preventDefault();
       }}
     >
       {children}

@@ -2,12 +2,11 @@ import { workspaces } from '@/domain/workspace/workspace.repository';
 import EditBaseDialog from '@/pages/editBaseDialog/EditBaseDialog';
 import useBaseInfo from '@/pages/editBaseDialog/useBaseInfo';
 import { maxScreen, middleScreen, minScreen } from '@/pages/home/types';
+import HovweDropButton from '@ibr/ibr-hover-drop-button/HoverDropButton';
 import AddIcon from '@ibr/ibr-icon/AddIcon';
 import BaseIcon from '@ibr/ibr-icon/BaseIcon';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { DefaultTheme } from '@mui/styles/defaultTheme';
 import makeStyles from '@mui/styles/makeStyles';
-import classNames from 'classnames';
 import { FC, memo, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import { Link } from 'umi';
@@ -21,7 +20,7 @@ interface stytelProps {
 const useStytel = makeStyles<DefaultTheme, stytelProps>({
   hoverContainer: {
     position: 'relative',
-    '&:hover .base-item-more-button,&:active .base-item-more-button': {
+    '&:hover .IuiHoverButton-hover,&:active .IuiHoverButton-hover': {
       opacity: 1,
     },
   },
@@ -54,25 +53,6 @@ const useStytel = makeStyles<DefaultTheme, stytelProps>({
     flex: 'auto',
     display: 'flex',
     '&:hover,&:active': {
-      backgroundColor: 'rgba(0,0,0,0.1)',
-    },
-  },
-  moreButton: {
-    width: '16px',
-    height: '16px',
-    opacity: 0,
-    borderRadius: '50%',
-    position: 'absolute',
-    bottom: 0,
-    right: 0,
-    cursor: 'pointer',
-    transition: 'all 0.085s ease-in',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: '0.25rem',
-    marginBottom: '0.25rem',
-    color: '#fff',
-    '&:hover,&:active,&:focus': {
       backgroundColor: 'rgba(0,0,0,0.1)',
     },
   },
@@ -120,14 +100,12 @@ const BaseItem: FC<{ baseId: string; rootClassName: string }> = ({
               iconProps={{ sx: { fontSize: 48 } }}
             />
           </Link>
-          <div
-            className={classNames(classes.moreButton, 'base-item-more-button')}
+          <HovweDropButton
+            sx={{ marginBottom: '0.25rem' }}
             onClick={() => {
               setOpen(true);
             }}
-          >
-            <ArrowDropDownIcon sx={{ fontSize: '16px' }} />
-          </div>
+          />
           <EditBaseDialog
             open={openDialog}
             onClose={() => {

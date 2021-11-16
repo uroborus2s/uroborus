@@ -30,6 +30,7 @@ const EditTableDesc: FC<EditTableDescProps> = ({ id, onClose, name }) => {
   return (
     <PanelRoot>
       <InputBase
+        autoFocus
         defaultValue={desc}
         placeholder={`描述${name}`}
         onChange={(e) => setdescValue(e.target.value)}
@@ -48,14 +49,22 @@ const EditTableDesc: FC<EditTableDescProps> = ({ id, onClose, name }) => {
         maxRows={10}
       />
       <ConfimButtonGroups sx={{ alignSelf: 'flex-end' }}>
-        <CancelButton variant="text" onClick={onClose} href="">
+        <CancelButton
+          variant="text"
+          onClick={(e) => {
+            e.stopPropagation();
+            if (onClose) onClose();
+          }}
+          href=""
+        >
           取消
         </CancelButton>
         <LoadingButton
           sx={{ width: '120px', padding: '0.25rem 0.5rem' }}
           loading={loading}
           variant="contained"
-          onClick={() => {
+          onClick={(e) => {
+            e.stopPropagation();
             run({
               path: { id: id },
               data: {

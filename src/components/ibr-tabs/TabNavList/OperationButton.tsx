@@ -44,7 +44,7 @@ const OperationButton: FC<OperationProps> = ({
       {!!anchorElem && (
         <Popover
           open={!!anchorElem}
-          anchorEl={anchorElem}
+          anchorEl={anchorElem as Element}
           onClose={() => {
             closePopover();
           }}

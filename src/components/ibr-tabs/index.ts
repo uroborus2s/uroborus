@@ -58,7 +58,11 @@ export interface TabsProps
   // //切换面板时的回调
   // onChange?: (activeKey: string) => void;
   // tab 标签页被点击时的回调
-  onTabClick?: (activeKey: string, e: KeyboardEvent | MouseEvent) => void;
+  onTabClick?: (
+    activeKey: string,
+    prevActiveKey: string,
+    e: KeyboardEvent | MouseEvent,
+  ) => void;
   //tab 滚动时的触发回调
   onTabScroll?: OnTabScroll;
   //页签的基本样式，可选 line、card editable-card 类型

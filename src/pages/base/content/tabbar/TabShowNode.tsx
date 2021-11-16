@@ -106,6 +106,10 @@ const TabShowNode: FC<TabTitleNodeProps> = ({
           e.stopPropagation();
           oppenPopover(e);
         }}
+        onDoubleClick={(e) => {
+          e.stopPropagation();
+          e.preventDefault();
+        }}
         style={{ visibility: active ? 'visible' : 'hidden' }}
       >
         <ArrowDown sx={{ fontSize: '12px' }} />
@@ -152,7 +156,8 @@ const TabShowNode: FC<TabTitleNodeProps> = ({
         <TableMenuItem
           disableRipple
           disableTouchRipple
-          onClick={() => {
+          onClick={(e) => {
+            e.stopPropagation();
             closePopover();
             duplicateTableRef.current?.open();
           }}
@@ -232,6 +237,14 @@ const TabShowNode: FC<TabTitleNodeProps> = ({
         />
       </PopDialog>
       <Popover
+        onClick={(e) => {
+          e.stopPropagation();
+          e.preventDefault();
+        }}
+        onDoubleClick={(e) => {
+          e.stopPropagation();
+          e.preventDefault();
+        }}
         id={id}
         open={!!infoElem}
         anchorEl={infoElem as Element}

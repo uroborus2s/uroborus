@@ -12,11 +12,13 @@ export const getTableEditState = atomFamily<boolean, string>({
 
 const TabTitleNode: FC<TabTitleNodeProps> = (props) => {
   const { id, name } = props;
-  const [isEditTableName, setEdit] = useRecoilState(getTableEditState(id));
-  const { run } = useDispath(EDITTABLE, { manual: true });
 
-  const { handleKeyboardEnter, handleToEdit, handleDoubleClick } =
-    useDoubleClickToEdit(id, name, run, isEditTableName, setEdit);
+  const {
+    isEditTableName,
+    handleKeyboardEnter,
+    handleToEdit,
+    handleDoubleClick,
+  } = useDoubleClickToEdit(id, name);
 
   const EditNode = () => {
     return (

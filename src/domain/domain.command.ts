@@ -37,7 +37,7 @@ export const api = {
     copyTable: (tableId?: string) => `/table/${tableId}/copy`,
 
     /***************view************************/
-    view: (viewId?: string) => `/view${viewId && `/${viewId}`}`,
+    view: (viewId?: string) => (viewId ? `/view/${viewId}` : '/view'),
     listTable: '/table',
     getViewOfTable: (tableId: string, viewId: string) =>
       `/table/${tableId}/view/${viewId}`,

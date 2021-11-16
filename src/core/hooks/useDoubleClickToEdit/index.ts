@@ -1,17 +1,16 @@
-import { CommandRunOptions } from '@/domain/types';
+import { EDITTABLE, useDispath } from '@/domain';
+import { getTableEditState } from '@/pages/base/content/tabbar/TabTitleNode';
 import { KeyboardEventHandler, MouseEventHandler, SyntheticEvent } from 'react';
-import { SetterOrUpdater } from 'recoil';
+import { useRecoilState } from 'recoil';
 
-export default function (
-  id: string,
-  oldName: string,
-  run: (config?: CommandRunOptions) => Promise<any>,
-  isEdit: boolean,
-  setEdit: SetterOrUpdater<boolean>,
-) {
+export default function (id: string, oldName: string) {
+  const [isEditTableName, setEdit] = useRecoilState(getTableEditState(id));
+
+  const { run } = useDispath(EDITTABLE, { manual: true });
+
   const handleDoubleClick: MouseEventHandler<HTMLElement> = (event) => {
     event.stopPropagation();
-    if (!isEdit) setEdit(true);
+    if (!isEditTableName) setEdit(true);
   };
 
   const handleToEdit = (event: SyntheticEvent<HTMLInputElement>) => {
@@ -31,5 +30,10 @@ export default function (
     }
   };
 
-  return { handleDoubleClick, handleToEdit, handleKeyboardEnter };
+  return {
+    isEditTableName,
+    handleDoubleClick,
+    handleToEdit,
+    handleKeyboardEnter,
+  };
 }

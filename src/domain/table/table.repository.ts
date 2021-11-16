@@ -9,6 +9,7 @@ import { calcSort, pureDispatcher, validator } from '../core';
 import {
   CREATTABLE,
   CREATTABLEBYFILE,
+  CREATVIEW,
   DUPLIACTETABLE,
   EDITTABLE,
   READBASE,
@@ -21,7 +22,7 @@ export const table = (function () {
     readonly name: (param: string) => RecoilState<string>;
     readonly desc: (param: string) => RecoilState<string>;
     readonly lastUsedViewId: (param: string) => RecoilState<string>;
-    readonly viewIds: (param: string) => RecoilState<string[]>;
+    readonly viewIds: (param: string) => RecoilState<Set<string>>;
 
     readonly allTables: (
       param: string[],
@@ -43,9 +44,9 @@ export const table = (function () {
         default: '',
       });
 
-      this.viewIds = atomFamily<string[], string>({
+      this.viewIds = atomFamily<Set<string>, string>({
         key: 'table/viewIds',
-        default: [],
+        default: new Set(),
       });
 
       this.allTables = selectorFamily({
@@ -77,7 +78,6 @@ function writeTables(
 
 function edit({ set }: TransactionInterface_UNSTABLE, options: CommandOptions) {
   const len = options.response ? Object.keys(options.response).length : 0;
-  console.log('修改table名称', options);
   if (len >= 0) {
     const { name, desc, selected_view_id } = (
       len > 0 ? options.response : options.request?.data
@@ -111,8 +111,19 @@ function write(
     if (desc) set(table.desc(id), desc);
     if (selected_view_id) set(table.lastUsedViewId(id), selected_view_id);
     if (views) {
-      set(table.viewIds(id), calcSort(views));
+      set(table.viewIds(id), new Set(calcSort(views)));
     }
+  }
+}
+
+function writeViewIds(
+  { set }: TransactionInterface_UNSTABLE,
+  options: CommandOptions,
+) {
+  const views = options.response.data;
+  const id = options.request?.params?.tableId;
+  if (id && views) {
+    set(table.viewIds(id), new Set(calcSort(views)));
   }
 }
 
@@ -124,4 +135,5 @@ export default pureDispatcher({
   [EDITTABLE]: edit,
   //拷贝表格，1、请求api，2、获取所有表格，3、写入表格数据，4、写入base里的tableIds数据
   [DUPLIACTETABLE]: writeTables,
+  [CREATVIEW]: writeViewIds,
 });

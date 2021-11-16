@@ -210,7 +210,7 @@ const ScrollButton = styled('div', {
     height: '100%',
     width: '60px',
     justifyContent: 'center',
-    zIndex: 9999,
+    zIndex: 1,
     ...(ownerState.direction !== 'end' ? { left: 0 } : { right: 0 }),
   }),
 );
@@ -357,11 +357,11 @@ const TabNavList: ForwardRefRenderFunction<HTMLDivElement, TabNavListProps> = (
   );
 
   const onInternalTabClick = (
-    activeKey: string,
+    newActiveKey: string,
     e: MouseEvent<HTMLDivElement>,
   ) => {
-    if (onTabClick) onTabClick(activeKey, e);
-    setActiveKey(activeKey);
+    if (onTabClick) onTabClick(newActiveKey, activeKey, e);
+    if (newActiveKey !== activeKey) setActiveKey(newActiveKey);
   };
 
   const tabNodes = tabs.map((tab, index) => (
@@ -405,7 +405,10 @@ const TabNavList: ForwardRefRenderFunction<HTMLDivElement, TabNavListProps> = (
           <TabsScrollerContainer>
             <ScrollButton
               ownerState={{ display: displayScroll.prev }}
-              className={classes?.scrollButtons}
+              className={classNames(
+                classes?.scrollButtons,
+                'IuiTabs-scrollButton-start',
+              )}
               onClick={handleStartScrollClick}
             >
               <ScrollButtonIcon />
@@ -428,7 +431,10 @@ const TabNavList: ForwardRefRenderFunction<HTMLDivElement, TabNavListProps> = (
             </TabsScroller>
             <ScrollButton
               ownerState={{ display: displayScroll.next, direction: 'end' }}
-              className={classes?.scrollButtons}
+              className={classNames(
+                classes?.scrollButtons,
+                'IuiTabs-scrollButton-end',
+              )}
               onClick={handleEndScrollClick}
             >
               <ScrollButtonIcon direction="end" />

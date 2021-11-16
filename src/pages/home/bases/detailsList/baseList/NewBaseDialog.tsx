@@ -1,5 +1,6 @@
 import { BlankIcon, iconColors, IconColorTypeArr } from '@/core/util';
 import { CREATBASE, useDispath } from '@/domain';
+import { OpenEditOnNewBase } from '@/pages/base/topbar/BaseTopBar';
 import useUploadBaseFile from '@/pages/home/bases/detailsList/baseList/useUploadBaseFile';
 import UploadFilePanel from '@ibr/ibr-upload-file/UploadFilePanel';
 import PopDialog, { HandleFun } from '@ibr/ibr-dialog/PopDialog';
@@ -12,6 +13,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import styled from '@mui/styles/styled';
 import { Dispatch, FC, Ref, SetStateAction, useRef } from 'react';
+import { useRecoilCallback } from 'recoil';
 import { history } from 'umi';
 
 const BaseMenuItem = styled(MenuItem)({
@@ -40,7 +42,7 @@ const NewBaseDialog: FC<NewBaseDialogProps> = ({
 
   const { run, loading } = useDispath(CREATBASE, { manual: true });
 
-  const handleCreatBase = () => {
+  const handleCreatBase = useRecoilCallback(({ set }) => () => {
     run({
       data: {
         workspace_id: workspaceId,
@@ -48,9 +50,12 @@ const NewBaseDialog: FC<NewBaseDialogProps> = ({
         color: iconColors[IconColorTypeArr[Math.round(Math.random() * 20)]],
         icon: BlankIcon,
       },
-    }).then((res) => history.push(`/base/${res.response.id}`));
+    }).then((res) => {
+      set(OpenEditOnNewBase, true);
+      history.push(`/base/${res.response.id}`);
+    });
     setAnchorEl(null);
-  };
+  });
 
   const { loading: upLoadFileLoading, onDrop } = useUploadBaseFile(
     workspaceId,

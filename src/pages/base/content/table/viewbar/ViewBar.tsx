@@ -1,5 +1,6 @@
 import { table } from '@/domain';
 import { view } from '@/domain/view/view.repository';
+import { currentViewIdState } from '@/pages/base/content/table/TablePage';
 import Typography from '@mui/material/Typography';
 import CollaborationEndIcon from './CollaborationEndIcon';
 import { CollapseIcon, SpreadIcon } from '@ibr/ibr-icon/SpreadAndCollapse';
@@ -76,7 +77,7 @@ const ViewBar: FC<HTMLAttributes<HTMLDivElement>> = (props) => {
 
   const [toggle, setToggle] = useRecoilState(ViewSiderToggleState);
 
-  const viewId = useRecoilValue(table.lastUsedViewId(tableId));
+  const viewId = useRecoilValue(currentViewIdState);
 
   const viewName = useRecoilValue(view.name(viewId));
 

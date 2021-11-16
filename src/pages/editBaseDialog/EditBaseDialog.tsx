@@ -32,6 +32,7 @@ interface EditBaseDialogProps {
   open: boolean;
   onClose?: () => void;
   baseId: string;
+  autoFocus?: boolean;
 }
 
 const useStyel = makeStyles({
@@ -122,7 +123,12 @@ const TextIcon = styled('span')({
   fontStyle: 'normal',
 });
 
-const EditBaseDialog: FC<EditBaseDialogProps> = ({ open, onClose, baseId }) => {
+const EditBaseDialog: FC<EditBaseDialogProps> = ({
+  open,
+  onClose,
+  baseId,
+  autoFocus = false,
+}) => {
   const { run } = useDispath(EDITBASE, { manual: true });
 
   const { baseName, baseIcon, baseColor, fontColor, fristChar } =
@@ -149,6 +155,10 @@ const EditBaseDialog: FC<EditBaseDialogProps> = ({ open, onClose, baseId }) => {
       >
         <div className={classes.baseDialog}>
           <InputBase
+            autoFocus={autoFocus}
+            onFocus={(e) => {
+              if (autoFocus) e.target.select();
+            }}
             classes={{ input: classes.input }}
             sx={{
               width: '100%',

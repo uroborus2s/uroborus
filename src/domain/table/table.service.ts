@@ -70,7 +70,7 @@ const creatTable = (url: string | ((id: string) => string)) =>
       const reqest = options.request || {};
       reqest['params'] = reqest.params || {};
       reqest.params['baseId'] = options.request?.data?.base_id;
-      reqest.params['tableId'] = data.id;
+      reqest.params['tableId'] = data.id || data.new_table_id;
       options['request'] = reqest;
       return readAllTables(options);
     }
