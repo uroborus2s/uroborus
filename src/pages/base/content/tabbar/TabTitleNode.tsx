@@ -1,24 +1,15 @@
-import { EDITTABLE, useDispath } from '@/domain';
+import { EDITTABLE } from '@/domain';
+import { currentEditTableIdState } from '@/pages/base/BaseContext';
 import useDoubleClickToEdit from '@hooks/useDoubleClickToEdit';
 import InputBase from '@mui/material/InputBase';
 import { FC, memo, SyntheticEvent } from 'react';
-import { atomFamily, useRecoilState } from 'recoil';
 import TabShowNode, { TabTitleNodeProps } from './TabShowNode';
-
-export const getTableEditState = atomFamily<boolean, string>({
-  key: 'IsEditTableName',
-  default: false,
-});
 
 const TabTitleNode: FC<TabTitleNodeProps> = (props) => {
   const { id, name } = props;
 
-  const {
-    isEditTableName,
-    handleKeyboardEnter,
-    handleToEdit,
-    handleDoubleClick,
-  } = useDoubleClickToEdit(id, name);
+  const { isEdit, handleKeyboardEnter, handleToEdit, handleDoubleClick } =
+    useDoubleClickToEdit(id, name, EDITTABLE, currentEditTableIdState);
 
   const EditNode = () => {
     return (
@@ -47,7 +38,7 @@ const TabTitleNode: FC<TabTitleNodeProps> = (props) => {
 
   return (
     <div onDoubleClick={handleDoubleClick}>
-      {isEditTableName ? <EditNode /> : <TabShowNode {...props} />}
+      {isEdit ? <EditNode /> : <TabShowNode {...props} />}
     </div>
   );
 };

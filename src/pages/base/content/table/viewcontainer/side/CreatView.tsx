@@ -1,8 +1,7 @@
 import { CREATVIEW, table, useDispath } from '@/domain';
 import { ViewData, ViewSchemaType, ViewType } from '@/domain/types';
 import { view } from '@/domain/view/view.repository';
-import { BaseIdContext } from '@/pages/base/BaseMainPage';
-import { TableIdContext } from '@/pages/base/content/table/TableContext';
+import { BaseIdContext } from '@/pages/base/BaseContext';
 import AddIcon from '@ibr/ibr-icon/AddIcon';
 import ViewIcon from '@ibr/ibr-icon/ViewIcon';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -16,7 +15,12 @@ import ListItemButton, {
 import Typography from '@mui/material/Typography';
 import styled from '@mui/styles/styled';
 import { FC, MouseEventHandler, useContext } from 'react';
-import { useRecoilValue } from 'recoil';
+import { useRecoilTransaction_UNSTABLE, useRecoilValue } from 'recoil';
+import {
+  currentEditViewIdState,
+  currentViewIdState,
+  TableIdContext,
+} from '../..//TableContext';
 
 const CreatItemButton = styled(ListItemButton)({
   padding: '0.25rem 0',
@@ -84,11 +88,23 @@ const CreatView = () => {
 
   const views = useRecoilValue(view.views([...viewIds]));
 
+  const makeSeletedAndEdit = useRecoilTransaction_UNSTABLE(
+    ({ set }) =>
+      (id: string) => {
+        set(currentEditViewIdState, id);
+        set(currentViewIdState, id);
+      },
+    [],
+  );
+
   const hangleNewView = (type: ViewSchemaType) => () => {
     const name = createViewName(type, views);
     run({
       data: { base_id: baseId, type: type, table_id: tableId, name: name },
-    }).then();
+    }).then((res) => {
+      const id = res.request.params.viewId;
+      if (id) makeSeletedAndEdit(id);
+    });
   };
 
   return (

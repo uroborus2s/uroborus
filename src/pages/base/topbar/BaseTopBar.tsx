@@ -1,4 +1,4 @@
-import { BaseIdContext } from '@/pages/base/BaseMainPage';
+import { BaseIdContext } from '@/pages/base/BaseContext';
 import EditBaseDialog from '@/pages/editBaseDialog/EditBaseDialog';
 import useBaseInfo from '@/pages/editBaseDialog/useBaseInfo';
 import SettingBar from '@/pages/setting/SettingBar';
@@ -7,8 +7,8 @@ import BaseIcon from '@ibr/ibr-icon/BaseIcon';
 import LogoIcon from '@ibr/ibr-icon/LogoIcon';
 import Typography from '@mui/material/Typography';
 import makeStyles from '@mui/styles/makeStyles';
-import { FC, memo, useContext, useEffect, useRef, useState } from 'react';
-import { atom, useRecoilState, useRecoilValue } from 'recoil';
+import { FC, memo, useContext, useEffect, useRef } from 'react';
+import { atom, useRecoilState } from 'recoil';
 import { Link } from 'umi';
 
 const useStyel = makeStyles({

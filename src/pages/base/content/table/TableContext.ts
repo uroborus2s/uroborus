@@ -7,3 +7,13 @@ export const ViewSiderToggleState = atom({
   key: 'view/siderToggleState',
   default: true,
 });
+
+export const currentViewIdState = atom({
+  key: 'TablePage/CurrentViewId',
+  default: '',
+});
+
+export const currentEditViewIdState = atom({
+  key: 'ViewListPage/currentEditViewIdState',
+  default: '',
+});

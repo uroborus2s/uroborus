@@ -1,8 +1,10 @@
+import { usePopover } from '@/core/hooks';
 import filterSearchValue from '@/core/util/filterSearchValue';
-import { EDITTABLE, table, useDispath } from '@/domain';
-import { ViewData } from '@/domain/types';
+import { EDITTABLE, EDITVIEW, table, useDispath } from '@/domain';
+import { ViewData, ViewType } from '@/domain/types';
 import { view } from '@/domain/view/view.repository';
-import { currentViewIdState } from '@/pages/base/content/table/TablePage';
+import EditViewMenu from '@/pages/base/content/table/viewcontainer/side/EditViewMenu';
+import useDoubleClickToEdit from '@hooks/useDoubleClickToEdit';
 import HovweDropButton from '@ibr/ibr-hover-drop-button/HoverDropButton';
 import BoldCheckIcon from '@ibr/ibr-icon/BoldCheckIcon';
 import ViewIcon from '@ibr/ibr-icon/ViewIcon';
@@ -14,15 +16,21 @@ import ListItemButton from '@mui/material/ListItemButton';
 import Typography from '@mui/material/Typography';
 import useAutocomplete from '@mui/material/useAutocomplete';
 import styled from '@mui/styles/styled';
-import { FC, useContext, useEffect } from 'react';
 import {
-  atom,
-  atomFamily,
-  useRecoilCallback,
-  useRecoilState,
-  useRecoilValue,
-} from 'recoil';
-import { TableIdContext } from '../../TableContext';
+  FC,
+  KeyboardEvent,
+  MouseEvent,
+  MutableRefObject,
+  SyntheticEvent,
+  useContext,
+  useRef,
+} from 'react';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import {
+  currentEditViewIdState,
+  currentViewIdState,
+  TableIdContext,
+} from '../../TableContext';
 
 const ViewListInSideRoot = styled('div')({
   display: 'flex',
@@ -32,79 +40,126 @@ const ViewListInSideRoot = styled('div')({
   paddingTop: '0.5rem',
 });
 
-const ViewListRoot = styled('div')({});
-
-const isViewEditState = atomFamily({
-  key: 'BasePage/IsViewEditState',
-  default: false,
+const ViewItemNode = styled('div')({
+  display: 'flex',
+  flex: 'auto',
 });
 
-const ViewList: FC<{ viewData: ViewData }> = ({ viewData }) => {
-  const [isEdit, setIsEdit] = useRecoilState(isViewEditState(viewData.id));
+const ViewList: FC<{
+  viewData: ViewData;
+  openMenu: (
+    event: MouseEvent<HTMLElement> | KeyboardEvent<HTMLElement>,
+  ) => void;
+  idRef: MutableRefObject<{ id: string; name: string }>;
+}> = ({ viewData, openMenu, idRef }) => {
   const [currentViewId, setCurrentViewId] = useRecoilState(currentViewIdState);
+
+  const { isEdit, handleKeyboardEnter, handleToEdit, handleDoubleClick } =
+    useDoubleClickToEdit(
+      viewData.id,
+      viewData.name,
+      EDITVIEW,
+      currentEditViewIdState,
+    );
 
   const { run } = useDispath(EDITTABLE, { manual: true });
 
   const isActive = currentViewId === viewData.id;
   const tableId = useContext(TableIdContext);
 
-  return (
-    <ViewListRoot>
-      {isEdit ? (
-        <div />
-      ) : (
-        <ListItemButton
+  return isEdit ? (
+    <InputBase
+      required
+      autoFocus
+      defaultValue={viewData.name}
+      onBlur={(e) => {
+        handleToEdit(e as SyntheticEvent<HTMLInputElement>);
+      }}
+      onFocus={(e) => {
+        e.currentTarget.select();
+      }}
+      startAdornment={
+        <ViewIcon type={viewData.type} sx={{ marginRight: '0.5rem' }} />
+      }
+      sx={{
+        lineHeight: 1.25,
+        padding: '0.5rem',
+        height: '32px',
+        width: '100%',
+        borderColor: 'rgba(0,0,0,0.25)',
+        borderRadius: '3px',
+        borderStyle: 'solid',
+        borderWidth: '2px',
+        '& .MuiInputBase-input': {
+          padding: '0 2px',
+          margin: '0 -4px',
+        },
+      }}
+      onKeyUp={handleKeyboardEnter}
+    />
+  ) : (
+    <ListItemButton
+      sx={{
+        padding: '0.5rem',
+        borderRadius: '3px',
+        '&:hover .IuiHoverButton-hover,&:active .IuiHoverButton-hover': {
+          opacity: 1,
+        },
+      }}
+      disableRipple
+      selected={isActive}
+      onClick={(e) => {
+        e.stopPropagation();
+        run({
+          path: { id: tableId },
+          data: { selected_view_id: viewData.id },
+        }).then();
+        if (!isActive) setCurrentViewId(viewData.id);
+      }}
+      onDoubleClick={handleDoubleClick}
+    >
+      <ViewIcon type={viewData.type} sx={{ marginRight: '0.5rem' }} />
+      <ViewItemNode>
+        <Typography
           sx={{
-            padding: '0.5rem',
-            borderRadius: '3px',
-            '&:hover .IuiHoverButton-hover,&:active .IuiHoverButton-hover': {
-              opacity: 1,
-            },
-          }}
-          disableRipple
-          selected={isActive}
-          onClick={() => {
-            run({
-              path: { id: tableId },
-              data: { selected_view_id: viewData.id },
-            }).then();
-            if (!isActive) setCurrentViewId(viewData.id);
+            flex: 'auto',
+            textOverflow: 'ellipsis',
+            fontSize: '14px',
+            lineHeight: 1,
           }}
         >
-          <ViewIcon type={viewData.type} sx={{ marginRight: '0.5rem' }} />
-          <Typography
-            sx={{
-              flex: 'auto',
-              textOverflow: 'ellipsis',
-              fontSize: '14px',
-              lineHeight: 1,
-            }}
-          >
-            {viewData.name}
-          </Typography>
-          <HovweDropButton
-            size={12}
-            sx={{
-              position: 'relative',
-              right: 'auto',
-              bottom: 'auto',
-              flex: 'none',
-              backgroundColor: 'rgba(0,0,0,0.25)',
-              '&:hover': {
-                backgroundColor: 'rgba(0,0,0,0.5)',
-              },
-            }}
-          />
-          <BoldCheckIcon
-            sx={{
-              fontSize: '13px',
-              flex: 'none',
-              visibility: isActive ? 'visible' : 'hidden',
-            }}
-          />
-        </ListItemButton>
-      )}
-    </ViewListRoot>
+          {viewData.name}
+        </Typography>
+        <HovweDropButton
+          size={12}
+          sx={{
+            position: 'relative',
+            right: 'auto',
+            bottom: 'auto',
+            flex: 'none',
+            backgroundColor: 'rgba(0,0,0,0.25)',
+            '&:hover': {
+              backgroundColor: 'rgba(0,0,0,0.5)',
+            },
+          }}
+          onClick={(e) => {
+            e.stopPropagation();
+            idRef.current = { id: viewData.id, name: viewData.name };
+            openMenu(e);
+          }}
+          onDoubleClick={(e) => {
+            e.stopPropagation();
+          }}
+        />
+        <BoldCheckIcon
+          sx={{
+            fontSize: '13px',
+            flex: 'none',
+            visibility: isActive ? 'visible' : 'hidden',
+          }}
+        />
+      </ViewItemNode>
+    </ListItemButton>
   );
 };
 
@@ -114,12 +169,6 @@ const ViewListInSide: FC = () => {
   const viewIds = useRecoilValue(table.viewIds(tableId));
 
   const views = useRecoilValue(view.views([...viewIds]));
-
-  const lastUsedViewId = useRecoilValue(table.lastUsedViewId(tableId));
-
-  const restEditState = useRecoilCallback(({ reset }) => (id: string) => {
-    reset(isViewEditState(id));
-  });
 
   const { groupedOptions, getInputProps } = useAutocomplete({
     getOptionLabel: (option) =>
@@ -131,11 +180,13 @@ const ViewListInSide: FC = () => {
     open: true,
   });
 
-  useEffect(() => {
-    return () => {
-      views.map((views) => restEditState(views.id));
-    };
-  }, []);
+  const { anchorElem, oppenPopover, closePopover } = usePopover();
+
+  const viewIdRef = useRef({ id: '', name: '' });
+
+  const gridViewNumber = views.filter(
+    (view) => view.type === ViewType.grid,
+  ).length;
 
   return (
     <ViewListInSideRoot>
@@ -168,9 +219,21 @@ const ViewListInSide: FC = () => {
         {groupedOptions &&
           groupedOptions.length > 0 &&
           (groupedOptions as ViewData[]).map((viewItem) => (
-            <ViewList viewData={viewItem} key={viewItem.id} />
+            <ViewList
+              viewData={viewItem}
+              key={viewItem.id}
+              openMenu={oppenPopover}
+              idRef={viewIdRef}
+            />
           ))}
       </List>
+      <EditViewMenu
+        anchorElem={anchorElem as Element}
+        closePopover={closePopover}
+        viewId={viewIdRef.current.id}
+        gridViewNumber={gridViewNumber}
+        viewName={viewIdRef.current.name}
+      />
     </ViewListInSideRoot>
   );
 };

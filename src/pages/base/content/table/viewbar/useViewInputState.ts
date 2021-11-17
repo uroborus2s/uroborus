@@ -1,20 +1,19 @@
-import { useDispath } from '@/domain';
-import { KeyboardEventHandler, MouseEventHandler, SyntheticEvent } from 'react';
-import { RecoilState, useRecoilState } from 'recoil';
+import { EDITVIEW, useDispath } from '@/domain';
+import {
+  KeyboardEventHandler,
+  MouseEventHandler,
+  SyntheticEvent,
+  useState,
+} from 'react';
 
-export default function (
-  id: string,
-  oldName: string,
-  command: string,
-  editState: RecoilState<string>,
-) {
-  const [currentEditId, setCurrentEditId] = useRecoilState(editState);
+export default function (id: string, oldName: string) {
+  const [currentEditState, setCurrentEditState] = useState(false);
 
-  const { run } = useDispath(command, { manual: true });
+  const { run } = useDispath(EDITVIEW, { manual: true });
 
   const handleDoubleClick: MouseEventHandler<HTMLElement> = (event) => {
     event.stopPropagation();
-    if (!currentEditId) setCurrentEditId(id);
+    setCurrentEditState(true);
   };
 
   const handleToEdit = (event: SyntheticEvent<HTMLInputElement>) => {
@@ -25,7 +24,7 @@ export default function (
         path: { id: id },
         data: { name: newName },
       }).then();
-    setCurrentEditId('');
+    setCurrentEditState(false);
   };
 
   const handleKeyboardEnter: KeyboardEventHandler<HTMLInputElement> = (e) => {
@@ -34,10 +33,8 @@ export default function (
     }
   };
 
-  const isEdit = currentEditId === id;
-
   return {
-    isEdit,
+    isEdit: currentEditState,
     handleDoubleClick,
     handleToEdit,
     handleKeyboardEnter,

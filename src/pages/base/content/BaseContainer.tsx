@@ -1,16 +1,19 @@
 import { iconColors } from '@/core/util';
 import { base, EDITBASE, useDispath } from '@/domain';
 import { table } from '@/domain/table/table.repository';
-import TablePage from '@/pages/base/content/table/TablePage';
+import {
+  BaseIdContext,
+  currentEditTableIdState,
+} from '@/pages/base/BaseContext';
 import { Tab, TabHandle } from '@ibr/ibr-tabs';
 import Tabs from '@ibr/ibr-tabs/Tabs';
 import styled from '@mui/material/styles/styled';
 import React, { FC, Ref, useContext, useRef } from 'react';
 import { useRecoilCallback, useRecoilValue } from 'recoil';
-import { BaseIdContext } from '../BaseMainPage';
 import AddTableInList from './tabbar/AddTableInList';
 import AddTableInTab from './tabbar/AddTableInTab';
-import TabTitleNode, { getTableEditState } from './tabbar/TabTitleNode';
+import TabTitleNode from './tabbar/TabTitleNode';
+import TablePage from './table/TablePage';
 
 interface StyledProps {
   backgroundColor: string;
@@ -93,9 +96,10 @@ const BaseContainer: FC = () => {
   const activateTabAndEdit = useRecoilCallback(
     ({ set }) =>
       (id: string) => {
-        if (id && tableActiveHandle.current)
+        if (id && tableActiveHandle.current) {
           tableActiveHandle.current.activeTab(id);
-        if (id) set(getTableEditState(id), true);
+          set(currentEditTableIdState, id);
+        }
       },
     [],
   );

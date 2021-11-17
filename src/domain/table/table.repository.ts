@@ -10,7 +10,9 @@ import {
   CREATTABLE,
   CREATTABLEBYFILE,
   CREATVIEW,
+  DELETEVIEW,
   DUPLIACTETABLE,
+  DUPLIACTEVIEW,
   EDITTABLE,
   READBASE,
   READTABLE,
@@ -79,7 +81,7 @@ function writeTables(
 function edit({ set }: TransactionInterface_UNSTABLE, options: CommandOptions) {
   const len = options.response ? Object.keys(options.response).length : 0;
   if (len >= 0) {
-    const { name, desc, selected_view_id } = (
+    const { name, desc } = (
       len > 0 ? options.response : options.request?.data
     ) as TableRsp;
     const id = options.request?.path?.id;
@@ -126,6 +128,18 @@ function writeViewIds(
     set(table.viewIds(id), new Set(calcSort(views)));
   }
 }
+function deleteOneViewById(
+  { set }: TransactionInterface_UNSTABLE,
+  options: CommandOptions,
+) {
+  const tableId = options.request?.path?.tableId;
+  const id = options.request?.path?.id;
+  if (tableId && id)
+    set(table.viewIds(tableId), (ids) => {
+      ids.delete(id);
+      return new Set([...ids]);
+    });
+}
 
 export default pureDispatcher({
   [READTABLE]: writeOneTable,
@@ -136,4 +150,6 @@ export default pureDispatcher({
   //拷贝表格，1、请求api，2、获取所有表格，3、写入表格数据，4、写入base里的tableIds数据
   [DUPLIACTETABLE]: writeTables,
   [CREATVIEW]: writeViewIds,
+  [DUPLIACTEVIEW]: writeViewIds,
+  [DELETEVIEW]: deleteOneViewById,
 });

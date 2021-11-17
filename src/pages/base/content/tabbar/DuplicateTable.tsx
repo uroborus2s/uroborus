@@ -1,5 +1,5 @@
 import { DUPLIACTETABLE, useDispath } from '@/domain';
-import { BaseIdContext } from '@/pages/base/BaseMainPage';
+import { BaseIdContext } from '@/pages/base/BaseContext';
 import { CancelButton, ConfimButtonGroups } from '@ibr/ibr-dialog/PopDialog';
 import LoadingButton from '@ibr/ibr-loading/LoadingButton';
 import IosSwitch from '@ibr/ibr-switch/IosSwitch';

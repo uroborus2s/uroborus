@@ -1,20 +1,15 @@
 import { READTABLE, useDispath } from '@/domain';
-import ViewContainer from '@/pages/base/content/table/viewcontainer/ViewContainer';
+import ViewContainer from './viewcontainer/ViewContainer';
 import LoadingWithNumber from '@ibr/ibr-loading/LoadingWithNumber';
 import styled from '@mui/styles/styled';
 import { FC } from 'react';
-import { atom, useSetRecoilState } from 'recoil';
-import { TableIdContext } from './TableContext';
+import { useSetRecoilState } from 'recoil';
+import { currentViewIdState, TableIdContext } from './TableContext';
 import ViewBar from './viewbar/ViewBar';
 
 interface TablePageProps {
   tableId: string;
 }
-
-export const currentViewIdState = atom({
-  key: 'TablePage/CurrentViewId',
-  default: '',
-});
 
 const TablePageRoot = styled('div')({
   display: 'flex',

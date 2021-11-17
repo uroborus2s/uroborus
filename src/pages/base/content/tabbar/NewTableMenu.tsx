@@ -1,6 +1,6 @@
 import { base, CREATTABLE, useDispath } from '@/domain';
 import { table } from '@/domain/table/table.repository';
-import { BaseIdContext } from '@/pages/base/BaseMainPage';
+import { BaseIdContext } from '@/pages/base/BaseContext';
 import PopDialog, { HandleFun } from '@ibr/ibr-dialog/PopDialog';
 import ExeclIcon from '@ibr/ibr-icon/ExeclIcon';
 import NewFileIcon from '@ibr/ibr-icon/NewFileIcon';

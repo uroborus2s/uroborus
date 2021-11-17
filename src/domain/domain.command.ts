@@ -34,11 +34,12 @@ export const api = {
       tableId && tableId != '' ? `/table/${tableId}` : '/table',
     //通过上传文件创建table
     uploadTable: '/upload/table',
-    copyTable: (tableId?: string) => `/table/${tableId}/copy`,
+    copyTable: (tableId: string) => `/table/${tableId}/copy`,
 
     /***************view************************/
     view: (viewId?: string) => (viewId ? `/view/${viewId}` : '/view'),
-    listTable: '/table',
+    copyView: (viewId: string) => `/view/${viewId}/copy`,
+
     getViewOfTable: (tableId: string, viewId: string) =>
       `/table/${tableId}/view/${viewId}`,
     getTableOfId: (tableId: string) => `/table/${tableId}`,
@@ -70,6 +71,9 @@ export const DUPLIACTETABLE = 'DUPLIACTETABLE';
 
 //view
 export const CREATVIEW = 'CREATVIEW';
+export const EDITVIEW = 'EDITVIEW';
+export const DUPLIACTEVIEW = 'DUPLIACTEVIEW';
+export const DELETEVIEW = 'DELETEVIEW';
 
 // invite
 export const REDALLINVITE = 'REDALLINVITE';

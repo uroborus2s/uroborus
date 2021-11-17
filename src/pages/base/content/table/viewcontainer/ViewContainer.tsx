@@ -2,11 +2,14 @@ import CreatView from '@/pages/base/content/table/viewcontainer/side/CreatView';
 import makeStyles from '@mui/styles/makeStyles';
 import { Property } from 'csstype';
 import React, { FC, HTMLAttributes, useEffect } from 'react';
-import { useRecoilValue } from 'recoil';
-import { ViewSiderToggleState } from '../../table/TableContext';
+import { useRecoilValue, useResetRecoilState } from 'recoil';
+import {
+  currentEditViewIdState,
+  ViewSiderToggleState,
+} from '../../table/TableContext';
+import ViewListInSide from './side/ViewListInSide';
 import useDragResizeLine from './useDragResizeLine';
 import useSuspendedBlock from './useSuspendedBlock';
-import ViewListInSide from './side/ViewListInSide';
 
 interface StylesProps {
   width: Property.Width;
@@ -75,6 +78,8 @@ const ViewContainer: FC<HTMLAttributes<HTMLDivElement>> = (props) => {
     top: `${rect}px`,
   });
 
+  const resetEditState = useResetRecoilState(currentEditViewIdState);
+
   useEffect(() => {
     document.addEventListener('mouseup', handleMouseUp);
     document.addEventListener('mousemove', handleMoveToResize);
@@ -84,6 +89,13 @@ const ViewContainer: FC<HTMLAttributes<HTMLDivElement>> = (props) => {
       document.removeEventListener('mousemove', handleMoveToResize);
     };
   }, []);
+
+  useEffect(
+    () => () => {
+      resetEditState();
+    },
+    [],
+  );
 
   return (
     <div className={classes.viewContainer} {...props}>

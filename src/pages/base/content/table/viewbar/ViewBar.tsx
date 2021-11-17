@@ -1,15 +1,19 @@
-import { table } from '@/domain';
+import { usePopover } from '@/core/hooks';
+import { EDITTABLE } from '@/domain';
 import { view } from '@/domain/view/view.repository';
-import { currentViewIdState } from '@/pages/base/content/table/TablePage';
-import Typography from '@mui/material/Typography';
-import CollaborationEndIcon from './CollaborationEndIcon';
+import EditDescripton from '@ibr/edit-description/EditDescripton';
 import { CollapseIcon, SpreadIcon } from '@ibr/ibr-icon/SpreadAndCollapse';
 import ViewIcon from '@ibr/ibr-icon/ViewIcon';
 import Button from '@mui/material/Button';
+import InputBase from '@mui/material/InputBase';
+import Typography from '@mui/material/Typography';
 import styled from '@mui/styles/styled';
-import { FC, HTMLAttributes, useContext } from 'react';
+import { FC, HTMLAttributes, SyntheticEvent } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { TableIdContext, ViewSiderToggleState } from '../TableContext';
+import { currentViewIdState, ViewSiderToggleState } from '../TableContext';
+import CollaborationEndIcon from './CollaborationEndIcon';
+import useViewInputState from './useViewInputState';
+import ViewMenu from './ViewMenu';
 
 export const ViewBarRoot = styled('div')({
   display: 'flex',
@@ -18,6 +22,7 @@ export const ViewBarRoot = styled('div')({
   whiteSpace: 'nowrap',
   boxShadow: 'rgb(200 200 200) 0 2px 0 0',
   flex: 'none',
+  alignItems: 'center',
 });
 
 export const ViewSwitcherContainer = styled('div')({
@@ -68,13 +73,25 @@ export const ViewCollaborationButton = styled(Button)({
   },
 });
 
+export const ViewInput = styled(InputBase)({
+  padding: '0 0.5rem',
+  height: '30px',
+  margin: '0 0.5rem',
+  borderColor: 'rgba(0,0,0,0.25)',
+  borderWidth: '2px',
+  borderStyle: 'solid',
+  borderTopLeftRadius: '3px',
+  borderTopRightRadius: '3px',
+  '& .MuiInputBase-input': {
+    textAlign: 'center',
+  },
+});
+
 export const ViewConfigContainer = styled('div')({});
 
 export const SearchButton = styled('div')({});
 
 const ViewBar: FC<HTMLAttributes<HTMLDivElement>> = (props) => {
-  const tableId = useContext(TableIdContext);
-
   const [toggle, setToggle] = useRecoilState(ViewSiderToggleState);
 
   const viewId = useRecoilValue(currentViewIdState);
@@ -83,41 +100,107 @@ const ViewBar: FC<HTMLAttributes<HTMLDivElement>> = (props) => {
 
   const viewType = useRecoilValue(view.type(viewId));
 
+  const { anchorElem, oppenPopover, closePopover } = usePopover();
+
+  const { isEdit, handleDoubleClick, handleToEdit, handleKeyboardEnter } =
+    useViewInputState(viewId, viewName);
+
+  console.log(isEdit);
+
   if (!viewName) return null;
 
   return (
-    <ViewBarRoot {...props}>
-      <ViewSwitcherContainer id="switcher-view">
-        <ViewSidebarToggleButton
-          disableRipple
-          onClick={() => {
-            setToggle((prevState) => !prevState);
-          }}
-          id="view-toggle-button"
-          variant="outlined"
-          startIcon={toggle ? <SpreadIcon /> : <CollapseIcon />}
-        >
-          {toggle ? '折叠' : '展开'}
-        </ViewSidebarToggleButton>
-        <ViewCollaborationButton
-          variant="outlined"
-          startIcon={<ViewIcon type={viewType} />}
-          endIcon={<CollaborationEndIcon />}
-        >
-          <Typography
-            sx={{
-              maxWidth: '8rem',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
+    <>
+      <ViewBarRoot {...props}>
+        <ViewSwitcherContainer id="switcher-view">
+          <ViewSidebarToggleButton
+            disableRipple
+            onClick={() => {
+              setToggle((prevState) => !prevState);
+            }}
+            id="view-toggle-button"
+            variant="outlined"
+            startIcon={toggle ? <SpreadIcon /> : <CollapseIcon />}
+          >
+            {toggle ? '折叠' : '展开'}
+          </ViewSidebarToggleButton>
+          <ViewInput
+            autoFocus
+            required
+            defaultValue={viewName}
+            onBlur={(e) => {
+              handleToEdit(e as SyntheticEvent<HTMLInputElement>);
+            }}
+            onKeyUp={handleKeyboardEnter}
+          />
+          <ViewCollaborationButton
+            variant="outlined"
+            startIcon={<ViewIcon type={viewType} />}
+            endIcon={<CollaborationEndIcon />}
+            onClick={(e) => {
+              e.stopPropagation();
+              oppenPopover(e);
             }}
           >
-            {viewName}
-          </Typography>
-        </ViewCollaborationButton>
-      </ViewSwitcherContainer>
-      <ViewConfigContainer></ViewConfigContainer>
-      <SearchButton></SearchButton>
-    </ViewBarRoot>
+            <Typography
+              sx={{
+                maxWidth: '8rem',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}
+            >
+              {viewName}
+            </Typography>
+          </ViewCollaborationButton>
+          {isEdit ? (
+            <ViewInput
+              autoFocus
+              required
+              defaultValue={viewName}
+              onBlur={(e) => {
+                handleToEdit(e as SyntheticEvent<HTMLInputElement>);
+              }}
+              onKeyUp={handleKeyboardEnter}
+            />
+          ) : (
+            <ViewCollaborationButton
+              variant="outlined"
+              startIcon={<ViewIcon type={viewType} />}
+              endIcon={<CollaborationEndIcon />}
+              onClick={(e) => {
+                e.stopPropagation();
+                oppenPopover(e);
+              }}
+            >
+              <Typography
+                sx={{
+                  maxWidth: '8rem',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                }}
+              >
+                {viewName}
+              </Typography>
+            </ViewCollaborationButton>
+          )}
+        </ViewSwitcherContainer>
+        <ViewConfigContainer></ViewConfigContainer>
+        <SearchButton></SearchButton>
+      </ViewBarRoot>
+      <ViewMenu
+        anchorElem={anchorElem}
+        closePopover={closePopover}
+        reName={handleDoubleClick}
+      />
+      {/*<EditDescripton*/}
+      {/*  id={id}*/}
+      {/*  name={name}*/}
+      {/*  desc={desValue}*/}
+      {/*  anchorElem={infoElem}*/}
+      {/*  closePopover={closeEditInfo}*/}
+      {/*  commandType={EDITTABLE}*/}
+      {/*/>*/}
+    </>
   );
 };
 

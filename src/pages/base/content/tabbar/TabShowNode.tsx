@@ -1,8 +1,7 @@
 import { usePopover } from '@/core/hooks';
-import { DELETETABLE, table } from '@/domain';
-import { BaseIdContext } from '@/pages/base/BaseMainPage';
-import DupliacteTable from '@/pages/base/content/tabbar/DuplicateTable';
-import EditTableDesc from '@/pages/base/content/tabbar/EditTableDesc';
+import { DELETETABLE, EDITTABLE, table } from '@/domain';
+import { BaseIdContext } from '@/pages/base/BaseContext';
+import EditDescripton from '@ibr/edit-description/EditDescripton';
 import DeleteDialog from '@ibr/ibr-dialog/DeleteDialog';
 import PopDialog, { HandleFun } from '@ibr/ibr-dialog/PopDialog';
 import ArrowDown from '@ibr/ibr-icon/ArrowDown';
@@ -19,6 +18,8 @@ import Tooltip from '@mui/material/Tooltip';
 import styled from '@mui/styles/styled';
 import { FC, LegacyRef, Ref, useContext, useRef } from 'react';
 import { useRecoilValue } from 'recoil';
+import DupliacteTable from './DuplicateTable';
+import EditTableDesc from './EditTableDesc';
 
 export interface TabTitleNodeProps {
   name: string;
@@ -29,6 +30,7 @@ export interface TabTitleNodeProps {
 
 const TableMenuItem = styled(ListItemButton)({
   padding: '0.5rem',
+  opacity: 0.75,
 });
 
 const TableMenuItemText = styled('div')({
@@ -236,30 +238,14 @@ const TabShowNode: FC<TabTitleNodeProps> = ({
           commandType={DELETETABLE}
         />
       </PopDialog>
-      <Popover
-        onClick={(e) => {
-          e.stopPropagation();
-          e.preventDefault();
-        }}
-        onDoubleClick={(e) => {
-          e.stopPropagation();
-          e.preventDefault();
-        }}
+      <EditDescripton
         id={id}
-        open={!!infoElem}
-        anchorEl={infoElem as Element}
-        onClose={closeEditInfo}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
-        }}
-      >
-        <EditTableDesc name={name} onClose={closeEditInfo} id={id} />
-      </Popover>
+        name={name}
+        desc={desValue}
+        anchorElem={infoElem}
+        closePopover={closeEditInfo}
+        commandType={EDITTABLE}
+      />
     </TabNodeRoot>
   );
 };

@@ -1,8 +1,8 @@
 import { READBASE, useDispath } from '@/domain';
 import CircularProgressWithNumber from '@ibr/ibr-loading/LoadingWithNumber';
 import makeStyles from '@mui/styles/makeStyles';
-import { createContext } from 'react';
 import { useParams } from 'umi';
+import { BaseIdContext } from './BaseContext';
 import BaseContainer from './content/BaseContainer';
 import BaseTopBar from './topbar/BaseTopBar';
 
@@ -30,8 +30,6 @@ const useStyel = makeStyles({
   topBarContent: { flex: 'auto' },
   topBarSetting: { flex: 'none' },
 });
-
-export const BaseIdContext = createContext('');
 
 const BaseMainPage = () => {
   const baseId = useParams<{ baseId: string }>().baseId;

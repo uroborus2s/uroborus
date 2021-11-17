@@ -6,7 +6,12 @@ import {
   TransactionInterface_UNSTABLE,
 } from 'recoil';
 import { pureDispatcher, validator } from '../core';
-import { CREATVIEW, READTABLE } from '../domain.command';
+import {
+  CREATVIEW,
+  DUPLIACTEVIEW,
+  EDITVIEW,
+  READTABLE,
+} from '../domain.command';
 import { CommandOptions, ViewData, ViewRsp, ViewSchemaType } from '../types';
 
 export const view = (function () {
@@ -69,7 +74,25 @@ function writeViews(
   }
 }
 
+function editView(
+  { set }: TransactionInterface_UNSTABLE,
+  options: CommandOptions,
+) {
+  const id = options.request?.path?.id;
+  const len = options.response ? Object.keys(options.response).length : 0;
+
+  const { name, desc, type } =
+    len > 0 ? options.response : options.request?.data;
+  if (id) {
+    if (name) set(view.name(id), name);
+    if (desc) set(view.desc(id), desc);
+    if (type) set(view.type(id), type);
+  }
+}
+
 export default pureDispatcher({
   [READTABLE]: writeViews,
   [CREATVIEW]: writeViews,
+  [EDITVIEW]: editView,
+  [DUPLIACTEVIEW]: writeViews,
 });

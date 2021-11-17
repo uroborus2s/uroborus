@@ -8,9 +8,10 @@ export default function (target?: BasicTarget<TargetElement>) {
 
   const oppenPopover = (
     event: MouseEvent<HTMLElement> | KeyboardEvent<HTMLElement>,
+    currentTarget?: BasicTarget<TargetElement>,
   ) => {
-    const currentTarget = getTargetElement(target);
-    if (currentTarget) setAnchorEl(currentTarget);
+    const localTarget = getTargetElement(currentTarget ?? target);
+    if (localTarget) setAnchorEl(localTarget);
     else setAnchorEl(event.currentTarget);
   };
 
