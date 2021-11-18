@@ -25,7 +25,6 @@ import { pureDispatcher } from '../core';
 export const workspaces = (function () {
   class WorkspaceEntity {
     readonly planId: (workspaceId: string) => RecoilState<string>;
-    readonly isEdit: (workspaceId: string) => RecoilState<boolean>;
     readonly baseIds: (workspaceId: string) => RecoilState<Set<string>>;
     readonly name: (workspaceId: string) => RecoilState<string>;
     readonly ids: RecoilState<Set<string>>;
@@ -40,11 +39,6 @@ export const workspaces = (function () {
       this.planId = atomFamily({
         key: 'workspace/planId',
         default: '',
-      });
-
-      this.isEdit = atomFamily<boolean, string>({
-        key: 'workspace/editstate',
-        default: false,
       });
 
       this.baseIds = atomFamily({

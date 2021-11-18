@@ -1,5 +1,4 @@
-import { DELETEWORKSPACE, EDITWORKSPACE, useDispath } from '@/domain';
-import { workspaces } from '@/domain/workspace/workspace.repository';
+import { DELETEWORKSPACE, EDITWORKSPACE } from '@/domain';
 import ShareWorkspace from '@/pages/home/bases/detailsList/title/ShareWorkspace';
 import { OriginDataType } from '@/pages/home/types';
 import useDoubleClickToEdit from '@hooks/useDoubleClickToEdit';
@@ -10,14 +9,18 @@ import EditIcon from '@ibr/ibr-icon/EditIcon';
 import ShareIcon from '@ibr/ibr-icon/ShareIcon';
 import ArrowDropDownRoundedIcon from '@mui/icons-material/ArrowDropDownRounded';
 import ShareIconOrgin from '@mui/icons-material/Share';
-import CircularProgress from '@mui/material/CircularProgress';
 import InputBase from '@mui/material/InputBase';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import makeStyles from '@mui/styles/makeStyles';
 import styled from '@mui/styles/styled';
 import { FC, memo, Ref, SyntheticEvent, useRef, useState } from 'react';
-import { useRecoilState } from 'recoil';
+import { atom } from 'recoil';
+
+export const currentEditWorkspaceIdState = atom({
+  key: 'Workspace/CurrentEditWorkspaceIdState',
+  default: '',
+});
 
 const useStyel = makeStyles({
   end: {
@@ -90,19 +93,18 @@ const WorkspaceMenuItemText = styled('div')({
 });
 
 const WorkspaceTitle: FC<{ data: OriginDataType }> = ({ data }) => {
-  const { run: editName, loading } = useDispath(EDITWORKSPACE, {
-    manual: true,
-  });
-
-  const [isEdit, setIsEdit] = useRecoilState(workspaces.isEdit(data.id));
-
   const [anchorEl, setAnchorEl] = useState<Element | null>(null);
 
   const shareRef = useRef<HandleFun>();
   const deleteRef = useRef<HandleFun>();
 
-  const { handleKeyboardEnter, handleToEdit, handleDoubleClick } =
-    useDoubleClickToEdit(data.id, data.name, editName, isEdit, setIsEdit);
+  const { isEdit, handleKeyboardEnter, handleToEdit, handleDoubleClick } =
+    useDoubleClickToEdit(
+      data.id,
+      data.name,
+      EDITWORKSPACE,
+      currentEditWorkspaceIdState,
+    );
 
   const classes = useStyel();
 
@@ -130,8 +132,6 @@ const WorkspaceTitle: FC<{ data: OriginDataType }> = ({ data }) => {
             }}
             onKeyUp={handleKeyboardEnter}
           />
-        ) : loading ? (
-          <CircularProgress size={20} />
         ) : (
           <>
             <h2 className="title">{data.name}</h2>

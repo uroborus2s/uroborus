@@ -1,18 +1,28 @@
 import { usePopover } from '@/core/hooks';
-import { EDITTABLE } from '@/domain';
+import { EDITVIEW } from '@/domain';
 import { view } from '@/domain/view/view.repository';
 import EditDescripton from '@ibr/edit-description/EditDescripton';
 import { CollapseIcon, SpreadIcon } from '@ibr/ibr-icon/SpreadAndCollapse';
 import ViewIcon from '@ibr/ibr-icon/ViewIcon';
+import InfoIcon from '@mui/icons-material/Info';
 import Button from '@mui/material/Button';
 import InputBase from '@mui/material/InputBase';
+import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import styled from '@mui/styles/styled';
-import { FC, HTMLAttributes, SyntheticEvent } from 'react';
+import {
+  FC,
+  HTMLAttributes,
+  MouseEvent,
+  RefObject,
+  SyntheticEvent,
+  useRef,
+} from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { currentViewIdState, ViewSiderToggleState } from '../TableContext';
 import CollaborationEndIcon from './CollaborationEndIcon';
 import useViewInputState from './useViewInputState';
+import ViewButtonGroup from './ViewButtonGroup';
 import ViewMenu from './ViewMenu';
 
 export const ViewBarRoot = styled('div')({
@@ -23,6 +33,7 @@ export const ViewBarRoot = styled('div')({
   boxShadow: 'rgb(200 200 200) 0 2px 0 0',
   flex: 'none',
   alignItems: 'center',
+  zIndex: 99,
 });
 
 export const ViewSwitcherContainer = styled('div')({
@@ -87,8 +98,6 @@ export const ViewInput = styled(InputBase)({
   },
 });
 
-export const ViewConfigContainer = styled('div')({});
-
 export const SearchButton = styled('div')({});
 
 const ViewBar: FC<HTMLAttributes<HTMLDivElement>> = (props) => {
@@ -100,15 +109,28 @@ const ViewBar: FC<HTMLAttributes<HTMLDivElement>> = (props) => {
 
   const viewType = useRecoilValue(view.type(viewId));
 
+  const desValue = useRecoilValue(view.desc(viewId));
+
   const { anchorElem, oppenPopover, closePopover } = usePopover();
 
   const { isEdit, handleDoubleClick, handleToEdit, handleKeyboardEnter } =
     useViewInputState(viewId, viewName);
 
-  console.log(isEdit);
+  const {
+    anchorElem: infoElem,
+    oppenPopover: openEditInfo,
+    closePopover: closeEditInfo,
+  } = usePopover();
+
+  const infoElemRef = useRef<HTMLElement>();
+
+  const handleOpenEditInfo = (event: MouseEvent<HTMLElement>) => {
+    if (openEditInfo) openEditInfo(event, infoElemRef);
+  };
 
   if (!viewName) return null;
 
+  // @ts-ignore
   return (
     <>
       <ViewBarRoot {...props}>
@@ -124,34 +146,6 @@ const ViewBar: FC<HTMLAttributes<HTMLDivElement>> = (props) => {
           >
             {toggle ? '折叠' : '展开'}
           </ViewSidebarToggleButton>
-          <ViewInput
-            autoFocus
-            required
-            defaultValue={viewName}
-            onBlur={(e) => {
-              handleToEdit(e as SyntheticEvent<HTMLInputElement>);
-            }}
-            onKeyUp={handleKeyboardEnter}
-          />
-          <ViewCollaborationButton
-            variant="outlined"
-            startIcon={<ViewIcon type={viewType} />}
-            endIcon={<CollaborationEndIcon />}
-            onClick={(e) => {
-              e.stopPropagation();
-              oppenPopover(e);
-            }}
-          >
-            <Typography
-              sx={{
-                maxWidth: '8rem',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-              }}
-            >
-              {viewName}
-            </Typography>
-          </ViewCollaborationButton>
           {isEdit ? (
             <ViewInput
               autoFocus
@@ -171,6 +165,7 @@ const ViewBar: FC<HTMLAttributes<HTMLDivElement>> = (props) => {
                 e.stopPropagation();
                 oppenPopover(e);
               }}
+              ref={infoElemRef as RefObject<HTMLButtonElement>}
             >
               <Typography
                 sx={{
@@ -181,25 +176,42 @@ const ViewBar: FC<HTMLAttributes<HTMLDivElement>> = (props) => {
               >
                 {viewName}
               </Typography>
+              <Tooltip title={desValue}>
+                <InfoIcon
+                  sx={{
+                    fontSize: '12px',
+                    opacity: 0.5,
+                    display: desValue ? 'inline-flex' : 'none',
+                    margin: '0.25rem',
+                    '&:hover': { opacity: 1 },
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    // @ts-ignore
+                    openEditInfo(e, infoElemRef);
+                  }}
+                />
+              </Tooltip>
             </ViewCollaborationButton>
           )}
         </ViewSwitcherContainer>
-        <ViewConfigContainer></ViewConfigContainer>
+        <ViewButtonGroup />
         <SearchButton></SearchButton>
       </ViewBarRoot>
       <ViewMenu
         anchorElem={anchorElem}
         closePopover={closePopover}
         reName={handleDoubleClick}
+        openEditInfo={handleOpenEditInfo}
       />
-      {/*<EditDescripton*/}
-      {/*  id={id}*/}
-      {/*  name={name}*/}
-      {/*  desc={desValue}*/}
-      {/*  anchorElem={infoElem}*/}
-      {/*  closePopover={closeEditInfo}*/}
-      {/*  commandType={EDITTABLE}*/}
-      {/*/>*/}
+      <EditDescripton
+        id={viewId}
+        name={viewName}
+        desc={desValue}
+        anchorElem={infoElem}
+        closePopover={closeEditInfo}
+        commandType={EDITVIEW}
+      />
     </>
   );
 };

@@ -13,13 +13,11 @@ import LockIcon from '@mui/icons-material/Lock';
 import Divider from '@mui/material/Divider';
 import ListItemButton from '@mui/material/ListItemButton';
 import Menu from '@mui/material/Menu';
-import Popover from '@mui/material/Popover';
 import Tooltip from '@mui/material/Tooltip';
 import styled from '@mui/styles/styled';
 import { FC, LegacyRef, Ref, useContext, useRef } from 'react';
 import { useRecoilValue } from 'recoil';
 import DupliacteTable from './DuplicateTable';
-import EditTableDesc from './EditTableDesc';
 
 export interface TabTitleNodeProps {
   name: string;
@@ -83,8 +81,10 @@ const TabShowNode: FC<TabTitleNodeProps> = ({
 
   const desValue = useRecoilValue(table.desc(id));
 
+  const tabNodeRef = useRef<HTMLDivElement>();
+
   return (
-    <TabNodeRoot>
+    <TabNodeRoot ref={tabNodeRef as LegacyRef<HTMLDivElement>}>
       <span>{name}</span>
       <Tooltip title={desValue}>
         <InfoIcon
@@ -98,7 +98,7 @@ const TabShowNode: FC<TabTitleNodeProps> = ({
           onClick={(e) => {
             e.stopPropagation();
             // @ts-ignore
-            openEditInfo(e);
+            openEditInfo(e, tabNodeRef);
           }}
         />
       </Tooltip>
@@ -172,7 +172,7 @@ const TabShowNode: FC<TabTitleNodeProps> = ({
           disableRipple
           disableTouchRipple
           onClick={(e) => {
-            openEditInfo(e);
+            openEditInfo(e, tabNodeRef);
             closePopover();
           }}
         >

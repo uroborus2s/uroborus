@@ -74,6 +74,7 @@ export const CREATVIEW = 'CREATVIEW';
 export const EDITVIEW = 'EDITVIEW';
 export const DUPLIACTEVIEW = 'DUPLIACTEVIEW';
 export const DELETEVIEW = 'DELETEVIEW';
+export const READVIEW = 'READVIEW';
 
 // invite
 export const REDALLINVITE = 'REDALLINVITE';

@@ -5,6 +5,7 @@ import {
   DELETEVIEW,
   DUPLIACTEVIEW,
   EDITVIEW,
+  READVIEW,
 } from '../domain.command';
 import { NullResponseError } from '../error';
 import { ServiceCodeError } from '../request/error';
@@ -41,6 +42,13 @@ const creatView = (url: string | ((id: string) => string)) =>
 const readAllViews = async function (options: CommandOptions) {
   const [err, res] = await request(api.path.view(), {
     cancelToken: options.token,
+  });
+  return transformResponse(options, err, res);
+};
+
+const readOneView = async function (options: CommandOptions) {
+  const [err, res] = await request(api.path.view(options.request?.path?.id), {
+    cancelToken: options.token,
     params: { table_id: options.request?.params?.tableId },
   });
   return transformResponse(options, err, res);
@@ -68,4 +76,5 @@ export default cmdDispatcher({
   [EDITVIEW]: editView,
   [DUPLIACTEVIEW]: creatView(api.path.copyView),
   [DELETEVIEW]: deleteView,
+  [READVIEW]: readOneView,
 });

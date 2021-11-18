@@ -57,7 +57,7 @@ const EditDescripton: FC<EditDescriptonProps> = ({
       }}
       transformOrigin={{
         vertical: 'top',
-        horizontal: 'right',
+        horizontal: 'left',
       }}
       {...popoverProps}
     >
