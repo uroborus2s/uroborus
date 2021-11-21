@@ -12,7 +12,7 @@ import SvgIcon, { SvgIconTypeMap } from '@mui/material/SvgIcon';
 import { SxProps } from '@mui/system/styleFunctionSx/styleFunctionSx';
 import classNames from 'classnames';
 
-import React, { memo } from 'react';
+import { ElementType, FC, memo } from 'react';
 
 type BaseIconProps = JSX.IntrinsicElements['div'] & {
   icon: BaseIconType;
@@ -20,7 +20,7 @@ type BaseIconProps = JSX.IntrinsicElements['div'] & {
   iconProps?: DefaultComponentProps<SvgIconTypeMap>;
   /* The system prop that allows defining system overrides as well as additional CSS styles.*/
   sx?: SxProps<Theme>;
-  as?: React.ElementType;
+  as?: ElementType;
   classes?: Partial<BaseIconClasses>;
   disabledBlank?: boolean;
 };
@@ -38,7 +38,7 @@ const BaseIconRoot = styled('div', {
   overridesResolver: (props, styles) => styles.root,
 })({ display: 'flex', alignItems: 'center', justifyContent: 'center' });
 
-const BaseIcon: React.FC<BaseIconProps> = (props) => {
+const BaseIcon: FC<BaseIconProps> = (props) => {
   const {
     icon,
     fristChar,

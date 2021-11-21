@@ -1,4 +1,5 @@
 import { BaseIconType, ColorType } from '@/core/util';
+import { ColumnTypeKey } from '@/core/util/column-types';
 import { CancelToken } from 'axios';
 import { DependencyList, Dispatch, SetStateAction } from 'react';
 import { TransactionInterface_UNSTABLE } from 'recoil';
@@ -264,4 +265,131 @@ export const ViewType: Record<ViewSchemaType, ViewSchemaType> = {
   gallery: 'gallery',
   //收集表单
   form: 'form',
+};
+
+interface ColumnGenericType<T, O> {
+  type: T;
+  options: O;
+}
+
+//对应type='text' 单行文本/email/地址
+type TextOptions =
+  | undefined
+  | {
+      validatorName: 'email' | 'url';
+    };
+
+interface AttachmentOptions {
+  unreversed: boolean;
+}
+
+interface CheckboxOptions {
+  color: string;
+  icon: string;
+}
+
+interface SelectOptions {
+  choiceOrder: string[];
+  choices: Record<string, { id: string; name: string; color: string }>;
+  disableColors: boolean;
+}
+
+interface DateOptions {
+  isDateTime: boolean;
+  dateFormat: string;
+  timeFormat: string;
+  timeZone: string;
+}
+
+interface CollaboratorOptions {
+  shouldNotify: boolean;
+}
+
+interface NumberOptions {
+  format: string;
+  precision: number;
+  negative: boolean;
+  validatorName: string;
+  symbol?: string;
+  durationFormat?: number;
+}
+
+interface RatingOptions {
+  color: string;
+  icon: string;
+  max: number;
+}
+
+interface FormulaOptions {
+  resultType: number;
+}
+
+interface AutoNumberOptions {
+  maxUsedAutoNumber: number;
+}
+
+interface ForeignKeyOptions {
+  relationColumnId: string;
+  foreignTableRollupColumnId: string;
+  canUseSelectResultType: boolean;
+}
+
+export type OptionsType =
+  | ForeignKeyOptions
+  | AutoNumberOptions
+  | FormulaOptions
+  | RatingOptions
+  | NumberOptions
+  | CollaboratorOptions
+  | DateOptions
+  | SelectOptions
+  | CheckboxOptions
+  | AttachmentOptions
+  | TextOptions;
+
+type ColumnType =
+  | ColumnGenericType<'text', TextOptions>
+  | ColumnGenericType<'multilineText', undefined>
+  | ColumnGenericType<'attachment', AttachmentOptions>
+  | ColumnGenericType<'checkbox', CheckboxOptions>
+  | ColumnGenericType<'select', SelectOptions>
+  | ColumnGenericType<'multiSelect', SelectOptions>
+  | ColumnGenericType<'collaborator', CollaboratorOptions>
+  | ColumnGenericType<'date', DateOptions>
+  | ColumnGenericType<'phone', undefined>
+  | ColumnGenericType<'number', NumberOptions>
+  | ColumnGenericType<'rating', RatingOptions>
+  | ColumnGenericType<'formula', FormulaOptions>
+  | ColumnGenericType<'computation', FormulaOptions>
+  | ColumnGenericType<'autoNumber', AutoNumberOptions>
+  | ColumnGenericType<'foreignKey', ForeignKeyOptions>;
+
+export type ColumnRsp = ColumnType & {
+  id: string;
+  name: string;
+  desc?: string;
+  color: string;
+  primary: boolean;
+};
+
+export type ColumnViewRsp = {
+  width: number;
+  order: number;
+  frozen: number;
+  summary_type: number;
+  column_id: string;
+};
+
+export type RowViewRsp = {
+  order: number;
+  row_id: string;
+};
+
+export type ColumnDataTemplate = {
+  id: string;
+  name: string;
+  type: ColumnTypeKey;
+  width: number;
+  offset: number;
+  option: OptionsType;
 };

@@ -14,7 +14,5 @@ export default function <S>(
 
   refState.current = state;
 
-  console.log(refState.current, state);
-
   return [refState, setState];
 }

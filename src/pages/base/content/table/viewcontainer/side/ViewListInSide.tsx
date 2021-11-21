@@ -38,11 +38,13 @@ const ViewListInSideRoot = styled('div')({
   flexDirection: 'column',
   flex: 'auto',
   paddingTop: '0.5rem',
+  overflow: 'auto',
 });
 
 const ViewItemNode = styled('div')({
   display: 'flex',
   flex: 'auto',
+  overflow: 'hidden',
 });
 
 const ViewList: FC<{
@@ -126,6 +128,8 @@ const ViewList: FC<{
             textOverflow: 'ellipsis',
             fontSize: '14px',
             lineHeight: 1,
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
           }}
         >
           {viewData.name}
@@ -189,7 +193,7 @@ const ViewListInSide: FC = () => {
   ).length;
 
   return (
-    <ViewListInSideRoot>
+    <ViewListInSideRoot className="scrollbar">
       <InputBase
         sx={{
           marginLeft: '1rem',

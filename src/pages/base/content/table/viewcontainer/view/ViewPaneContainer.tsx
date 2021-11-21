@@ -1,6 +1,7 @@
 import { READVIEW, useDispath } from '@/domain';
 import { currentViewIdState } from '@/pages/base/content/table/TableContext';
-import GridView from './GridView';
+import GridTable from '@ibr/ibr-grid-view/GridTable';
+import LoadingWithNumber from '@ibr/ibr-loading/LoadingWithNumber';
 import styled from '@mui/styles/styled';
 import { useRecoilValue } from 'recoil';
 
@@ -21,7 +22,7 @@ const ViewPaneContainer = () => {
 
   return (
     <ViewPaneContainerRoot>
-      <GridView />
+      {loading ? <LoadingWithNumber loading={loading} /> : <GridTable />}
     </ViewPaneContainerRoot>
   );
 };

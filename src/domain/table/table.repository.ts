@@ -25,6 +25,7 @@ export const table = (function () {
     readonly desc: (param: string) => RecoilState<string>;
     readonly lastUsedViewId: (param: string) => RecoilState<string>;
     readonly viewIds: (param: string) => RecoilState<Set<string>>;
+    readonly rowIds: (param: string) => RecoilState<Set<string>>;
 
     readonly allTables: (
       param: string[],
@@ -48,6 +49,11 @@ export const table = (function () {
 
       this.viewIds = atomFamily<Set<string>, string>({
         key: 'table/viewIds',
+        default: new Set(),
+      });
+
+      this.rowIds = atomFamily<Set<string>, string>({
+        key: 'table/rowIds',
         default: new Set(),
       });
 

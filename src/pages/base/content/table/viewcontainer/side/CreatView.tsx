@@ -121,6 +121,7 @@ const CreatView = () => {
           '&.Mui-expanded': {
             margin: '0 1rem 1rem',
           },
+          flex: 'none',
         }}
       >
         <AccordionSummary

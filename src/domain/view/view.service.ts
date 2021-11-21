@@ -42,6 +42,7 @@ const creatView = (url: string | ((id: string) => string)) =>
 const readAllViews = async function (options: CommandOptions) {
   const [err, res] = await request(api.path.view(), {
     cancelToken: options.token,
+    params: { table_id: options.request?.params?.tableId },
   });
   return transformResponse(options, err, res);
 };
@@ -49,7 +50,6 @@ const readAllViews = async function (options: CommandOptions) {
 const readOneView = async function (options: CommandOptions) {
   const [err, res] = await request(api.path.view(options.request?.path?.id), {
     cancelToken: options.token,
-    params: { table_id: options.request?.params?.tableId },
   });
   return transformResponse(options, err, res);
 };

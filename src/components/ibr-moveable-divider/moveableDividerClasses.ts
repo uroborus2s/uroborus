@@ -6,7 +6,7 @@ const slots = ['root', 'paneLine', 'dragBlock', 'tooltip', 'press'] as const;
 
 export type MoveableDividerClassesKey = typeof slots[number];
 
-export type VariablesizelistClasses = Record<MoveableDividerClassesKey, string>;
+export type MoveableDividerClasses = Record<MoveableDividerClassesKey, string>;
 
 export const MoveableDividerCommponentName = 'IuiMoveableDivider';
 
