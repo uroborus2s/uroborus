@@ -10,20 +10,15 @@ import { FC } from 'react';
 const HeaderRoot = styled('div', {
   name: GridTableComponentName,
   slot: 'columnHeader',
-})<{ ownerState: OwnerStateType & { offset: number; width: number } }>(
-  ({ ownerState }) => ({
-    position: 'absolute',
-    borderLeft: 'none',
-    backgroundColor: '#f5f5f5',
-    top: 0,
-    left: ownerState.offset,
-    width: ownerState.width,
-    height: ownerState.columnHeaderHight,
-    borderRight: '1px solid #ccc',
-    display: 'flex',
-    alignItems: 'center',
-  }),
-);
+})<{ ownerState: OwnerStateType & { width: number } }>(({ ownerState }) => ({
+  position: 'relative',
+  borderLeft: 'none',
+  top: 0,
+  width: ownerState.width,
+  borderRight: '1px solid #ccc',
+  display: 'flex',
+  alignItems: 'center',
+}));
 
 const HeaderContent = styled('div', {
   name: GridTableComponentName,
@@ -37,6 +32,7 @@ const HeaderContent = styled('div', {
   height: '100%',
   overflow: 'hidden',
   width: '100%',
+  paddingLeft: '0.5rem',
 });
 
 const DropButton = styled('div', {
@@ -63,7 +59,7 @@ const ResizeHandle = styled('div', {
   height: '100%',
   width: '16px',
   marginRight: '-8px',
-  zIndex: 2,
+  zIndex: 5,
   display: 'flex',
   justifyContent: 'center',
   '&:hover > div': {
@@ -76,7 +72,7 @@ const DraggingLine = styled('div')({
   flex: 'none',
   height: '100%',
   width: '3px',
-  zIndex: 2,
+  zIndex: 5,
   backgroundColor: '#2d7ff9',
   borderRadius: '2px',
   opacity: 0,

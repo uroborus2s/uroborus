@@ -1,13 +1,15 @@
+import { GridStateContext } from '@ibr/ibr-grid-view/Context';
+import RowDataContent from '@ibr/ibr-grid-view/RowDataContent';
 import MoveableDivider from '@ibr/ibr-moveable-divider/MoveableDivider';
 import styled from '@mui/material/styles/styled';
 import { FC, useContext } from 'react';
 import { GridTableComponentName } from './GridClasses';
-import PaneInnerContent from './PaneInnerContent';
-import { GridStateContext, IbrGridProps, OwnerStateType } from './types';
+import ColumnHeaderContent from './ColumnHeaderContent';
+import { IbrGridProps, OwnerStateType } from './types';
 
 const ContainerRoot = styled('div', {
   name: GridTableComponentName,
-  slot: 'container',
+  slot: 'gridTableContainer',
 })({
   borderColor: 'inherit',
   position: 'absolute',
@@ -21,11 +23,9 @@ const LeftPaneWrapper = styled('div', {
   name: GridTableComponentName,
   slot: 'leftPaneWrapper',
 })<{ ownerState: OwnerStateType }>(({ ownerState }) => ({
-  borderStyle: 'solid',
-  borderColor: '#ccc',
-  borderWidth: '1px',
+  borderLeft: '1px solid #ccc',
   zIndex: 3,
-  boxShadow: '4px 0 0 0 rgb(0 0 0 / 4%)',
+  boxShadow: '3px 0 0 0 rgb(0 0 0 / 4%)',
   transition: 'border-color, box-shadow 200ms ease-in-out',
   overflow: 'visible',
   position: 'absolute',
@@ -69,7 +69,7 @@ const HeaderLeftPane = styled('div', {
   height: ownerState.columnHeaderHight,
   top: 0,
   position: 'absolute',
-  overflow: 'hidden',
+  overflow: 'visible',
   zIndex: 3,
   left: 0,
   right: 0,
@@ -85,8 +85,9 @@ const HeaderRightPane = styled('div', {
   top: 0,
   position: 'absolute',
   overflow: 'visible',
-  backgroundColor: 'hsla(0,0%,100%,0.5)',
-  borderBottom: 'hsla(0,0%,100%,0.5)',
+  backgroundColor: '#f5f5f5',
+  borderBottom: '1px solid hsl(0,0%,82%)',
+
   zIndex: 1,
   left: 0,
   right: 0,
@@ -99,11 +100,24 @@ const DataLeftPane = styled('div', {
   top: ownerState.columnHeaderHight,
   bottom: 0,
   position: 'absolute',
-  overflow: 'hidden',
+  overflow: 'visible',
   zIndex: 2,
   left: 0,
   right: 0,
   backgroundColor: 'hsl(0,0%,99%)',
+}));
+
+const DataRightPane = styled('div', {
+  name: GridTableComponentName,
+  slot: 'dataRightPane',
+})<{ ownerState: OwnerStateType }>(({ ownerState }) => ({
+  top: ownerState.columnHeaderHight,
+  bottom: 0,
+  position: 'absolute',
+  overflow: 'hidden',
+  zIndex: 0,
+  left: 0,
+  right: 0,
 }));
 
 const GridContainer: FC<Omit<IbrGridProps, 'sx'>> = ({ classes }) => {
@@ -113,9 +127,11 @@ const GridContainer: FC<Omit<IbrGridProps, 'sx'>> = ({ classes }) => {
     <ContainerRoot>
       <LeftPaneWrapper ownerState={ownerState}>
         <HeaderLeftPane ownerState={ownerState}>
-          <PaneInnerContent position="left" />
+          <ColumnHeaderContent position="left" />
         </HeaderLeftPane>
-        <DataLeftPane ownerState={ownerState} />
+        <DataLeftPane ownerState={ownerState}>
+          <RowDataContent position="left" />
+        </DataLeftPane>
       </LeftPaneWrapper>
       <MoveableDivider
         disabledTooltip={false}
@@ -124,15 +140,18 @@ const GridContainer: FC<Omit<IbrGridProps, 'sx'>> = ({ classes }) => {
           position: 'absolute',
           left: ownerState.fixedColumnWidth,
           zIndex: 4,
-          marginLeft: '-3px',
+          marginLeft: '-4px',
           cursor: 'grab',
           '& .IuiMoveableDivider-press': { cursor: 'grabbing' },
         }}
       />
       <RightPaneWrapper ownerState={ownerState}>
         <HeaderRightPane ownerState={ownerState}>
-          <PaneInnerContent position="right" />
+          <ColumnHeaderContent position="right" />
         </HeaderRightPane>
+        <DataRightPane ownerState={ownerState}>
+          <RowDataContent position="right" />
+        </DataRightPane>
       </RightPaneWrapper>
     </ContainerRoot>
   );

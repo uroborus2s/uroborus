@@ -2,9 +2,9 @@ import {
   ColumnTypeKey,
   conversionToColTypeName,
 } from '@/core/util/column-types';
-import { READTABLE } from '@/domain';
-import { pureDispatcher } from '@/domain/core';
-import { ColumnRsp, CommandOptions, OptionsType } from '@/domain/types';
+import { READTABLE } from '../domain.command';
+import { pureDispatcher } from '../core';
+import { ColumnRsp, CommandOptions, OptionsType } from '../types';
 import { atomFamily, RecoilState, TransactionInterface_UNSTABLE } from 'recoil';
 
 export const column = (function () {

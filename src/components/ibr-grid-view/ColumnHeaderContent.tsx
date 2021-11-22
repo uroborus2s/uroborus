@@ -1,23 +1,26 @@
 import { view } from '@/domain/view/view.repository';
 import { currentViewIdState } from '@/pages/base/content/table/TableContext';
-import ColumnHeader from '@ibr/ibr-grid-view/ColumnHeader';
+import { GridStateContext } from '@ibr/ibr-grid-view/Context';
+import ColumnAddButton from './ColumnAddButton';
+import ColumnHeader from './ColumnHeader';
 import Checkbox from '@mui/material/Checkbox';
 import styled from '@mui/material/styles/styled';
 import { FC, useContext } from 'react';
 import { useRecoilValue } from 'recoil';
 import { GridTableComponentName } from './GridClasses';
-import { GridStateContext, PaneInnerContentProps } from './types';
+import { ColumnHeaderContentProps } from './types';
 
-const PaneInnerContentRoot = styled('div', {
+const ColumnHeaderContentRoot = styled('div', {
   name: GridTableComponentName,
-  slot: 'paneInnerContent',
+  slot: 'columnHeaderContent',
 })({
   height: '100%',
+  width: '100%',
   position: 'relative',
   display: 'flex',
 });
 
-const PaneInnerContent: FC<PaneInnerContentProps> = ({ position }) => {
+const ColumnHeaderContent: FC<ColumnHeaderContentProps> = ({ position }) => {
   const ownerState = useContext(GridStateContext);
   const viewId = useRecoilValue(currentViewIdState);
 
@@ -26,15 +29,14 @@ const PaneInnerContent: FC<PaneInnerContentProps> = ({ position }) => {
   const frozenIndex = useRecoilValue(view.frozenIndex(viewId));
 
   return (
-    <PaneInnerContentRoot>
-      {position == 'right' ? (
-        <div />
-      ) : (
+    <ColumnHeaderContentRoot>
+      {position == 'left' && (
         <Checkbox
           sx={{
             height: ownerState.columnHeaderHight,
             borderRadius: 0,
-            paddingRight: '43px',
+            paddingLeft: '12px',
+            paddingRight: '41px',
             '& svg': {
               fontSize: '12px',
             },
@@ -44,15 +46,19 @@ const PaneInnerContent: FC<PaneInnerContentProps> = ({ position }) => {
           disableTouchRipple
         />
       )}
-      {columnDatas.slice(0, frozenIndex).map((data) => (
+      {(position == 'left'
+        ? columnDatas.slice(0, frozenIndex)
+        : columnDatas.slice(frozenIndex, columnDatas.length)
+      ).map((data) => (
         <ColumnHeader
           columnData={data}
           key={data.id}
-          ownerState={{ offset: data.offset, width: data.width, ...ownerState }}
+          ownerState={{ width: data.width, ...ownerState }}
         />
       ))}
-    </PaneInnerContentRoot>
+      {position == 'right' && <ColumnAddButton />}
+    </ColumnHeaderContentRoot>
   );
 };
 
-export default PaneInnerContent;
+export default ColumnHeaderContent;

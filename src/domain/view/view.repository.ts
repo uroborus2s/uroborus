@@ -14,7 +14,6 @@ import {
   READTABLE,
   READVIEW,
 } from '../domain.command';
-import { row as rowEntity } from '../row/row.repository';
 import {
   ColumnDataTemplate,
   ColumnViewRsp,
@@ -35,12 +34,9 @@ export const view = (function () {
     readonly columnWidth: (columnId: string) => RecoilState<number>;
     readonly columnFrozen: (columnId: string) => RecoilState<number>;
     readonly frozenWidth: (viewId: string) => RecoilValueReadOnly<number>;
-    readonly rowOrders: (viewId: string) => RecoilState<Set<string>>;
+    readonly noFrozenColWidth: (viewId: string) => RecoilValueReadOnly<number>;
     readonly frozenIndex: (viewId: string) => RecoilValueReadOnly<number>;
-
-    readonly rowData: (
-      viewId: string,
-    ) => RecoilValueReadOnly<Array<Record<string, any>>>;
+    readonly rowOrders: (viewId: string) => RecoilState<Set<string>>;
 
     readonly columnData: (
       viewId: string,
@@ -101,8 +97,28 @@ export const view = (function () {
 
             return colIds
               .slice(0, endIndex)
-              .map((colId) => get(this.columnWidth(colId)))
-              .reduce((pre, current) => pre + current, 0);
+              .reduce(
+                (width, colId) => width + get(this.columnWidth(colId)),
+                0,
+              );
+          },
+      });
+
+      this.noFrozenColWidth = selectorFamily({
+        key: 'view/noFrozenColWidth',
+        get:
+          (viewId) =>
+          ({ get }) => {
+            const colIds = [...get(this.columnOrders(viewId))];
+            const startIndex = colIds.findIndex(
+              (id) => get(this.columnFrozen(id)) === 0,
+            );
+            return colIds
+              .slice(startIndex, colIds.length)
+              .reduce(
+                (width, colId) => width + get(this.columnWidth(colId)),
+                0,
+              );
           },
       });
 
@@ -119,25 +135,6 @@ export const view = (function () {
       this.rowOrders = atomFamily({
         key: 'view/rowOrders',
         default: new Set(),
-      });
-
-      this.rowData = selectorFamily({
-        key: 'view/rowData',
-        get:
-          (viewId) =>
-          ({ get }) => {
-            const rowIds = [...get(this.rowOrders(viewId))];
-            return rowIds.map((rId) => {
-              const colIds = get(rowEntity.columnIds(rId));
-              const oneRowData: Record<string, any> = {};
-              colIds.forEach((cId) => {
-                oneRowData[get(columnEntity.name(cId))] = get(
-                  rowEntity.cellValue(cId),
-                );
-              });
-              return oneRowData;
-            });
-          },
       });
 
       this.columnData = selectorFamily({

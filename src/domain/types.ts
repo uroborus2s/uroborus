@@ -393,3 +393,8 @@ export type ColumnDataTemplate = {
   offset: number;
   option: OptionsType;
 };
+
+export type RowDataTemplate = {
+  id: string;
+  colIds: string[];
+};

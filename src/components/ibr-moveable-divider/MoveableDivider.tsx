@@ -54,7 +54,7 @@ const DividerRoot = styled('div', {
   position: 'relative',
   width: '6px',
   height: '100%',
-  zIndex: 99,
+  zIndex: 9,
 });
 
 const PaneLine = styled('div', {
@@ -68,6 +68,16 @@ const PaneLine = styled('div', {
   height: '100%',
   width: '2px',
   backgroundColor: '#aaa',
+  pointerEvents: 'none',
+});
+
+const OrgPaneLine = styled('div')({
+  position: 'absolute',
+  left: '3px',
+  top: 0,
+  height: '100%',
+  width: '1px',
+  backgroundColor: '#ccc',
   pointerEvents: 'none',
 });
 
@@ -164,7 +174,7 @@ const MoveableDivider: FC<MoveableDividerProps> = ({
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      {hover && (
+      {hover ? (
         <div
           className={mClasses.container}
           onMouseDown={(event) => {
@@ -194,6 +204,8 @@ const MoveableDivider: FC<MoveableDividerProps> = ({
             )
           }
         </div>
+      ) : (
+        <OrgPaneLine />
       )}
     </DividerRoot>
   );

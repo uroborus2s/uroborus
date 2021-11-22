@@ -1,22 +1,23 @@
-import { READTABLE } from '@/domain';
-import { pureDispatcher } from '@/domain/core';
-import { CommandOptions } from '@/domain/types';
+import { READTABLE } from '../domain.command';
+import { pureDispatcher } from '../core';
+import { CommandOptions } from '../types';
 import { atomFamily, RecoilState, TransactionInterface_UNSTABLE } from 'recoil';
 
 export const row = (function () {
   class c {
-    readonly columnIds: (rowId: string) => RecoilState<string[]>;
-    readonly cellValue: (columnId: string) => RecoilState<any>;
+    readonly cellValue: (cellId: string) => RecoilState<any>;
+
+    readonly rowHoverState: (rowId: string) => RecoilState<boolean>;
 
     constructor() {
-      this.columnIds = atomFamily<string[], string>({
-        key: 'row/columnIds',
-        default: [],
-      });
-
       this.cellValue = atomFamily({
         key: 'row/cell',
         default: undefined,
+      });
+
+      this.rowHoverState = atomFamily<boolean, string>({
+        key: 'row/ui/hover-state',
+        default: false,
       });
     }
   }
@@ -36,10 +37,9 @@ function wirteColumnIdsOfRow(
       console.log(cols);
       if (id && typeof cols == 'object') {
         console.log('保存值', Object.keys(cols));
-        const cIds = Object.keys(cols);
-        set(row.columnIds(id), cIds);
-        cIds.forEach((cId) => {
-          set(row.cellValue(cId), cols[cId]);
+        Object.keys(cols).forEach((cId) => {
+          const cellId = (id as string).concat('/', cId);
+          set(row.cellValue(cellId), cols[cId]);
         });
       }
     });
