@@ -27,12 +27,13 @@ export type RowNumberProps = {
 };
 
 export type OwnerStateType = {
-  fixedColumnWidth: number;
-  columnHeaderHight: number;
-  rowHight: number;
+  columnSizes?: number | string;
+  rowSizes?: number;
+  columnWidth?: number;
+  transform?: string;
+  position?: 'left' | 'right';
 };
 
 export type ColumnHeaderProps = {
-  ownerState: OwnerStateType & { width: number };
-  columnData: ColumnDataTemplate;
+  colId: string;
 };

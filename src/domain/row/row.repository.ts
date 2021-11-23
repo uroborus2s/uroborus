@@ -1,4 +1,4 @@
-import { READTABLE } from '../domain.command';
+import { CREATROW, READTABLE } from '../domain.command';
 import { pureDispatcher } from '../core';
 import { CommandOptions } from '../types';
 import { atomFamily, RecoilState, TransactionInterface_UNSTABLE } from 'recoil';

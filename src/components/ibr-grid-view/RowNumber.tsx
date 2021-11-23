@@ -1,14 +1,14 @@
 import { row } from '@/domain/row/row.repository';
-import { GridStateContext } from '@ibr/ibr-grid-view/Context';
+import { defaultRowHight } from '@ibr/ibr-grid-view/Context';
 import ExpandIcon from '@ibr/ibr-icon/ExpandIcon';
 import { Tooltip } from '@mui/material';
 import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import { useRecoilValue } from 'recoil';
-import { OwnerStateType, RowNumberProps } from './types';
 import styled from '@mui/material/styles/styled';
-import { FC, useContext } from 'react';
+import Typography from '@mui/material/Typography';
+import { FC } from 'react';
+import { useRecoilValue } from 'recoil';
+import { RowNumberProps } from './types';
 
 const RowNumberRoot = styled('div')({
   display: 'flex',
@@ -16,26 +16,22 @@ const RowNumberRoot = styled('div')({
   width: '65px',
 });
 
-const Grabby = styled('div')<{
-  ownerState: { hover: boolean } & OwnerStateType;
-}>(({ ownerState }) => ({
+const Grabby = styled('div')({
   cursor: 'grab',
   backgroundImage: 'url(/grabby.png)',
   backgroundRepeat: 'no-repeat',
   backgroundPosition: '2px 2px',
   width: '12px',
   flex: 'none',
-  opacity: ownerState.hover ? 1 : 0,
-  height: ownerState.rowHight,
-}));
+  height: defaultRowHight,
+});
 
 const RowNumber: FC<RowNumberProps> = ({ rowId, sequence }) => {
   const hover = useRecoilValue(row.rowHoverState(rowId));
-  const ownerState = useContext(GridStateContext);
 
   return (
     <RowNumberRoot>
-      <Grabby ownerState={{ ...ownerState, hover: hover }} />
+      <Grabby sx={{ opacity: hover ? 1 : 0 }} />
       {hover ? (
         <Checkbox
           sx={{

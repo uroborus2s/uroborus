@@ -40,9 +40,10 @@ export const api = {
     view: (viewId?: string) => (viewId ? `/view/${viewId}` : '/view'),
     copyView: (viewId: string) => `/view/${viewId}/copy`,
 
-    getViewOfTable: (tableId: string, viewId: string) =>
-      `/table/${tableId}/view/${viewId}`,
-    getTableOfId: (tableId: string) => `/table/${tableId}`,
+    /***************column************************/
+
+    /***************row************************/
+    row: (rowId?: string) => (rowId ? `/row/${rowId}` : '/row'),
   },
 };
 
@@ -75,6 +76,9 @@ export const EDITVIEW = 'EDITVIEW';
 export const DUPLIACTEVIEW = 'DUPLIACTEVIEW';
 export const DELETEVIEW = 'DELETEVIEW';
 export const READVIEW = 'READVIEW';
+
+//row
+export const CREATROW = 'CREATROW';
 
 // invite
 export const REDALLINVITE = 'REDALLINVITE';

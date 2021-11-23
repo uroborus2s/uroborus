@@ -1,116 +1,152 @@
-import { getTargetElement } from '@/core/util';
-import { column } from '@/domain/column/column.repository';
 import { view } from '@/domain/view/view.repository';
-import { currentViewIdState } from '@/pages/base/content/table/TableContext';
-import Select from '@mui/material/Select';
+import ArrowDown from '@ibr/ibr-icon/ArrowDown';
 import MenuItem from '@mui/material/MenuItem';
-import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
-import styled from '@mui/material/styles/styled';
+import Select from '@mui/material/Select';
 import Typography from '@mui/material/Typography';
+import styled from '@mui/styles/styled';
 import * as React from 'react';
-import { FC, useRef, useState } from 'react';
+import { FC, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 
 interface SummaryCellProps {
   colId: string;
 }
 
-const CellRoot = styled('div')({
-  display: 'flex',
-  height: '100%',
-  overflow: 'hidden',
-  alignItems: 'center',
+const Item = styled(MenuItem)({
+  padding: '0.5rem',
 });
 
+const SummaryText: FC = ({ children }) => {
+  return (
+    <>
+      <ArrowDown className="MuiSelect-select-text-icon" />
+      <Typography className="MuiSelect-select-text">{children}</Typography>
+    </>
+  );
+};
+
 const SummaryCell: FC<SummaryCellProps> = ({ colId }) => {
-  const viewId = useRecoilValue(currentViewIdState);
-
-  const rowIds = useRecoilValue(view.rowOrders(viewId));
-
   const cellWidth = useRecoilValue(view.columnWidth(colId));
-
-  const isPrimary = useRecoilValue(column.primary(colId));
 
   const [isNone, setIsNone] = useState('none');
 
   const handleRenderTotal = (value: string) => {
-    console.log(isNone, value);
     if (isNone !== value) {
       if (isNone == 'none' || value == 'none') {
         setIsNone(value);
       }
     }
+    let text = '';
     switch (value) {
       case 'none':
-        return <em>总计</em>;
+        text = '总计';
+        break;
       case 'empty':
-        return <em>空值 0</em>;
+        text = '空值 0';
+        break;
       case 'filled':
-        return <em>已填写 0</em>;
+        text = '已填写 0';
+        break;
       case 'unique':
-        return <em>唯一值 0</em>;
+        text = '唯一值 0<';
+        break;
       case 'percentEmpty':
-        return <em>空值 33.33%</em>;
+        text = '空值 33.33%';
+        break;
       case 'percentFilled':
-        return <em>已填写 33.33%</em>;
+        text = '已填写 33.33%';
+        break;
       case 'percentUnique':
-        return <em>唯一值 33.33%</em>;
+        text = '唯一值 33.33%';
+        break;
       default:
-        return <em>总计</em>;
+        break;
     }
+    return <SummaryText>{text}</SummaryText>;
   };
 
   return (
-    <CellRoot sx={{ width: cellWidth }}>
-      {isPrimary && (
-        <Typography
-          sx={{
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-            fontSize: '12px',
-            flex: 'none',
-            height: '100%',
-            overflow: 'hidden',
-            alignItems: 'center',
-            display: 'flex',
-            maxWidth: '120px',
-          }}
-        >{`${rowIds.size} 条记录`}</Typography>
-      )}
-      <Select
-        sx={{
-          flex: 'auto',
+    <Select
+      autoWidth
+      sx={{
+        width: cellWidth,
+        border: 'none',
+        borderRadius: 0,
+        flexDirection: 'row-reverse',
+        overflow: 'hidden',
+        cursor: 'pointer',
+
+        '& .MuiSelect-select': {
+          width: '100%',
+          padding: 0,
+          display: 'flex',
+          justifyContent: 'flex-end',
+          alignItems: 'center',
+          '& .MuiSelect-select-text-icon': {
+            opacity: 0,
+            fontSize: '13px',
+          },
+          '& .MuiSelect-select-text': {
+            opacity: isNone !== 'none' ? 0.75 : 0,
+            marginLeft: '4px',
+          },
+        },
+        '& .MuiSelect-icon': {
+          display: 'none',
+        },
+        '& .MuiOutlinedInput-notchedOutline': {
           border: 'none',
-          alignSelf: 'flex-end',
-          height: '100%',
-          opacity: isNone !== 'none' ? 1 : 0,
-          backgroundColor: isNone !== 'none' ? 'rgba(0,0,0,0.05)' : 'inherit',
-          borderRadius: 0,
-          '&:hover': {
-            opacity: 1,
-            backgroundColor: 'rgba(0,0,0,0.05)',
+        },
+        zIndex: 2,
+        '&:hover': {
+          backgroundColor: 'rgba(0,0,0,0.05)',
+        },
+
+        '&:hover .MuiSelect-select-text-icon': {
+          opacity: 0.5,
+        },
+        '&:hover .MuiSelect-select-text': {
+          opacity: 0.75,
+        },
+
+        '& .MuiSelect-select.MuiSelect-outlined.MuiOutlinedInput-input.MuiInputBase-input':
+          {
+            paddingRight: '8px',
           },
-          '& .MuiSelect-select': {
-            padding: '2px 8px 4px 6px',
-            alignSelf: 'flex-end',
+      }}
+      // variant="standard"
+      defaultValue="none"
+      renderValue={handleRenderTotal}
+      disableUnderline
+      MenuProps={{
+        anchorOrigin: {
+          vertical: 'top',
+          horizontal: 'right',
+        },
+        transformOrigin: {
+          vertical: 'bottom',
+          horizontal: 'right',
+        },
+        sx: {
+          '& .MuiMenu-list': {
+            maxWidth: '140px',
+            borderRadius: '3px',
+            padding: 0,
           },
-        }}
-        variant="standard"
-        defaultValue="none"
-        renderValue={handleRenderTotal}
-        disableUnderline
-      >
-        <MenuItem value="none">
-          <em>none</em>
-        </MenuItem>
-        <MenuItem value="empty">空值</MenuItem>
-        <MenuItem value="filled">已填写</MenuItem>
-        <MenuItem value="unique">非重复唯一值</MenuItem>
-        <MenuItem value="percentEmpty">空值占比</MenuItem>
-        <MenuItem value="percentFilled">已填写占比</MenuItem>
-        <MenuItem value="percentUnique">唯一值占比</MenuItem>
-      </Select>
-    </CellRoot>
+          '& .MuiMenu-paper': {
+            minWidth: '140px',
+          },
+        },
+      }}
+    >
+      <Item value="none">none</Item>
+      <Item value="empty">空值</Item>
+      <Item value="filled">已填写</Item>
+      <Item value="unique">非重复唯一值</Item>
+      <Item value="percentEmpty">空值占比</Item>
+      <Item value="percentFilled">已填写占比</Item>
+      <Item value="percentUnique">唯一值占比</Item>
+    </Select>
   );
 };
 export default SummaryCell;

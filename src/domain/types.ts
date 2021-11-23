@@ -385,15 +385,6 @@ export type RowViewRsp = {
   row_id: string;
 };
 
-export type ColumnDataTemplate = {
-  id: string;
-  name: string;
-  type: ColumnTypeKey;
-  width: number;
-  offset: number;
-  option: OptionsType;
-};
-
 export type RowDataTemplate = {
   id: string;
   colIds: string[];

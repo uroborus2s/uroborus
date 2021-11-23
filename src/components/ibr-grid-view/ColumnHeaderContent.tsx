@@ -1,39 +1,45 @@
 import { view } from '@/domain/view/view.repository';
 import { currentViewIdState } from '@/pages/base/content/table/TableContext';
-import { GridStateContext } from '@ibr/ibr-grid-view/Context';
-import ColumnAddButton from './ColumnAddButton';
-import ColumnHeader from './ColumnHeader';
+import { defaultRowHight, gridScrollLeft } from '@ibr/ibr-grid-view/Context';
 import Checkbox from '@mui/material/Checkbox';
 import styled from '@mui/material/styles/styled';
-import { FC, useContext } from 'react';
+import { FC } from 'react';
 import { useRecoilValue } from 'recoil';
+import ColumnAddButton from './ColumnAddButton';
+import ColumnHeader from './ColumnHeader';
 import { GridTableComponentName } from './GridClasses';
-import { ColumnHeaderContentProps } from './types';
+import { ColumnHeaderContentProps, OwnerStateType } from './types';
 
 const ColumnHeaderContentRoot = styled('div', {
   name: GridTableComponentName,
   slot: 'columnHeaderContent',
-})({
+})<{ ownerState: OwnerStateType }>(({ ownerState }) => ({
   height: '100%',
-  width: '100%',
+  width: 'auto',
   position: 'relative',
   display: 'flex',
-});
+  transform: ownerState.transform,
+}));
 
 const ColumnHeaderContent: FC<ColumnHeaderContentProps> = ({ position }) => {
-  const ownerState = useContext(GridStateContext);
   const viewId = useRecoilValue(currentViewIdState);
 
-  const columnDatas = useRecoilValue(view.columnData(viewId));
+  const scrollLeft = useRecoilValue(gridScrollLeft);
+
+  const ownerState = {
+    transform: position === 'left' ? 'none' : `translateX(${scrollLeft}px)`,
+  };
+
+  const columnIds = [...useRecoilValue(view.columnOrders(viewId))];
 
   const frozenIndex = useRecoilValue(view.frozenIndex(viewId));
 
   return (
-    <ColumnHeaderContentRoot>
+    <ColumnHeaderContentRoot ownerState={ownerState}>
       {position == 'left' && (
         <Checkbox
           sx={{
-            height: ownerState.columnHeaderHight,
+            height: defaultRowHight,
             borderRadius: 0,
             paddingLeft: '12px',
             paddingRight: '41px',
@@ -47,14 +53,10 @@ const ColumnHeaderContent: FC<ColumnHeaderContentProps> = ({ position }) => {
         />
       )}
       {(position == 'left'
-        ? columnDatas.slice(0, frozenIndex)
-        : columnDatas.slice(frozenIndex, columnDatas.length)
-      ).map((data) => (
-        <ColumnHeader
-          columnData={data}
-          key={data.id}
-          ownerState={{ width: data.width, ...ownerState }}
-        />
+        ? columnIds.slice(0, frozenIndex)
+        : columnIds.slice(frozenIndex, columnIds.length)
+      ).map((colId) => (
+        <ColumnHeader colId={colId} key={colId} />
       ))}
       {position == 'right' && <ColumnAddButton />}
     </ColumnHeaderContentRoot>

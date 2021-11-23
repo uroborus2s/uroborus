@@ -1,4 +1,6 @@
 import { conversionColTypeToIconType } from '@/core/util/column-types';
+import { column } from '@/domain/column/column.repository';
+import { view } from '@/domain/view/view.repository';
 import { GridTableComponentName } from '@ibr/ibr-grid-view/GridClasses';
 import { ColumnHeaderProps, OwnerStateType } from '@ibr/ibr-grid-view/types';
 import ArrowDown from '@ibr/ibr-icon/ArrowDown';
@@ -6,18 +8,20 @@ import ColumnHeaderIcon from '@ibr/ibr-icon/ColumnHeaderIcon';
 import styled from '@mui/material/styles/styled';
 import Typography from '@mui/material/Typography';
 import { FC } from 'react';
+import { useRecoilValue } from 'recoil';
 
 const HeaderRoot = styled('div', {
   name: GridTableComponentName,
   slot: 'columnHeader',
-})<{ ownerState: OwnerStateType & { width: number } }>(({ ownerState }) => ({
+})<{ ownerState: OwnerStateType }>(({ ownerState }) => ({
   position: 'relative',
   borderLeft: 'none',
   top: 0,
-  width: ownerState.width,
+  width: ownerState.columnWidth,
   borderRight: '1px solid #ccc',
   display: 'flex',
   alignItems: 'center',
+  flex: 'none',
 }));
 
 const HeaderContent = styled('div', {
@@ -78,13 +82,19 @@ const DraggingLine = styled('div')({
   opacity: 0,
 });
 
-const ColumnHeader: FC<ColumnHeaderProps> = ({ ownerState, columnData }) => {
+const ColumnHeader: FC<ColumnHeaderProps> = ({ colId }) => {
+  const columnWidth = useRecoilValue(view.columnWidth(colId));
+  const columnName = useRecoilValue(column.name(colId));
+  const columnType = useRecoilValue(column.type(colId));
+  const columnOption = useRecoilValue(column.options(colId));
+
+  const ownerState = { columnWidth };
   return (
     <HeaderRoot ownerState={ownerState}>
       <HeaderContent>
         <ColumnHeaderIcon
           sx={{ fontSize: '16px' }}
-          type={conversionColTypeToIconType(columnData.type, columnData.option)}
+          type={conversionColTypeToIconType(columnType, columnOption)}
         />
         <Typography
           sx={{
@@ -97,7 +107,7 @@ const ColumnHeader: FC<ColumnHeaderProps> = ({ ownerState, columnData }) => {
             letterSpacing: '3px',
           }}
         >
-          {columnData.name}
+          {columnName}
         </Typography>
       </HeaderContent>
       <DropButton>

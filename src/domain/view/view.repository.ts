@@ -8,6 +8,7 @@ import {
 import { column as columnEntity } from '../column/column.repository';
 import { pureDispatcher, validator } from '../core';
 import {
+  CREATROW,
   CREATVIEW,
   DUPLIACTEVIEW,
   EDITVIEW,
@@ -15,7 +16,6 @@ import {
   READVIEW,
 } from '../domain.command';
 import {
-  ColumnDataTemplate,
   ColumnViewRsp,
   CommandOptions,
   RowViewRsp,
@@ -35,12 +35,11 @@ export const view = (function () {
     readonly columnFrozen: (columnId: string) => RecoilState<number>;
     readonly frozenWidth: (viewId: string) => RecoilValueReadOnly<number>;
     readonly noFrozenColWidth: (viewId: string) => RecoilValueReadOnly<number>;
+    readonly colWidths: (viewId: string) => RecoilValueReadOnly<number>;
+
     readonly frozenIndex: (viewId: string) => RecoilValueReadOnly<number>;
     readonly rowOrders: (viewId: string) => RecoilState<Set<string>>;
-
-    readonly columnData: (
-      viewId: string,
-    ) => RecoilValueReadOnly<Array<ColumnDataTemplate>>;
+    readonly rowsSize: (viewId: string) => RecoilValueReadOnly<number>;
 
     constructor() {
       this.name = atomFamily<string, string>({
@@ -122,6 +121,19 @@ export const view = (function () {
           },
       });
 
+      this.colWidths = selectorFamily({
+        key: 'view/colWidths',
+        get:
+          (viewId) =>
+          ({ get }) => {
+            const colIds = [...get(this.columnOrders(viewId))];
+            return colIds.reduce(
+              (width, colId) => width + get(this.columnWidth(colId)),
+              0,
+            );
+          },
+      });
+
       this.frozenIndex = selectorFamily({
         key: 'view/frozenIndex',
         get:
@@ -137,30 +149,12 @@ export const view = (function () {
         default: new Set(),
       });
 
-      this.columnData = selectorFamily({
-        key: 'view/columnData',
+      this.rowsSize = selectorFamily({
+        key: 'view/rowsSize',
         get:
           (viewId) =>
-          ({ get }) => {
-            let offset = 65;
-            const colIds = [...get(this.columnOrders(viewId))];
-            return colIds.map((colId, index) => {
-              const currentWidth = get(this.columnWidth(colId));
-              let prveWidth = 0;
-              if (index > 0) {
-                prveWidth = get(this.columnWidth(colIds[index - 1]));
-              }
-              offset += prveWidth;
-              return {
-                name: get(columnEntity.name(colId)),
-                type: get(columnEntity.type(colId)),
-                id: colId,
-                width: currentWidth,
-                offset: offset,
-                option: get(columnEntity.options(colId)),
-              };
-            });
-          },
+          ({ get }) =>
+            get(this.rowOrders(viewId)).size,
       });
     }
   }
@@ -230,10 +224,18 @@ function editView(
   }
 }
 
+function newBlankRow(
+  { set }: TransactionInterface_UNSTABLE,
+  options: CommandOptions,
+) {
+  console.log(options);
+}
+
 export default pureDispatcher({
   [READTABLE]: writeViews,
   [CREATVIEW]: writeViews,
   [EDITVIEW]: editView,
   [DUPLIACTEVIEW]: writeViews,
   [READVIEW]: editView,
+  [CREATROW]: newBlankRow,
 });

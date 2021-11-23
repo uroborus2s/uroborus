@@ -1,19 +1,23 @@
 import { view } from '@/domain/view/view.repository';
 import { currentViewIdState } from '@/pages/base/content/table/TableContext';
+import { gridScrollLeft } from '@ibr/ibr-grid-view/Context';
+import * as React from 'react';
 import SummaryCell from './SummaryCell';
-import { SummaryContentProps } from './types';
+import { OwnerStateType, SummaryContentProps } from './types';
 import styled from '@mui/material/styles/styled';
 import Typography from '@mui/material/Typography';
 import { FC } from 'react';
 import { useRecoilValue } from 'recoil';
 
-const ContentRoot = styled('div')({
+const ContentRoot = styled('div')<{
+  ownerState: OwnerStateType;
+}>(({ ownerState }) => ({
   display: 'flex',
-  alignItems: 'center',
-  width: '100%',
-  height: '100%',
-  paddingLeft: '65px',
-});
+  width: ownerState.columnSizes,
+  height: '24px',
+  paddingLeft: ownerState.position == 'left' ? '65px' : '0',
+  transform: ownerState.transform,
+}));
 
 const SummaryContent: FC<SummaryContentProps> = ({ position }) => {
   const viewId = useRecoilValue(currentViewIdState);
@@ -22,8 +26,38 @@ const SummaryContent: FC<SummaryContentProps> = ({ position }) => {
 
   const frozenIndex = useRecoilValue(view.frozenIndex(viewId));
 
+  const rowIds = useRecoilValue(view.rowOrders(viewId));
+
+  const scrollLeft = useRecoilValue(gridScrollLeft);
+
+  const ownerState = {
+    position: position,
+    columnSizes: position == 'left' ? '100%' : 'auto',
+    transform: position === 'left' ? 'none' : `translateX(${scrollLeft}px)`,
+  };
+
   return (
-    <ContentRoot>
+    <ContentRoot ownerState={ownerState}>
+      {position == 'left' && (
+        <Typography
+          sx={{
+            padding: '3px 8px',
+            position: 'absolute',
+            top: 0,
+            height: '24px',
+            left: '36px',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            fontSize: '12px',
+            overflow: 'hidden',
+            alignItems: 'center',
+            display: 'inline-block',
+            maxWidth: '80px',
+            backgroundColor: '#fff',
+            zIndex: 99,
+          }}
+        >{`${rowIds.size} 条记录`}</Typography>
+      )}
       {(position == 'left'
         ? colIds.slice(0, frozenIndex)
         : colIds.slice(frozenIndex, colIds.length)

@@ -1,11 +1,11 @@
-import { GridStateContext } from '@ibr/ibr-grid-view/Context';
+import { view } from '@/domain/view/view.repository';
+import { currentViewIdState } from '@/pages/base/content/table/TableContext';
+import { rowNumberWidth } from '@ibr/ibr-grid-view/Context';
 import { GridTableComponentName } from '@ibr/ibr-grid-view/GridClasses';
 import SummaryContent from '@ibr/ibr-grid-view/SummaryContent';
 import { OwnerStateType } from '@ibr/ibr-grid-view/types';
-import AddIcon from '@ibr/ibr-icon/AddIcon';
-import Fab from '@mui/material/Fab';
 import styled from '@mui/material/styles/styled';
-import { useContext } from 'react';
+import { useRecoilValue } from 'recoil';
 
 const SummaryBarRoot = styled('div', {
   name: GridTableComponentName,
@@ -30,7 +30,7 @@ const SummaryLeftPane = styled('div', {
   left: 0,
   top: 0,
   backgroundColor: 'hsla(0,0%,100%,0.5)',
-  width: ownerState.fixedColumnWidth,
+  width: ownerState.columnSizes,
   borderRight: '1px solid #ccc',
   zIndex: 1,
   overflow: 'visible',
@@ -42,7 +42,7 @@ const SummaryRightPane = styled('div', {
 })<{ ownerState: OwnerStateType }>(({ ownerState }) => ({
   position: 'absolute',
   bottom: 0,
-  left: ownerState.fixedColumnWidth,
+  left: ownerState.columnSizes,
   top: 0,
   right: 0,
   overflow: 'visible',
@@ -50,14 +50,22 @@ const SummaryRightPane = styled('div', {
 }));
 
 const SummaryBarContainer = () => {
-  const ownerState = useContext(GridStateContext);
+  const viewId = useRecoilValue(currentViewIdState);
+
+  const frozenColWidth = useRecoilValue(view.frozenWidth(viewId));
+
+  const ownerState = {
+    columnSizes: Math.ceil(frozenColWidth + rowNumberWidth),
+  };
 
   return (
     <SummaryBarRoot>
       <SummaryLeftPane ownerState={ownerState}>
         <SummaryContent position="left" />
       </SummaryLeftPane>
-      <SummaryRightPane ownerState={ownerState}></SummaryRightPane>
+      <SummaryRightPane ownerState={ownerState}>
+        <SummaryContent position="right" />
+      </SummaryRightPane>
     </SummaryBarRoot>
   );
 };
