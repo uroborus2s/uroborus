@@ -7,17 +7,10 @@ export const row = (function () {
   class c {
     readonly cellValue: (cellId: string) => RecoilState<any>;
 
-    readonly rowHoverState: (rowId: string) => RecoilState<boolean>;
-
     constructor() {
       this.cellValue = atomFamily({
         key: 'row/cell',
         default: undefined,
-      });
-
-      this.rowHoverState = atomFamily<boolean, string>({
-        key: 'row/ui/hover-state',
-        default: false,
       });
     }
   }

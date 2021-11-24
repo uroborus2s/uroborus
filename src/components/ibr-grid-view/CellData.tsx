@@ -1,6 +1,6 @@
 import { view } from '@/domain/view/view.repository';
-import { defaultRowHight } from '@ibr/ibr-grid-view/Context';
-import { GridTableComponentName } from '@ibr/ibr-grid-view/GridClasses';
+import { rowHeight } from './Context';
+import { GridTableComponentName } from './GridClasses';
 import styled from '@mui/material/styles/styled';
 import { FC } from 'react';
 import { useRecoilValue } from 'recoil';
@@ -11,7 +11,6 @@ const CellRoot = styled('div', {
   slot: 'cell',
 })({
   position: 'relative',
-  height: defaultRowHight,
   overflow: 'hidden',
   borderRight: '1px solid #ccc',
   zIndex: 1,
@@ -19,11 +18,11 @@ const CellRoot = styled('div', {
 
 const CellData: FC<CellDataProps> = ({ cellId }) => {
   const [rowId, colId] = cellId.split('/');
-  console.log(cellId, rowId, colId);
 
   const colWidth = useRecoilValue(view.columnWidth(colId));
+  const cellHeight = useRecoilValue(rowHeight);
 
-  return <CellRoot style={{ width: colWidth }} />;
+  return <CellRoot style={{ width: colWidth, height: cellHeight }} />;
 };
 
 export default CellData;

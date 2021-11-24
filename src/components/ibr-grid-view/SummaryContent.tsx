@@ -33,7 +33,7 @@ const SummaryContent: FC<SummaryContentProps> = ({ position }) => {
   const ownerState = {
     position: position,
     columnSizes: position == 'left' ? '100%' : 'auto',
-    transform: position === 'left' ? 'none' : `translateX(${scrollLeft}px)`,
+    transform: position === 'left' ? 'none' : `translateX(${-scrollLeft}px)`,
   };
 
   return (

@@ -1,21 +1,29 @@
 import { useSize } from '@/core/hooks';
+import useRafFun from '@/core/hooks/useRafFun';
 import { view } from '@/domain/view/view.repository';
 import { currentViewIdState } from '@/pages/base/content/table/TableContext';
 import styled from '@mui/material/styles/styled';
 import {
-  defaultColumnHeaderHight,
-  defaultRowHight,
-  gridScrollLeft,
-  gridScrollTop,
-  rowNumberWidth,
-} from './Context';
-import { LegacyRef, UIEvent, useRef } from 'react';
+  ComponentPropsWithoutRef,
+  FC,
+  LegacyRef,
+  UIEvent,
+  useRef,
+} from 'react';
 import {
   useRecoilState,
   useRecoilTransaction_UNSTABLE,
   useRecoilValue,
 } from 'recoil';
-import useRafFun from '@/core/hooks/useRafFun';
+import {
+  defaultColumnHeaderHight,
+  gridScrollLeft,
+  gridScrollTop,
+  rowHeight,
+  rowNumberWidth,
+} from './Context';
+import { ScrollBarProps } from './types';
+import useGridMoveScrollThumb from './useGridMoveScrollThumb';
 
 const ScrollRoot = styled('div')({
   position: 'absolute',
@@ -24,18 +32,22 @@ const ScrollRoot = styled('div')({
   top: defaultColumnHeaderHight,
   bottom: 0,
   zIndex: 4,
-  pointerEvents: 'none',
-  opacity: 0.7,
   overflow: 'hidden',
+  display: 'inline-block',
 });
 
 const ScrollInner = styled('div')({
   overflow: 'scroll',
+  display: 'inline-block',
+  width: '100%',
+  height: '100%',
   '&::-webkit-scrollbar': {
     display: 'none',
     width: 0,
     height: 0,
   },
+  scrollbarWidth: 'none',
+  msOverflowStyle: 'none',
 });
 
 const ScrollBar = styled('div')({
@@ -43,85 +55,135 @@ const ScrollBar = styled('div')({
   zIndex: 2,
   backgroundColor: 'hsla(0,0%,0%,0.28)',
   boxShadow: 'inset 0 0 0 1px hsl(0deg 0% 100%)',
-  borderRadius: '7px',
+  borderRadius: '8px',
   position: 'absolute',
   '&:hover': {
     backgroundColor: 'hsla(0,0%,0%,0.4)',
   },
 });
 
-const HorizontalScrollBar = styled(ScrollBar)({
+const HorizontalScrollBarRoot = styled(ScrollBar)({
   height: '10px',
   marginLeft: '2px',
   left: 0,
   bottom: '2px',
 });
 
-const VerticalScrollBar = styled(ScrollBar)({
+const HorizontalScrollBar: FC<ScrollBarProps> = ({ maxWidth, scrollWidth }) => {
+  const { handleMouseDown, barOffset } = useGridMoveScrollThumb(
+    'horizontal',
+    gridScrollLeft,
+    maxWidth,
+    scrollWidth,
+  );
+
+  const length = scrollWidth.current;
+
+  const thumbLength = (length * length) / maxWidth;
+
+  const transForm = `translateX(${barOffset}px)`;
+
+  return (
+    <HorizontalScrollBarRoot
+      onMouseDownCapture={handleMouseDown}
+      style={{
+        width: thumbLength,
+        transform: transForm,
+      }}
+    />
+  );
+};
+
+const VerticalScrollBarRoot = styled(ScrollBar)({
   width: '10px',
   marginTop: '2px',
   top: 0,
   right: '2px',
 });
 
-const ScrollOverlay = () => {
+const VerticalScrollBar: FC<ScrollBarProps> = ({ maxHeight, scrollHeight }) => {
+  const { handleMouseDown, barOffset } = useGridMoveScrollThumb(
+    'horizontal',
+    gridScrollTop,
+    maxHeight,
+    scrollHeight,
+  );
+
+  const length = scrollHeight.current;
+
+  const thumbLength = (length * length) / maxHeight;
+
+  const transForm = `translateY(${barOffset}px)`;
+
+  return (
+    <VerticalScrollBarRoot
+      onMouseDownCapture={handleMouseDown}
+      style={{ width: thumbLength, transform: transForm }}
+    />
+  );
+};
+
+const ScrollOverlay: FC<ComponentPropsWithoutRef<'div'>> = (props) => {
   const overlayRef = useRef<HTMLDivElement>();
 
-  const { offsetHeight, offsetWidth } = useSize(overlayRef);
+  const rect = useSize(overlayRef);
+
+  const clientHeight = useRef(rect.clientHeight);
+
+  clientHeight.current = rect.clientHeight;
+
+  const clientWdith = useRef(rect.clientWdith);
+
+  clientWdith.current = rect.clientWdith;
 
   const viewId = useRecoilValue(currentViewIdState);
 
-  const maxWidth = useRecoilValue(view.colWidths(viewId)) + rowNumberWidth;
+  const maxWidth =
+    useRecoilValue(view.colWidths(viewId)) + rowNumberWidth + 160;
 
-  const maxHeigth = useRecoilValue(view.rowsSize(viewId)) * defaultRowHight;
+  const rHeight = useRecoilValue(rowHeight);
 
-  const [scrollTop, setScrollTop] = useRecoilState(gridScrollTop);
-
-  const [scrollLeft, setScrollLeft] = useRecoilState(gridScrollLeft);
-
-  let horizontalScrollBlockLength = 0;
-  let verticalScrollBlockLength = 0;
-
-  if (maxWidth > offsetWidth) {
-    horizontalScrollBlockLength = Math.pow(offsetWidth, 2) / maxWidth;
-  }
-
-  if (maxHeigth > offsetHeight) {
-    verticalScrollBlockLength = Math.pow(offsetHeight, 2) / maxHeigth;
-  }
+  const maxHeigth = useRecoilValue(view.rowsSize(viewId)) * rHeight + 160;
 
   const handleOnScroll = useRafFun(
-    useRecoilTransaction_UNSTABLE(() => (event: UIEvent<HTMLDivElement>) => {
-      console.log(event.target);
-      const scrollTop = (event.target as HTMLDivElement).scrollTop;
-      const scrollLeft = (event.target as HTMLDivElement).scrollLeft;
-      setScrollTop(scrollTop);
-      setScrollLeft(scrollLeft);
-    }),
+    useRecoilTransaction_UNSTABLE(
+      ({ set }) =>
+        (event: UIEvent<HTMLDivElement>) => {
+          console.log(event.target);
+          const scrollTop = (event.target as HTMLDivElement).scrollTop;
+          const scrollLeft = (event.target as HTMLDivElement).scrollLeft;
+          set(gridScrollTop, scrollTop);
+          set(gridScrollLeft, scrollLeft);
+        },
+    ),
   );
 
   return (
-    <ScrollRoot ref={overlayRef as LegacyRef<HTMLDivElement>}>
-      <ScrollInner
-        style={{ width: offsetWidth, height: offsetHeight }}
-        onScroll={handleOnScroll}
-      >
+    <ScrollRoot
+      // ref={overlayRef as LegacyRef<HTMLDivElement>}
+      onScroll={handleOnScroll}
+      {...props}
+    >
+      <ScrollInner ref={overlayRef as LegacyRef<HTMLDivElement>}>
         <div style={{ width: maxWidth, height: maxHeigth }} />
       </ScrollInner>
-      {horizontalScrollBlockLength > 0 && (
+
+      {/*水平的滚动栏*/}
+      {maxWidth > clientWdith.current && (
         <HorizontalScrollBar
-          style={{
-            width: horizontalScrollBlockLength,
-            transform: `translateX(${scrollLeft}px)`,
-          }}
+          maxHeight={maxHeigth}
+          maxWidth={maxWidth}
+          scrollHeight={clientHeight}
+          scrollWidth={clientWdith}
         />
       )}
-      {verticalScrollBlockLength > 0 && (
+      {/*垂直的滚动栏*/}
+      {maxHeigth > clientHeight.current && (
         <VerticalScrollBar
-          style={{
-            height: verticalScrollBlockLength,
-            transform: `translateY(${scrollTop}px)`,
-          }}
+          maxHeight={maxHeigth}
+          maxWidth={maxWidth}
+          scrollHeight={clientHeight}
+          scrollWidth={clientWdith}
         />
       )}
     </ScrollRoot>

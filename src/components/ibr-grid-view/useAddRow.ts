@@ -19,6 +19,7 @@ export default function (lastRowId: string) {
         view_id: viewId,
         anchor_row_id: lastRowId,
         direction: 0,
+        contents: {},
       },
     }).then();
   };

@@ -1,5 +1,4 @@
-import { row } from '@/domain/row/row.repository';
-import { defaultRowHight } from '@ibr/ibr-grid-view/Context';
+import { DefaultRowHeight, rowHoverState } from './Context';
 import ExpandIcon from '@ibr/ibr-icon/ExpandIcon';
 import { Tooltip } from '@mui/material';
 import Checkbox from '@mui/material/Checkbox';
@@ -23,11 +22,11 @@ const Grabby = styled('div')({
   backgroundPosition: '2px 2px',
   width: '12px',
   flex: 'none',
-  height: defaultRowHight,
+  height: DefaultRowHeight.short,
 });
 
 const RowNumber: FC<RowNumberProps> = ({ rowId, sequence }) => {
-  const hover = useRecoilValue(row.rowHoverState(rowId));
+  const hover = useRecoilValue(rowHoverState(rowId));
 
   return (
     <RowNumberRoot>

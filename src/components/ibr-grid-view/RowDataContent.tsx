@@ -1,11 +1,15 @@
-import { row } from '@/domain/row/row.repository';
 import { view } from '@/domain/view/view.repository';
 import { currentViewIdState } from '@/pages/base/content/table/TableContext';
 import styled from '@mui/material/styles/styled';
 import { FC } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import CellData from './CellData';
-import { defaultRowHight, gridScrollLeft, gridScrollTop } from './Context';
+import {
+  gridScrollLeft,
+  gridScrollTop,
+  rowHeight,
+  rowHoverState,
+} from './Context';
 import { GridTableComponentName } from './GridClasses';
 import RowAddButton from './RowAddButton';
 import RowNumber from './RowNumber';
@@ -30,7 +34,6 @@ const RowDataRoot = styled('div', {
   slot: 'rowData',
 })({
   position: 'relative',
-  height: defaultRowHight,
   display: 'flex',
   alignItems: 'center',
   width: '100%',
@@ -45,11 +48,13 @@ const RowData: FC<{ rowId: string; sequence: number } & RowDataContentProps> =
 
     const colOrders = [...useRecoilValue(view.columnOrders(viewId))];
 
-    const [hover, setHover] = useRecoilState(row.rowHoverState(rowId));
+    const [hover, setHover] = useRecoilState(rowHoverState(rowId));
+
+    const rHeight = useRecoilValue(rowHeight);
 
     return (
       <RowDataRoot
-        sx={{ backgroundColor: hover ? '#f8f8f8' : 'inherit' }}
+        sx={{ backgroundColor: hover ? '#f8f8f8' : 'inherit', height: rHeight }}
         onMouseEnter={() => {
           setHover(true);
         }}
@@ -71,7 +76,9 @@ const RowData: FC<{ rowId: string; sequence: number } & RowDataContentProps> =
 const RowDataContent: FC<RowDataContentProps> = ({ position }) => {
   const viewId = useRecoilValue(currentViewIdState);
 
-  const rowsSize = useRecoilValue(view.rowsSize(viewId)) * defaultRowHight;
+  const rHeight = useRecoilValue(rowHeight);
+
+  const rowsSize = useRecoilValue(view.rowsSize(viewId)) * rHeight;
 
   const rowIds = [...useRecoilValue(view.rowOrders(viewId))];
 
@@ -85,8 +92,8 @@ const RowDataContent: FC<RowDataContentProps> = ({ position }) => {
     rowSizes: rowsSize,
     transform:
       position == 'left'
-        ? `translateY(${scrollTop}px)`
-        : `translate(${scrollLeft}px,${scrollTop}px)`,
+        ? `translateY(${-scrollTop}px)`
+        : `translate(${-scrollLeft}px,${-scrollTop}px)`,
   };
 
   return (

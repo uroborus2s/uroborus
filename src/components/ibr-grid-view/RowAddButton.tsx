@@ -4,7 +4,7 @@ import styled from '@mui/material/styles/styled';
 import Typography from '@mui/material/Typography';
 import { FC } from 'react';
 import { useRecoilState } from 'recoil';
-import { defaultRowHight, rowAddHoverState } from './Context';
+import { DefaultRowHeight, rowAddHoverState } from './Context';
 
 const RowAddButtonRoot = styled('div')({
   width: '100%',
@@ -14,7 +14,6 @@ const RowAddButtonRoot = styled('div')({
   cursor: 'pointer',
   display: 'flex',
   alignItems: 'center',
-  height: defaultRowHight,
   paddingLeft: '0.5rem',
 });
 
@@ -28,7 +27,10 @@ const RowAddButton: FC<{ position: 'left' | 'right'; lastRowId: string }> = ({
 
   return (
     <RowAddButtonRoot
-      sx={{ backgroundColor: hover ? '#f8f8f8' : 'hsl(0,0%,100%)' }}
+      sx={{
+        backgroundColor: hover ? '#f8f8f8' : 'hsl(0,0%,100%)',
+        height: DefaultRowHeight.short,
+      }}
       onMouseEnter={() => {
         setHover(true);
       }}

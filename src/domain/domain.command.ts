@@ -44,6 +44,7 @@ export const api = {
 
     /***************row************************/
     row: (rowId?: string) => (rowId ? `/row/${rowId}` : '/row'),
+    newRow: '/row/contentWith',
   },
 };
 

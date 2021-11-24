@@ -9,6 +9,8 @@ import useRafState from '../useRafState';
 type Size = {
   offsetWidth: number;
   offsetHeight: number;
+  clientWdith: number;
+  clientHeight: number;
 };
 
 type OnResizeFun = (
@@ -49,6 +51,8 @@ export default function (
     return {
       offsetWidth: el ? el.offsetWidth : 0,
       offsetHeight: el ? el.offsetHeight : 0,
+      clientWdith: el ? el.clientWidth : 0,
+      clientHeight: el ? el.clientHeight : 0,
     };
   });
 
@@ -77,6 +81,8 @@ export default function (
         setState({
           offsetWidth: elem.offsetWidth,
           offsetHeight: elem.offsetHeight,
+          clientHeight: elem.clientHeight,
+          clientWdith: elem.clientWidth,
         });
       });
     });

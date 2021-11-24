@@ -1,7 +1,6 @@
 //表格组件的参数
 import { StyeldProps } from '@/core/ibr-types';
-import { ColumnDataTemplate } from '@/domain/types';
-import { ComponentPropsWithoutRef } from 'react';
+import { ComponentPropsWithoutRef, MutableRefObject } from 'react';
 
 export type IbrGridProps = StyeldProps & ComponentPropsWithoutRef<'div'>;
 
@@ -37,3 +36,11 @@ export type OwnerStateType = {
 export type ColumnHeaderProps = {
   colId: string;
 };
+
+export type ScrollBarProps = StyeldProps &
+  ComponentPropsWithoutRef<'div'> & {
+    maxHeight: number;
+    maxWidth: number;
+    scrollWidth: MutableRefObject<number>;
+    scrollHeight: MutableRefObject<number>;
+  };

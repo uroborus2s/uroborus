@@ -117,7 +117,6 @@ const SummaryCell: FC<SummaryCellProps> = ({ colId }) => {
       // variant="standard"
       defaultValue="none"
       renderValue={handleRenderTotal}
-      disableUnderline
       MenuProps={{
         anchorOrigin: {
           vertical: 'top',

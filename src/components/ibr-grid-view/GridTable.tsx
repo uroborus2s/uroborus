@@ -1,5 +1,11 @@
-import { gridScrollLeft, gridScrollTop } from '@ibr/ibr-grid-view/Context';
+import {
+  gridScrollLeft,
+  gridScrollTop,
+  isGridScrollingState,
+  rowAddHoverState,
+} from '@ibr/ibr-grid-view/Context';
 import ScrollOverlay from '@ibr/ibr-grid-view/ScrollOverlay';
+import useOnWellScroll from '@ibr/ibr-grid-view/useOnWellScroll';
 import AddIcon from '@ibr/ibr-icon/AddIcon';
 import composeClasses from '@mui/core/composeClasses';
 import { Tooltip } from '@mui/material';
@@ -35,6 +41,7 @@ const useUtilityClasses = (ownerState: IbrGridProps) => {
 const GridRoot = styled('div', { name: GridTableComponentName, slot: 'Root' })({
   position: 'relative',
   height: '100%',
+  zIndex: 4,
 });
 
 const GridTable: ForwardRefRenderFunction<HTMLElement, IbrGridProps> = (
@@ -51,19 +58,26 @@ const GridTable: ForwardRefRenderFunction<HTMLElement, IbrGridProps> = (
       () => {
         reset(gridScrollTop);
         reset(gridScrollLeft);
+        reset(isGridScrollingState);
+        reset(rowAddHoverState);
       },
     [],
   );
 
   useEffect(() => resetScrollState, []);
 
+  const { handleOnWell, isScrolling } = useOnWellScroll();
+
   return (
     <GridRoot
       className={classNames(className, classes.root)}
       ref={ref as LegacyRef<HTMLDivElement>}
+      onWheel={() => {
+        handleOnWell.current();
+      }}
       {...rootProps}
     >
-      <ScrollOverlay />
+      <ScrollOverlay style={{ pointerEvents: isScrolling ? 'auto' : 'none' }} />
       <GridContainer />
       <SummaryBarContainer />
       <Tooltip title="新增记录" placement="right-start">

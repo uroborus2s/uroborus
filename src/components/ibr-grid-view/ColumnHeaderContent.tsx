@@ -1,6 +1,9 @@
 import { view } from '@/domain/view/view.repository';
 import { currentViewIdState } from '@/pages/base/content/table/TableContext';
-import { defaultRowHight, gridScrollLeft } from '@ibr/ibr-grid-view/Context';
+import {
+  defaultColumnHeaderHight,
+  gridScrollLeft,
+} from '@ibr/ibr-grid-view/Context';
 import Checkbox from '@mui/material/Checkbox';
 import styled from '@mui/material/styles/styled';
 import { FC } from 'react';
@@ -27,7 +30,7 @@ const ColumnHeaderContent: FC<ColumnHeaderContentProps> = ({ position }) => {
   const scrollLeft = useRecoilValue(gridScrollLeft);
 
   const ownerState = {
-    transform: position === 'left' ? 'none' : `translateX(${scrollLeft}px)`,
+    transform: position === 'left' ? 'none' : `translateX(${-scrollLeft}px)`,
   };
 
   const columnIds = [...useRecoilValue(view.columnOrders(viewId))];
@@ -39,7 +42,7 @@ const ColumnHeaderContent: FC<ColumnHeaderContentProps> = ({ position }) => {
       {position == 'left' && (
         <Checkbox
           sx={{
-            height: defaultRowHight,
+            height: defaultColumnHeaderHight,
             borderRadius: 0,
             paddingLeft: '12px',
             paddingRight: '41px',
