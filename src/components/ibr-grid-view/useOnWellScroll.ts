@@ -12,25 +12,26 @@ export default function () {
 
   refState.current = isScrolling;
 
-  const handleOnWell = useRef<DebouncedFunc<() => void>>();
+  const endWheel = useCallback(
+    debounce(() => {
+      setScrolling(false);
+    }, 500),
+    [],
+  );
 
-  useEffect(() => {
-    handleOnWell.current = debounce(
-      () => {
-        console.log(refState.current);
-        if (refState.current) {
-          setScrolling(false);
-        } else {
-          setScrolling(true);
-        }
-      },
-      500,
-      { leading: true, trailing: true },
-    );
-    return () => {
-      handleOnWell.current?.cancel();
-    };
-  }, []);
+  const handleOnWell = () => {
+    if (!isScrolling) {
+      setScrolling(true);
+    }
+    endWheel();
+  };
+
+  useEffect(
+    () => () => {
+      endWheel.cancel();
+    },
+    [],
+  );
 
   return { handleOnWell, isScrolling };
 }

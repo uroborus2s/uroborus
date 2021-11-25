@@ -72,9 +72,7 @@ const GridTable: ForwardRefRenderFunction<HTMLElement, IbrGridProps> = (
     <GridRoot
       className={classNames(className, classes.root)}
       ref={ref as LegacyRef<HTMLDivElement>}
-      onWheel={() => {
-        handleOnWell.current();
-      }}
+      onWheel={handleOnWell}
       {...rootProps}
     >
       <ScrollOverlay style={{ pointerEvents: isScrolling ? 'auto' : 'none' }} />
