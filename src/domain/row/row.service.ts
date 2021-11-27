@@ -1,4 +1,5 @@
-import { api, CREATROW } from '@/domain';
+// import { api, CREATROW } from '@/domain';
+import { api, CREATROW } from '../domain.command';
 import { cmdDispatcher, transformResponse } from '@/domain/core';
 import request from '@/domain/request/request';
 import { CommandOptions } from '@/domain/types';

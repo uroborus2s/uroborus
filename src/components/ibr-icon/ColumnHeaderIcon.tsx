@@ -235,12 +235,13 @@ const ColIcons = {
 } as const;
 
 type ColumnHeaderIconProps = SvgIconProps & {
-  type: keyof typeof ColIcons;
+  type: string;
 };
 
-const ColumnHeaderIcon: FC<ColumnHeaderIconProps> = ({ type, ...prop }) => {
-  const IconComm = ColIcons[type];
-  if (IconComm) return <IconComm {...prop} />;
+const ColumnHeaderIcon: FC<ColumnHeaderIconProps> = ({ type, sx, ...prop }) => {
+  const IconComm = ColIcons[type as keyof typeof ColIcons];
+  const isx = { ...sx, fontSize: '16px' };
+  if (IconComm) return <IconComm {...prop} sx={isx} />;
   else return null;
 };
 

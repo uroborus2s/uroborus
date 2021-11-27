@@ -5,7 +5,6 @@ import {
   selectorFamily,
   TransactionInterface_UNSTABLE,
 } from 'recoil';
-import { column as columnEntity } from '../column/column.repository';
 import { pureDispatcher, validator } from '../core';
 import {
   CREATROW,
