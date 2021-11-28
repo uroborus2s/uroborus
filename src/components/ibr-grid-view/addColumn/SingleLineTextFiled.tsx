@@ -5,7 +5,7 @@ const SingleLineTextFiled = () => {
   return (
     <div style={{ padding: '0.5rem 0' }}>
       <Typography sx={{ opacity: 0.75 }}>
-        当行文本。您可以选择使用默认值填充单元格：
+        单行文本。您可以选择使用默认值填充单元格：
       </Typography>
       <Typography
         sx={{

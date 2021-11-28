@@ -42,6 +42,7 @@ const GridRoot = styled('div', { name: GridTableComponentName, slot: 'Root' })({
   position: 'relative',
   height: '100%',
   zIndex: 4,
+  userSelect: 'none',
 });
 
 const GridTable: ForwardRefRenderFunction<HTMLElement, IbrGridProps> = (

@@ -25,6 +25,12 @@ const Grabby = styled('div')({
   height: DefaultRowHeight.short,
 });
 
+const RowColorContainer = styled('div')({
+  width: '8px',
+  borderRadius: '9999px',
+  height: '22px',
+});
+
 const RowNumber: FC<RowNumberProps> = ({ rowId, sequence }) => {
   const hover = useRecoilValue(rowHoverState(rowId));
 
@@ -55,6 +61,7 @@ const RowNumber: FC<RowNumberProps> = ({ rowId, sequence }) => {
           {sequence}
         </Typography>
       )}
+      <RowColorContainer />
       {hover && (
         <Tooltip title="查看记录详细内容" placement="bottom-end">
           <IconButton

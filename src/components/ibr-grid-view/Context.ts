@@ -7,6 +7,8 @@ export const DefaultRowHeight = {
   extraTall: 128,
 };
 
+export const defaultSummaryBarHight = 34;
+
 export const defaultColumnHeaderHight = 32;
 export const rowNumberWidth = 66;
 export const addColumnButtonWidth = 32;

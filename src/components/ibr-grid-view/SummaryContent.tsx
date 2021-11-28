@@ -53,8 +53,6 @@ const SummaryContent: FC<SummaryContentProps> = ({ position }) => {
             alignItems: 'center',
             display: 'inline-block',
             maxWidth: '80px',
-            backgroundColor: '#fff',
-            zIndex: 99,
           }}
         >{`${rowIds.size} 条记录`}</Typography>
       )}

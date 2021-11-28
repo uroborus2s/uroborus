@@ -1,4 +1,12 @@
 import filterSearchValue from '@/core/util/filterSearchValue';
+import { CREATCOLUMN, useDispath } from '@/domain';
+import { view } from '@/domain/view/view.repository';
+import {
+  currentViewIdState,
+  TableIdContext,
+} from '@/pages/base/content/table/TableContext';
+import CheckBoxFiled from '@ibr/ibr-grid-view/addColumn/CheckBoxFiled';
+import FiledInformation from '@ibr/ibr-grid-view/addColumn/FiledInformation';
 import SingleLineTextFiled from '@ibr/ibr-grid-view/addColumn/SingleLineTextFiled';
 import ColumnHeaderIcon from '@ibr/ibr-icon/ColumnHeaderIcon';
 import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded';
@@ -17,7 +25,8 @@ import ListItemText from '@mui/material/ListItemText';
 import styled from '@mui/material/styles/styled';
 import Tooltip from '@mui/material/Tooltip';
 import useAutocomplete from '@mui/material/useAutocomplete';
-import { createElement, FC, useState } from 'react';
+import { createElement, FC, useContext, useState } from 'react';
+import { useRecoilValue } from 'recoil';
 
 const ItemButton = styled(ListItemButton)({
   borderRadius: '6px',
@@ -36,7 +45,8 @@ const ItemText = styled(ListItemText)({
 const AddColumnPopover: FC<{
   expanded: boolean;
   setExpanded: (exp: boolean) => void;
-}> = ({ expanded, setExpanded }) => {
+  closePopover: () => void;
+}> = ({ expanded, setExpanded, closePopover }) => {
   const { groupedOptions, getInputProps } = useAutocomplete({
     getOptionLabel: (option) => option.lable,
     options: Object.entries(primaryText).map(([key, value]) => ({
@@ -49,13 +59,46 @@ const AddColumnPopover: FC<{
     open: true,
   });
 
+  const viewId = useRecoilValue(currentViewIdState);
+
+  const tableId = useContext(TableIdContext);
+
+  const lastColId = [...useRecoilValue(view.columnOrders(viewId))].pop();
+
   //当前选中的列状态
   const [type, setType] = useState('text');
+
+  //新建列的默认参数，对应接口中的options 字段
+  const [option, setOption] = useState({});
+
+  const [filedName, setFiledName] = useState<string>();
+
+  console.log(filedName, option);
+
+  const { run } = useDispath(CREATCOLUMN, { manual: true });
+
+  const handleNewColumn = () => {
+    run({
+      data: {
+        view_id: viewId,
+        table_id: tableId,
+        type: type,
+        anchor_column_id: lastColId,
+        options: option,
+        name: filedName ?? primaryText[type][0],
+        desc: '',
+      },
+    }).then();
+  };
 
   return (
     <>
       <InputBase
         placeholder="请填写列名(可选的)"
+        value={filedName}
+        onChange={(e) => {
+          setFiledName(e.target.value);
+        }}
         sx={{
           width: '100%',
           flex: 'none',
@@ -180,15 +223,32 @@ const AddColumnPopover: FC<{
           </List>
         </AccordionDetails>
       </Accordion>
-      {!expanded && createElement(addComment[type])}
-      <ButtonGroup sx={{ justifyContent: 'end', padding: '0.5rem 0' }}>
-        <Button variant="text">取消</Button>
+      {!expanded &&
+        createElement(InfoComment[type].component, {
+          ...InfoComment[type].props,
+          setParameters: setOption,
+        })}
+      <ButtonGroup
+        sx={{ justifyContent: 'end', padding: '0.5rem 0' }}
+        disableRipple
+        disableFocusRipple
+      >
+        <Button
+          variant="text"
+          onClick={(e) => {
+            e.stopPropagation();
+            closePopover();
+          }}
+        >
+          取消
+        </Button>
         <Button
           variant="contained"
           sx={{
             marginLeft: '1rem',
             display: expanded ? 'none' : 'inline-flex',
           }}
+          onClick={handleNewColumn}
         >
           创建列字段
         </Button>
@@ -225,27 +285,35 @@ const primaryText: Record<string, string[]> = {
   autoNumber: ['自增序列号', '为记录添加一个唯一且顺序自增的序列号'],
 };
 
-const addComment: Record<string, FC> = {
-  text: SingleLineTextFiled,
-  multilineText: SingleLineTextFiled,
-  attachment: SingleLineTextFiled,
-  checkbox: SingleLineTextFiled,
-  select: SingleLineTextFiled,
-  multiSelect: SingleLineTextFiled,
-  collaborator: SingleLineTextFiled,
-  date: SingleLineTextFiled,
-  phone: SingleLineTextFiled,
-  email: SingleLineTextFiled,
-  url: SingleLineTextFiled,
-  decimal: SingleLineTextFiled,
-  currency: SingleLineTextFiled,
-  percent: SingleLineTextFiled,
-  duration: SingleLineTextFiled,
-  rating: SingleLineTextFiled,
-  formula: SingleLineTextFiled,
-  createdTime: SingleLineTextFiled,
-  lastModifiedTime: SingleLineTextFiled,
-  createdBy: SingleLineTextFiled,
-  lastModifiedBy: SingleLineTextFiled,
-  autoNumber: SingleLineTextFiled,
+const InfoComment: Record<string, { component: FC<any>; props?: any }> = {
+  text: { component: SingleLineTextFiled },
+  multilineText: {
+    component: FiledInformation,
+    props: { text: '您可以填入多行长文本' },
+  },
+  attachment: {
+    component: FiledInformation,
+    props: {
+      text: '附件字段允许您添加图像、文档或其他文件，然后可以查看或下载这些文件。',
+    },
+  },
+  checkbox: { component: CheckBoxFiled },
+  // select: SingleLineTextFiled,
+  // multiSelect: SingleLineTextFiled,
+  // collaborator: SingleLineTextFiled,
+  // date: SingleLineTextFiled,
+  // phone: SingleLineTextFiled,
+  // email: SingleLineTextFiled,
+  // url: SingleLineTextFiled,
+  // decimal: SingleLineTextFiled,
+  // currency: SingleLineTextFiled,
+  // percent: SingleLineTextFiled,
+  // duration: SingleLineTextFiled,
+  // rating: SingleLineTextFiled,
+  // formula: SingleLineTextFiled,
+  // createdTime: SingleLineTextFiled,
+  // lastModifiedTime: SingleLineTextFiled,
+  // createdBy: SingleLineTextFiled,
+  // lastModifiedBy: SingleLineTextFiled,
+  // autoNumber: SingleLineTextFiled,
 };

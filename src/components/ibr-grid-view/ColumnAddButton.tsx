@@ -60,7 +60,11 @@ const ColumnAddButton = () => {
           setIsExpanded(false);
         }}
       >
-        <AddColumnPopover expanded={expanded} setExpanded={setIsExpanded} />
+        <AddColumnPopover
+          expanded={expanded}
+          setExpanded={setIsExpanded}
+          closePopover={handleClose}
+        />
       </Popover>
     </>
   );

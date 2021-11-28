@@ -45,6 +45,13 @@ export const api = {
     /***************row************************/
     row: (rowId?: string) => (rowId ? `/row/${rowId}` : '/row'),
     newRow: '/row/contentWith',
+
+    /***************column************************/
+    column: (columnId?: string) =>
+      columnId ? `/column/${columnId}` : '/column',
+
+    /***************Orders************************/
+    rowOrders: '/orders/rows',
   },
 };
 
@@ -80,6 +87,9 @@ export const READVIEW = 'READVIEW';
 
 //row
 export const CREATROW = 'CREATROW';
+
+//column
+export const CREATCOLUMN = 'CREATCOLUMN';
 
 // invite
 export const REDALLINVITE = 'REDALLINVITE';

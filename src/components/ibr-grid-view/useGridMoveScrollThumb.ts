@@ -5,6 +5,7 @@ import {
   MouseEvent as ReactMouseEvent,
   MutableRefObject,
   useEffect,
+  useLayoutEffect,
 } from 'react';
 import { RecoilState, useRecoilState } from 'recoil';
 
@@ -19,9 +20,17 @@ export default function (
 ) {
   const [scrollOffset, setScrollOffset] = useRecoilState(state);
 
+  console.log(scrollOffset);
+
   const [scrolling, setScrolling] = useRefState(false);
 
-  const [barOffset, setBarOffset] = useRafState(scrollOffset);
+  const [barOffset, setBarOffset] = useRafState(
+    () => (scrollOffset * width.current) / maxOffset,
+  );
+
+  useLayoutEffect(() => {
+    setBarOffset((scrollOffset * width.current) / maxOffset);
+  }, [scrollOffset]);
 
   const handleMouseDown = (event: ReactMouseEvent) => {
     event.stopPropagation();
@@ -72,7 +81,6 @@ export default function (
     document.addEventListener('mousemove', handleMouseMove);
 
     return () => {
-      console.log('卸载组件');
       document.removeEventListener('mouseup', handleMouseUp);
       document.removeEventListener('mousemove', handleMouseMove);
       setScrolling(false);

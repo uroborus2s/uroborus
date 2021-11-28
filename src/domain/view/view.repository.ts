@@ -228,6 +228,9 @@ function newBlankRow(
   options: CommandOptions,
 ) {
   console.log(options);
+  const newRowId = options.response.id;
+  const viewId = options.request?.data?.view_id;
+  set(view.rowOrders(viewId), (prev) => new Set([...prev, newRowId]));
 }
 
 export default pureDispatcher({

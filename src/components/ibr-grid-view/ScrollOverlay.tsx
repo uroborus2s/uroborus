@@ -8,15 +8,13 @@ import {
   FC,
   LegacyRef,
   UIEvent,
+  useEffect,
   useRef,
 } from 'react';
-import {
-  useRecoilState,
-  useRecoilTransaction_UNSTABLE,
-  useRecoilValue,
-} from 'recoil';
+import { useRecoilCallback, useRecoilValue, useSetRecoilState } from 'recoil';
 import {
   defaultColumnHeaderHight,
+  defaultSummaryBarHight,
   gridScrollLeft,
   gridScrollTop,
   rowHeight,
@@ -103,7 +101,7 @@ const VerticalScrollBarRoot = styled(ScrollBar)({
 
 const VerticalScrollBar: FC<ScrollBarProps> = ({ maxHeight, scrollHeight }) => {
   const { handleMouseDown, barOffset } = useGridMoveScrollThumb(
-    'horizontal',
+    'vertical',
     gridScrollTop,
     maxHeight,
     scrollHeight,
@@ -118,7 +116,7 @@ const VerticalScrollBar: FC<ScrollBarProps> = ({ maxHeight, scrollHeight }) => {
   return (
     <VerticalScrollBarRoot
       onMouseDownCapture={handleMouseDown}
-      style={{ width: thumbLength, transform: transForm }}
+      style={{ height: thumbLength, transform: transForm }}
     />
   );
 };
@@ -128,9 +126,9 @@ const ScrollOverlay: FC<ComponentPropsWithoutRef<'div'>> = (props) => {
 
   const rect = useSize(overlayRef);
 
-  const clientHeight = useRef(rect.clientHeight);
+  const clientHeight = useRef(rect.clientHeight - defaultSummaryBarHight);
 
-  clientHeight.current = rect.clientHeight;
+  clientHeight.current = rect.clientHeight - defaultSummaryBarHight;
 
   const clientWdith = useRef(rect.clientWdith);
 
@@ -146,25 +144,39 @@ const ScrollOverlay: FC<ComponentPropsWithoutRef<'div'>> = (props) => {
   const maxHeigth = useRecoilValue(view.rowsSize(viewId)) * rHeight + 160;
 
   const handleOnScroll = useRafFun(
-    useRecoilTransaction_UNSTABLE(
+    useRecoilCallback(
       ({ set }) =>
         (event: UIEvent<HTMLDivElement>) => {
           console.log(event.target);
           const scrollTop = (event.target as HTMLDivElement).scrollTop;
-          const scrollLeft = (event.target as HTMLDivElement).scrollLeft;
+          console.log(scrollTop);
+
           set(gridScrollTop, scrollTop);
-          set(gridScrollLeft, scrollLeft);
         },
+      [],
     ),
   );
+
+  const setWidth = useSetRecoilState(gridScrollLeft);
+
+  useEffect(() => {
+    if (clientWdith.current >= maxWidth) {
+      setWidth((prev) => {
+        if (prev != 0) return 0;
+        else return prev;
+      });
+    }
+  }, [clientWdith.current]);
 
   return (
     <ScrollRoot
       // ref={overlayRef as LegacyRef<HTMLDivElement>}
-      onScroll={handleOnScroll}
       {...props}
     >
-      <ScrollInner ref={overlayRef as LegacyRef<HTMLDivElement>}>
+      <ScrollInner
+        ref={overlayRef as LegacyRef<HTMLDivElement>}
+        onScroll={handleOnScroll}
+      >
         <div style={{ width: maxWidth, height: maxHeigth }} />
       </ScrollInner>
 
