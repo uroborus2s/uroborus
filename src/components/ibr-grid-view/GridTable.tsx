@@ -96,7 +96,7 @@ const GridTable: ForwardRefRenderFunction<HTMLElement, IbrGridProps> = (
         <GridScrollTop.Provider value={gridScrollOffset.top}>
           <GridScrollLeft.Provider value={gridScrollOffset.left}>
             <ScrollOverlay
-              style={{ pointerEvents: isScrolling ? 'auto' : 'none' }}
+              style={{ pointerEvents: isScrolling.current ? 'auto' : 'none' }}
             />
             <GridContainer />
             <SummaryBarContainer />

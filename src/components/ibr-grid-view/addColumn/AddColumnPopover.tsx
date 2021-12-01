@@ -75,8 +75,6 @@ const AddColumnPopover: FC<{
 
   const [filedName, setFiledName] = useState<string>();
 
-  console.log(filedName, option);
-
   const { run } = useDispath(CREATCOLUMN, { manual: true });
 
   const handleNewColumn = () => {

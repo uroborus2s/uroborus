@@ -1,3 +1,4 @@
+import { textColors } from '@/core/util';
 import AddIcon from '@ibr/ibr-icon/AddIcon';
 import IosSwitch from '@ibr/ibr-switch/IosSwitch';
 import SwapVertRoundedIcon from '@mui/icons-material/SwapVertRounded';
@@ -33,8 +34,9 @@ const ColorPopover = styled('div')({
   display: 'grid',
   gridTemplateColumns: 'repeat(10,36px)',
   gridTemplateRows: 'repeat(4,36px)',
-  gridColumnGap: '1rem',
+  gridColumnGap: '0.5rem',
   padding: '0.5rem',
+  placeItems: 'center',
 });
 
 const SingleSelectFiled: FC<FiledComponentProps> = ({
@@ -61,6 +63,8 @@ const SingleSelectFiled: FC<FiledComponentProps> = ({
   const handleClose = () => {
     setColorEl(null);
   };
+
+  const textColorType = Object.keys(textColors);
 
   const onDragEnd = () => {};
 
@@ -103,7 +107,10 @@ const SingleSelectFiled: FC<FiledComponentProps> = ({
           borderTopWidth: '2px',
           borderTopStyle: 'solid',
           borderTopColor: 'rgba(0,0,0,0.05)',
+          maxHeight: '460px',
+          overflow: 'auto',
         }}
+        className="scrollbar"
       >
         {parameters.choiceOrder && parameters.choiceOrder.length > 0 ? (
           <DragDropContext onDragEnd={onDragEnd}>
@@ -127,17 +134,21 @@ const SingleSelectFiled: FC<FiledComponentProps> = ({
                               disableRipple
                               disableFocusRipple
                               sx={{
-                                backgroundColor: '#cfdfff',
+                                backgroundColor:
+                                  textColors[parameters.choices[id]['color']],
                                 padding: 0,
                                 marginRight: '0.25rem',
                                 '&:hover': {
-                                  backgroundColor: 'rgba(207,223, 255, 0.4)',
+                                  opacity: 0.7,
+                                  backgroundColor:
+                                    textColors[parameters.choices[id]['color']],
                                 },
                               }}
+                              data-id={id}
                               onClick={handleClick}
                             >
                               <ArrowDropDownRoundedIcon
-                                sx={{ fontSize: '16px' }}
+                                sx={{ fontSize: '16px', color: '#fff' }}
                               />
                             </IconButton>
                           )}
@@ -166,6 +177,25 @@ const SingleSelectFiled: FC<FiledComponentProps> = ({
                               opacity: 0.6,
                               fontSize: '16px',
                               cursor: 'pointer',
+                            }}
+                            onClick={() => {
+                              setParameters((p) => {
+                                const order = [...p.choiceOrder] as string[];
+                                const newChoices = { ...p.choices };
+                                order.splice(
+                                  order.findIndex((oId) => oId === id),
+                                  1,
+                                );
+                                delete newChoices[id];
+                                console.log(id, order, newChoices);
+                                console.log(p);
+
+                                return {
+                                  choiceOrder: order,
+                                  choices: newChoices,
+                                  disableColors: p.disableColors,
+                                };
+                              });
                             }}
                           />
                         </EditSelectItem>
@@ -200,13 +230,21 @@ const SingleSelectFiled: FC<FiledComponentProps> = ({
           }}
           onClick={() => {
             const uId = uniqueid('ssf');
-            console.log(parameters);
             setParameters((pState) => ({
               ...pState,
               choiceOrder: [...pState.choiceOrder, uId],
               choices: {
                 ...pState.choices,
-                uId: { id: uId, name: '', color: 'blue' },
+                [uId]: {
+                  id: uId,
+                  name: '',
+                  color:
+                    textColorType[
+                      pState.choiceOrder.length >= 40
+                        ? pState.choiceOrder.length - 40
+                        : pState.choiceOrder.length
+                    ],
+                },
               },
             }));
           }}
@@ -228,7 +266,41 @@ const SingleSelectFiled: FC<FiledComponentProps> = ({
           horizontal: 'center',
         }}
       >
-        <ColorPopover />
+        <ColorPopover>
+          {Object.entries(textColors).map(([type, color], index) => (
+            <div
+              key={index}
+              style={{
+                fontSize: '4px',
+                backgroundColor: color,
+                cursor: 'pointer',
+                borderRadius: '9999px',
+                height: '18px',
+                width: '18px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#fff',
+                padding: '0 0.5rem',
+              }}
+              onClick={(e) => {
+                e.stopPropagation();
+                const id = colorEl?.dataset.id;
+                if (id)
+                  setParameters((p) => ({
+                    ...p,
+                    choices: {
+                      ...p.choices,
+                      [id]: { ...p.choices[id], color: type },
+                    },
+                  }));
+                handleClose();
+              }}
+            >
+              文
+            </div>
+          ))}
+        </ColorPopover>
       </Popover>
     </div>
   );
