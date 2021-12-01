@@ -2,7 +2,7 @@ import useAddRow from '@ibr/ibr-grid-view/useAddRow';
 import AddIcon from '@ibr/ibr-icon/AddIcon';
 import styled from '@mui/material/styles/styled';
 import Typography from '@mui/material/Typography';
-import { FC } from 'react';
+import { FC, memo } from 'react';
 import { useRecoilState } from 'recoil';
 import { DefaultRowHeight, rowAddHoverState } from './Context';
 
@@ -51,4 +51,4 @@ const RowAddButton: FC<{ position: 'left' | 'right'; lastRowId: string }> = ({
   );
 };
 
-export default RowAddButton;
+export default memo(RowAddButton);

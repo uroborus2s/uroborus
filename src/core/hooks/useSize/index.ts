@@ -56,6 +56,9 @@ export default function (
     };
   });
 
+  const refState = useRef(state);
+  refState.current = state;
+
   const throttleRef = useRef<DebouncedFunc<OnResizeFun> | OnResizeFun>();
 
   useLayoutEffect(() => {
@@ -116,5 +119,5 @@ export default function (
         (throttleRef.current as DebouncedFunc<OnResizeFun>).cancel();
     };
   }, [target]);
-  return state;
+  return refState.current;
 }

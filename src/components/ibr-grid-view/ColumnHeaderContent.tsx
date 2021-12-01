@@ -2,11 +2,11 @@ import { view } from '@/domain/view/view.repository';
 import { currentViewIdState } from '@/pages/base/content/table/TableContext';
 import {
   defaultColumnHeaderHight,
-  gridScrollLeft,
+  GridScrollLeft,
 } from '@ibr/ibr-grid-view/Context';
 import Checkbox from '@mui/material/Checkbox';
 import styled from '@mui/material/styles/styled';
-import { FC } from 'react';
+import { FC, memo, useContext } from 'react';
 import { useRecoilValue } from 'recoil';
 import ColumnAddButton from './ColumnAddButton';
 import ColumnHeader from './ColumnHeader';
@@ -27,7 +27,7 @@ const ColumnHeaderContentRoot = styled('div', {
 const ColumnHeaderContent: FC<ColumnHeaderContentProps> = ({ position }) => {
   const viewId = useRecoilValue(currentViewIdState);
 
-  const scrollLeft = useRecoilValue(gridScrollLeft);
+  const scrollLeft = useContext(GridScrollLeft);
 
   const ownerState = {
     transform: position === 'left' ? 'none' : `translateX(${-scrollLeft}px)`,
@@ -66,4 +66,4 @@ const ColumnHeaderContent: FC<ColumnHeaderContentProps> = ({ position }) => {
   );
 };
 
-export default ColumnHeaderContent;
+export default memo(ColumnHeaderContent);

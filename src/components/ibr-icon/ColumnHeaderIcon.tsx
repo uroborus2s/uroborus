@@ -1,5 +1,5 @@
 import SvgIcon, { SvgIconProps } from '@mui/material/SvgIcon';
-import { FC } from 'react';
+import { FC, memo } from 'react';
 
 const TextIcon = (props: SvgIconProps): JSX.Element => (
   <SvgIcon viewBox="0 0 16 16" {...props}>
@@ -245,4 +245,4 @@ const ColumnHeaderIcon: FC<ColumnHeaderIconProps> = ({ type, sx, ...prop }) => {
   else return null;
 };
 
-export default ColumnHeaderIcon;
+export default memo(ColumnHeaderIcon);

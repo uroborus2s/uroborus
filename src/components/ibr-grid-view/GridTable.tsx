@@ -1,22 +1,24 @@
 import {
-  gridScrollLeft,
-  gridScrollTop,
-  isGridScrollingState,
+  GridScrollDispatch,
   rowAddHoverState,
-} from '@ibr/ibr-grid-view/Context';
+  GridScrollTop,
+  GridScrollLeft,
+} from './Context';
 import ScrollOverlay from '@ibr/ibr-grid-view/ScrollOverlay';
 import useOnWellScroll from '@ibr/ibr-grid-view/useOnWellScroll';
 import AddIcon from '@ibr/ibr-icon/AddIcon';
 import composeClasses from '@mui/core/composeClasses';
-import { Tooltip } from '@mui/material';
+import Tooltip from '@mui/material/Tooltip';
 import Fab from '@mui/material/Fab';
 import styled from '@mui/material/styles/styled';
+import useForkRef from '@mui/material/utils/useForkRef';
 import classNames from 'classnames';
 import {
   forwardRef,
   ForwardRefRenderFunction,
   LegacyRef,
   useEffect,
+  useReducer,
   useRef,
 } from 'react';
 import { useRecoilCallback } from 'recoil';
@@ -57,9 +59,6 @@ const GridTable: ForwardRefRenderFunction<HTMLElement, IbrGridProps> = (
   const resetScrollState = useRecoilCallback(
     ({ reset }) =>
       () => {
-        reset(gridScrollTop);
-        reset(gridScrollLeft);
-        reset(isGridScrollingState);
         reset(rowAddHoverState);
       },
     [],
@@ -69,16 +68,41 @@ const GridTable: ForwardRefRenderFunction<HTMLElement, IbrGridProps> = (
 
   const { handleOnWell, isScrolling } = useOnWellScroll();
 
+  const gridRef = useRef<HTMLDivElement>();
+
+  const handleGridRef = useForkRef(ref, gridRef);
+
+  //onWheel事件，当滑动滚轮时，委派给子元素当onscroll事件
+  useEffect(() => {
+    gridRef.current?.addEventListener('wheel', handleOnWell);
+
+    return () => {
+      gridRef.current?.removeEventListener('wheel', handleOnWell);
+    };
+  }, []);
+
+  const [gridScrollOffset, dispatch] = useReducer(scrollReducer, {
+    top: 0,
+    left: 0,
+  });
+
   return (
     <GridRoot
       className={classNames(className, classes.root)}
-      ref={ref as LegacyRef<HTMLDivElement>}
-      onWheel={handleOnWell}
+      ref={handleGridRef as LegacyRef<HTMLDivElement>}
       {...rootProps}
     >
-      <ScrollOverlay style={{ pointerEvents: isScrolling ? 'auto' : 'none' }} />
-      <GridContainer />
-      <SummaryBarContainer />
+      <GridScrollDispatch.Provider value={dispatch}>
+        <GridScrollTop.Provider value={gridScrollOffset.top}>
+          <GridScrollLeft.Provider value={gridScrollOffset.left}>
+            <ScrollOverlay
+              style={{ pointerEvents: isScrolling ? 'auto' : 'none' }}
+            />
+            <GridContainer />
+            <SummaryBarContainer />
+          </GridScrollLeft.Provider>
+        </GridScrollTop.Provider>
+      </GridScrollDispatch.Provider>
       <Tooltip title="新增记录" placement="right-start">
         <Fab
           sx={{
@@ -101,3 +125,14 @@ const GridTable: ForwardRefRenderFunction<HTMLElement, IbrGridProps> = (
 };
 
 export default forwardRef(GridTable);
+
+const scrollReducer = (
+  state: { top: number; left: number },
+  action: { type: 'left' | 'top'; offset: number },
+) => {
+  if (action.type === 'left') {
+    return { ...state, left: action.offset };
+  } else {
+    return { ...state, top: action.offset };
+  }
+};

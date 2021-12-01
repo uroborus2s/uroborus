@@ -5,7 +5,7 @@ import Select from '@mui/material/Select';
 import Typography from '@mui/material/Typography';
 import styled from '@mui/styles/styled';
 import * as React from 'react';
-import { FC, useState } from 'react';
+import { FC, memo, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 
 interface SummaryCellProps {
@@ -148,4 +148,4 @@ const SummaryCell: FC<SummaryCellProps> = ({ colId }) => {
     </Select>
   );
 };
-export default SummaryCell;
+export default memo(SummaryCell);

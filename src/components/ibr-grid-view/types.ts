@@ -1,6 +1,12 @@
 //表格组件的参数
 import { StyeldProps } from '@/core/ibr-types';
-import { ComponentPropsWithoutRef, MutableRefObject } from 'react';
+import {
+  ComponentPropsWithoutRef,
+  Context,
+  Dispatch,
+  MutableRefObject,
+  SetStateAction,
+} from 'react';
 
 export type IbrGridProps = StyeldProps & ComponentPropsWithoutRef<'div'>;
 
@@ -39,8 +45,16 @@ export type ColumnHeaderProps = {
 
 export type ScrollBarProps = StyeldProps &
   ComponentPropsWithoutRef<'div'> & {
-    maxHeight: number;
-    maxWidth: number;
-    scrollWidth: MutableRefObject<number>;
-    scrollHeight: MutableRefObject<number>;
+    maxHeight?: number;
+    maxWidth?: number;
+    thumbLength: number;
+    scrollWidth?: number;
+    scrollHeight?: number;
+    scrollInnerRef: MutableRefObject<HTMLDivElement | undefined>;
+    scrollOffsetContext: Context<number>;
   };
+
+export type FiledComponentProps = {
+  setParameters: Dispatch<SetStateAction<Record<string, any>>>;
+  parameters: Record<string, any>;
+};

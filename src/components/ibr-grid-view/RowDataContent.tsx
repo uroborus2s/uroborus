@@ -1,12 +1,12 @@
 import { view } from '@/domain/view/view.repository';
 import { currentViewIdState } from '@/pages/base/content/table/TableContext';
 import styled from '@mui/material/styles/styled';
-import { FC } from 'react';
+import { FC, memo, useContext } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import CellData from './CellData';
 import {
-  gridScrollLeft,
-  gridScrollTop,
+  GridScrollLeft,
+  GridScrollTop,
   rowHeight,
   rowHoverState,
 } from './Context';
@@ -26,7 +26,6 @@ const RowDataContentRoot = styled('div', {
   backgroundImage: 'url(/grid-bg-height.png)',
   height: ownerState.rowSizes,
   width: ownerState.columnSizes,
-  transform: ownerState.transform,
 }));
 
 const RowDataRoot = styled('div', {
@@ -40,7 +39,7 @@ const RowDataRoot = styled('div', {
   borderBottom: '1px solid #ccc',
 });
 
-const RowData: FC<{ rowId: string; sequence: number } & RowDataContentProps> =
+const RowDataFC: FC<{ rowId: string; sequence: number } & RowDataContentProps> =
   ({ rowId, position, sequence }) => {
     const viewId = useRecoilValue(currentViewIdState);
 
@@ -73,6 +72,8 @@ const RowData: FC<{ rowId: string; sequence: number } & RowDataContentProps> =
     );
   };
 
+const RowData = memo(RowDataFC);
+
 const RowDataContent: FC<RowDataContentProps> = ({ position }) => {
   const viewId = useRecoilValue(currentViewIdState);
 
@@ -84,20 +85,24 @@ const RowDataContent: FC<RowDataContentProps> = ({ position }) => {
 
   const noFrozenColWidth = useRecoilValue(view.noFrozenColWidth(viewId));
 
-  const scrollLeft = useRecoilValue(gridScrollLeft);
-  const scrollTop = useRecoilValue(gridScrollTop);
+  const scrollLeft = useContext(GridScrollLeft);
+  const scrollTop = useContext(GridScrollTop);
 
   const ownerState = {
     columnSizes: position == 'left' ? '100%' : noFrozenColWidth,
     rowSizes: rowsSize,
-    transform:
-      position == 'left'
-        ? `translateY(${-scrollTop}px)`
-        : `translate(${-scrollLeft}px,${-scrollTop}px)`,
   };
 
   return (
-    <RowDataContentRoot ownerState={ownerState}>
+    <RowDataContentRoot
+      ownerState={ownerState}
+      style={{
+        transform:
+          position == 'left'
+            ? `translateY(${-scrollTop}px)`
+            : `translate(${-scrollLeft}px,${-scrollTop}px)`,
+      }}
+    >
       {rowIds.map((rowId, index) => (
         <RowData
           key={rowId}
@@ -111,4 +116,4 @@ const RowDataContent: FC<RowDataContentProps> = ({ position }) => {
   );
 };
 
-export default RowDataContent;
+export default memo(RowDataContent);

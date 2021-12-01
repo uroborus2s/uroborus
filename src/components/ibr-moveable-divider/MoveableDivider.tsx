@@ -8,7 +8,14 @@ import { TooltipProps } from '@mui/material/Tooltip/Tooltip';
 import makeStyles from '@mui/styles/makeStyles';
 import { SxProps } from '@mui/system/styleFunctionSx/styleFunctionSx';
 import classNames from 'classnames';
-import { ElementType, FC, HTMLAttributes, useEffect, useState } from 'react';
+import {
+  ElementType,
+  FC,
+  HTMLAttributes,
+  memo,
+  useEffect,
+  useState,
+} from 'react';
 import {
   getMoveableDividerUtilityClass,
   MoveableDividerClasses,
@@ -211,4 +218,4 @@ const MoveableDivider: FC<MoveableDividerProps> = ({
   );
 };
 
-export default MoveableDivider;
+export default memo(MoveableDivider);

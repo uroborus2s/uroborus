@@ -7,7 +7,7 @@ import ArrowDown from '@ibr/ibr-icon/ArrowDown';
 import ColumnHeaderIcon from '@ibr/ibr-icon/ColumnHeaderIcon';
 import styled from '@mui/material/styles/styled';
 import Typography from '@mui/material/Typography';
-import { FC } from 'react';
+import { FC, memo } from 'react';
 import { useRecoilValue } from 'recoil';
 
 const HeaderRoot = styled('div', {
@@ -120,4 +120,4 @@ const ColumnHeader: FC<ColumnHeaderProps> = ({ colId }) => {
   );
 };
 
-export default ColumnHeader;
+export default memo(ColumnHeader);

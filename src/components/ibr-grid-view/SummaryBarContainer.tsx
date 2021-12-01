@@ -8,6 +8,7 @@ import { GridTableComponentName } from '@ibr/ibr-grid-view/GridClasses';
 import SummaryContent from '@ibr/ibr-grid-view/SummaryContent';
 import { OwnerStateType } from '@ibr/ibr-grid-view/types';
 import styled from '@mui/material/styles/styled';
+import { memo } from 'react';
 import { useRecoilValue } from 'recoil';
 
 const SummaryBarRoot = styled('div', {
@@ -72,4 +73,4 @@ const SummaryBarContainer = () => {
   );
 };
 
-export default SummaryBarContainer;
+export default memo(SummaryBarContainer);

@@ -4,19 +4,23 @@ import { view } from '@/domain/view/view.repository';
 import { currentViewIdState } from '@/pages/base/content/table/TableContext';
 import styled from '@mui/material/styles/styled';
 import {
-  ComponentPropsWithoutRef,
   FC,
+  HTMLAttributes,
   LegacyRef,
-  UIEvent,
+  memo,
+  useContext,
   useEffect,
+  useMemo,
   useRef,
 } from 'react';
-import { useRecoilCallback, useRecoilValue, useSetRecoilState } from 'recoil';
+import { useRecoilValue } from 'recoil';
 import {
+  addButtonMaxWidth,
   defaultColumnHeaderHight,
   defaultSummaryBarHight,
-  gridScrollLeft,
-  gridScrollTop,
+  GridScrollDispatch,
+  GridScrollLeft,
+  GridScrollTop,
   rowHeight,
   rowNumberWidth,
 } from './Context';
@@ -67,19 +71,26 @@ const HorizontalScrollBarRoot = styled(ScrollBar)({
   bottom: '2px',
 });
 
-const HorizontalScrollBar: FC<ScrollBarProps> = ({ maxWidth, scrollWidth }) => {
-  const { handleMouseDown, barOffset } = useGridMoveScrollThumb(
+const HorizontalScrollBar: FC<ScrollBarProps> = ({
+  maxWidth = 0,
+  thumbLength,
+  scrollInnerRef,
+  scrollOffsetContext,
+  scrollWidth = 0,
+}) => {
+  const handleMouseDown = useGridMoveScrollThumb(
     'horizontal',
-    gridScrollLeft,
-    maxWidth,
     scrollWidth,
+    maxWidth,
+    scrollInnerRef,
   );
 
-  const length = scrollWidth.current;
+  const offset = useContext(scrollOffsetContext);
 
-  const thumbLength = (length * length) / maxWidth;
+  let thumbOffset = 0;
+  if (scrollWidth && maxWidth) thumbOffset = (offset * scrollWidth) / maxWidth;
 
-  const transForm = `translateX(${barOffset}px)`;
+  const transForm = `translateX(${thumbOffset}px)`;
 
   return (
     <HorizontalScrollBarRoot
@@ -99,19 +110,27 @@ const VerticalScrollBarRoot = styled(ScrollBar)({
   right: '2px',
 });
 
-const VerticalScrollBar: FC<ScrollBarProps> = ({ maxHeight, scrollHeight }) => {
-  const { handleMouseDown, barOffset } = useGridMoveScrollThumb(
+const VerticalScrollBar: FC<ScrollBarProps> = ({
+  maxHeight = 0,
+  scrollHeight = 0,
+  scrollInnerRef,
+  scrollOffsetContext,
+  thumbLength,
+}) => {
+  const handleMouseDown = useGridMoveScrollThumb(
     'vertical',
-    gridScrollTop,
-    maxHeight,
     scrollHeight,
+    maxHeight,
+    scrollInnerRef,
   );
 
-  const length = scrollHeight.current;
+  const offset = useContext(scrollOffsetContext);
 
-  const thumbLength = (length * length) / maxHeight;
+  let thumbOffset = 0;
+  if (scrollHeight && maxHeight)
+    thumbOffset = (offset * scrollHeight) / maxHeight;
 
-  const transForm = `translateY(${barOffset}px)`;
+  const transForm = `translateY(${thumbOffset}px)`;
 
   return (
     <VerticalScrollBarRoot
@@ -121,85 +140,95 @@ const VerticalScrollBar: FC<ScrollBarProps> = ({ maxHeight, scrollHeight }) => {
   );
 };
 
-const ScrollOverlay: FC<ComponentPropsWithoutRef<'div'>> = (props) => {
+const ScrollOverlay: FC<HTMLAttributes<HTMLDivElement>> = (props) => {
   const overlayRef = useRef<HTMLDivElement>();
 
   const rect = useSize(overlayRef);
 
-  const clientHeight = useRef(rect.clientHeight - defaultSummaryBarHight);
+  const clientHeight = rect.clientHeight - defaultSummaryBarHight;
 
-  clientHeight.current = rect.clientHeight - defaultSummaryBarHight;
-
-  const clientWdith = useRef(rect.clientWdith);
-
-  clientWdith.current = rect.clientWdith;
+  const clientWdith = rect.clientWdith;
 
   const viewId = useRecoilValue(currentViewIdState);
 
   const maxWidth =
-    useRecoilValue(view.colWidths(viewId)) + rowNumberWidth + 160;
+    useRecoilValue(view.colWidths(viewId)) + rowNumberWidth + addButtonMaxWidth;
 
   const rHeight = useRecoilValue(rowHeight);
 
-  const maxHeigth = useRecoilValue(view.rowsSize(viewId)) * rHeight + 160;
+  const maxHeigth =
+    useRecoilValue(view.rowsSize(viewId)) * rHeight + addButtonMaxWidth;
 
-  const handleOnScroll = useRafFun(
-    useRecoilCallback(
-      ({ set }) =>
-        (event: UIEvent<HTMLDivElement>) => {
-          console.log(event.target);
-          const scrollTop = (event.target as HTMLDivElement).scrollTop;
-          console.log(scrollTop);
+  const dispatch = useContext(GridScrollDispatch);
 
-          set(gridScrollTop, scrollTop);
-        },
-      [],
-    ),
-  );
+  const handleOnScroll = useRafFun((event: Event) => {
+    const scrollTop = (event.target as HTMLDivElement).scrollTop;
+    const scrollLeft = (event.target as HTMLDivElement).scrollLeft;
+    dispatch!({ type: 'top', offset: scrollTop });
+    dispatch!({ type: 'left', offset: scrollLeft });
+  });
 
-  const setWidth = useSetRecoilState(gridScrollLeft);
+  const horizontalThumbLength = useMemo(() => {
+    if (clientWdith < maxWidth) {
+      return (clientWdith * clientWdith) / maxWidth;
+    } else return 0;
+  }, [clientWdith, maxWidth]);
+
+  const verticalThumbLength = useMemo(() => {
+    if (clientHeight >= 0 && clientHeight < maxHeigth) {
+      return (clientHeight * clientHeight) / maxHeigth;
+    } else return 0;
+  }, [clientHeight, maxHeigth]);
 
   useEffect(() => {
-    if (clientWdith.current >= maxWidth) {
-      setWidth((prev) => {
-        if (prev != 0) return 0;
-        else return prev;
-      });
+    if (overlayRef.current) {
+      if (horizontalThumbLength == 0) {
+        overlayRef.current.scrollLeft = 0;
+      }
+      if (verticalThumbLength == 0) {
+        overlayRef.current.scrollTop = 0;
+      }
     }
-  }, [clientWdith.current]);
+  }, [horizontalThumbLength, verticalThumbLength]);
+
+  useEffect(() => {
+    overlayRef.current?.addEventListener('scroll', handleOnScroll);
+
+    return () => {
+      overlayRef.current?.removeEventListener('scroll', handleOnScroll);
+    };
+  }, []);
 
   return (
     <ScrollRoot
       // ref={overlayRef as LegacyRef<HTMLDivElement>}
       {...props}
     >
-      <ScrollInner
-        ref={overlayRef as LegacyRef<HTMLDivElement>}
-        onScroll={handleOnScroll}
-      >
+      <ScrollInner ref={overlayRef as LegacyRef<HTMLDivElement>}>
         <div style={{ width: maxWidth, height: maxHeigth }} />
       </ScrollInner>
-
-      {/*水平的滚动栏*/}
-      {maxWidth > clientWdith.current && (
+      水平的滚动栏
+      {horizontalThumbLength > 0 && (
         <HorizontalScrollBar
-          maxHeight={maxHeigth}
           maxWidth={maxWidth}
-          scrollHeight={clientHeight}
           scrollWidth={clientWdith}
+          thumbLength={horizontalThumbLength}
+          scrollInnerRef={overlayRef}
+          scrollOffsetContext={GridScrollLeft}
         />
       )}
       {/*垂直的滚动栏*/}
-      {maxHeigth > clientHeight.current && (
+      {verticalThumbLength > 0 && (
         <VerticalScrollBar
           maxHeight={maxHeigth}
-          maxWidth={maxWidth}
           scrollHeight={clientHeight}
-          scrollWidth={clientWdith}
+          scrollInnerRef={overlayRef}
+          scrollOffsetContext={GridScrollTop}
+          thumbLength={verticalThumbLength}
         />
       )}
     </ScrollRoot>
   );
 };
 
-export default ScrollOverlay;
+export default memo(ScrollOverlay);

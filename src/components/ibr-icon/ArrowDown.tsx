@@ -1,4 +1,5 @@
 import SvgIcon, { SvgIconProps } from '@mui/material/SvgIcon';
+import { memo } from 'react';
 
 const ArrowDown = (props: SvgIconProps): JSX.Element => (
   <SvgIcon viewBox="0 0 12 12" {...props}>
@@ -9,4 +10,4 @@ const ArrowDown = (props: SvgIconProps): JSX.Element => (
   </SvgIcon>
 );
 
-export default ArrowDown;
+export default memo(ArrowDown);

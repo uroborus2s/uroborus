@@ -1,36 +1,22 @@
-import { useRafState } from '@/core/hooks';
 import useRafFun from '@/core/hooks/useRafFun';
 import useRefState from '@/core/hooks/useRefState';
 import {
   MouseEvent as ReactMouseEvent,
   MutableRefObject,
   useEffect,
-  useLayoutEffect,
+  useRef,
 } from 'react';
-import { RecoilState, useRecoilState } from 'recoil';
 
 let distY = 0;
 let distX = 0;
 
 export default function (
   direction: 'horizontal' | 'vertical',
-  state: RecoilState<number>,
-  maxOffset: number,
-  width: MutableRefObject<number>,
+  width: number,
+  maxWidth: number,
+  scrollInnerRef: MutableRefObject<HTMLDivElement | undefined>,
 ) {
-  const [scrollOffset, setScrollOffset] = useRecoilState(state);
-
-  console.log(scrollOffset);
-
   const [scrolling, setScrolling] = useRefState(false);
-
-  const [barOffset, setBarOffset] = useRafState(
-    () => (scrollOffset * width.current) / maxOffset,
-  );
-
-  useLayoutEffect(() => {
-    setBarOffset((scrollOffset * width.current) / maxOffset);
-  }, [scrollOffset]);
 
   const handleMouseDown = (event: ReactMouseEvent) => {
     event.stopPropagation();
@@ -48,7 +34,12 @@ export default function (
     }
   };
 
-  const handleMouseMove = useRafFun((event: MouseEvent) => {
+  const moveRef = useRef(function (event: MouseEvent): void {
+    event.stopPropagation();
+    throw new Error('组件呈现时无法调用事件处理程序。');
+  });
+
+  moveRef.current = (event: MouseEvent) => {
     if (scrolling.current) {
       let moveDis = 0;
       if (direction == 'horizontal') {
@@ -59,22 +50,30 @@ export default function (
         distY += moveDis;
       }
 
-      const winLength = width.current;
-      setBarOffset((per) =>
-        Math.max(
-          0,
-          Math.min(
-            per + moveDis,
-            winLength - (winLength * winLength) / maxOffset,
-          ),
-        ),
-      );
-      moveDis *= maxOffset / winLength;
-      setScrollOffset((per) =>
-        Math.max(0, Math.min(per + moveDis, maxOffset - winLength)),
-      );
+      moveDis *= maxWidth / width;
+
+      if (scrollInnerRef.current) {
+        if (direction == 'horizontal') {
+          const preLeft = scrollInnerRef.current.scrollLeft;
+          scrollInnerRef.current.scrollLeft = Math.max(
+            0,
+            Math.min(
+              Math.round(preLeft + moveDis),
+              Math.ceil(maxWidth - width),
+            ),
+          );
+        } else {
+          const preTop = scrollInnerRef.current.scrollTop;
+          scrollInnerRef.current.scrollTop = Math.max(
+            0,
+            Math.min(Math.round(preTop + moveDis), Math.ceil(maxWidth - width)),
+          );
+        }
+      }
     }
-  });
+  };
+
+  const handleMouseMove = useRafFun<MouseEvent>(moveRef);
 
   useEffect(() => {
     document.addEventListener('mouseup', handleMouseUp);
@@ -87,5 +86,5 @@ export default function (
     };
   }, []);
 
-  return { handleMouseDown, barOffset };
+  return handleMouseDown;
 }

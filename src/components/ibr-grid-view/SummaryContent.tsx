@@ -1,12 +1,11 @@
 import { view } from '@/domain/view/view.repository';
 import { currentViewIdState } from '@/pages/base/content/table/TableContext';
-import { gridScrollLeft } from '@ibr/ibr-grid-view/Context';
-import * as React from 'react';
+import { GridScrollLeft } from '@ibr/ibr-grid-view/Context';
 import SummaryCell from './SummaryCell';
 import { OwnerStateType, SummaryContentProps } from './types';
 import styled from '@mui/material/styles/styled';
 import Typography from '@mui/material/Typography';
-import { FC } from 'react';
+import { FC, memo, useContext } from 'react';
 import { useRecoilValue } from 'recoil';
 
 const ContentRoot = styled('div')<{
@@ -28,7 +27,7 @@ const SummaryContent: FC<SummaryContentProps> = ({ position }) => {
 
   const rowIds = useRecoilValue(view.rowOrders(viewId));
 
-  const scrollLeft = useRecoilValue(gridScrollLeft);
+  const scrollLeft = useContext(GridScrollLeft);
 
   const ownerState = {
     position: position,
@@ -66,4 +65,4 @@ const SummaryContent: FC<SummaryContentProps> = ({ position }) => {
   );
 };
 
-export default SummaryContent;
+export default memo(SummaryContent);

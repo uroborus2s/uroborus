@@ -1,5 +1,6 @@
 import SvgIcon, { SvgIconProps } from '@mui/material/SvgIcon';
 import styled from '@mui/styles/styled';
+import { memo } from 'react';
 
 const ScrollButtonIcon = styled(
   ({ direction, ...props }: SvgIconProps): JSX.Element => (
@@ -15,4 +16,4 @@ const ScrollButtonIcon = styled(
   fontSize: '14px',
 });
 
-export default ScrollButtonIcon;
+export default memo(ScrollButtonIcon);

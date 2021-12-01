@@ -45,3 +45,5 @@ export const iconColors: Record<ColorType, string> = {
   purpleLight: '#ede2fe', //浅紫色
   grayLight: '#eeeeee', //浅灰色
 };
+
+export const textColors = {};

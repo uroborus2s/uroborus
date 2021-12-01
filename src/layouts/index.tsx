@@ -6,7 +6,6 @@ import { StylesProvider } from '@mui/styles';
 import { FC, StrictMode } from 'react';
 import { RecoilRoot } from 'recoil';
 import ErrorBoundary from './ErrorBoundary';
-import DebugObserver from './RecoilDebugObserver';
 
 import('@/domain/store');
 
@@ -123,7 +122,7 @@ const WarpEntryNode: FC = ({ children }) => (
               <ScrollBarSize />
             </ThemeProvider>
           </StylesProvider>
-          <DebugObserver />
+          {/*<DebugObserver />*/}
         </div>
       </RecoilRoot>
     </ErrorBoundary>

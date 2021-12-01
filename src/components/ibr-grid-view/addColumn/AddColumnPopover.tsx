@@ -8,6 +8,8 @@ import {
 import CheckBoxFiled from '@ibr/ibr-grid-view/addColumn/CheckBoxFiled';
 import FiledInformation from '@ibr/ibr-grid-view/addColumn/FiledInformation';
 import SingleLineTextFiled from '@ibr/ibr-grid-view/addColumn/SingleLineTextFiled';
+import SingleSelectFiled from '@ibr/ibr-grid-view/addColumn/SingleSelectFiled';
+import AddIcon from '@ibr/ibr-icon/AddIcon';
 import ColumnHeaderIcon from '@ibr/ibr-icon/ColumnHeaderIcon';
 import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -25,7 +27,7 @@ import ListItemText from '@mui/material/ListItemText';
 import styled from '@mui/material/styles/styled';
 import Tooltip from '@mui/material/Tooltip';
 import useAutocomplete from '@mui/material/useAutocomplete';
-import { createElement, FC, useContext, useState } from 'react';
+import { createElement, FC, memo, useContext, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 
 const ItemButton = styled(ListItemButton)({
@@ -68,7 +70,7 @@ const AddColumnPopover: FC<{
   //当前选中的列状态
   const [type, setType] = useState('text');
 
-  //新建列的默认参数，对应接口中的options 字段
+  //新建列的默认参数数据，对应接口中的options 字段
   const [option, setOption] = useState({});
 
   const [filedName, setFiledName] = useState<string>();
@@ -227,12 +229,25 @@ const AddColumnPopover: FC<{
         createElement(InfoComment[type].component, {
           ...InfoComment[type].props,
           setParameters: setOption,
+          parameters: option,
         })}
       <ButtonGroup
-        sx={{ justifyContent: 'end', padding: '0.5rem 0' }}
-        disableRipple
-        disableFocusRipple
+        sx={{
+          justifyContent: 'end',
+          padding: '0.5rem 0',
+          alignItems: 'center',
+        }}
       >
+        <Button
+          variant="text"
+          sx={{ alignSelf: 'start', opacity: 0.7 }}
+          startIcon={<AddIcon />}
+          color="inherit"
+          size="small"
+        >
+          添加描述信息
+        </Button>
+        <div style={{ flex: 'auto' }} />
         <Button
           variant="text"
           onClick={(e) => {
@@ -257,7 +272,7 @@ const AddColumnPopover: FC<{
   );
 };
 
-export default AddColumnPopover;
+export default memo(AddColumnPopover);
 
 const primaryText: Record<string, string[]> = {
   foreignKey: ['外键关联', '引用其他关联表的记录'],
@@ -298,7 +313,7 @@ const InfoComment: Record<string, { component: FC<any>; props?: any }> = {
     },
   },
   checkbox: { component: CheckBoxFiled },
-  // select: SingleLineTextFiled,
+  select: { component: SingleSelectFiled },
   // multiSelect: SingleLineTextFiled,
   // collaborator: SingleLineTextFiled,
   // date: SingleLineTextFiled,

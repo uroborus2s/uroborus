@@ -1,11 +1,11 @@
 import { DefaultRowHeight, rowHoverState } from './Context';
 import ExpandIcon from '@ibr/ibr-icon/ExpandIcon';
-import { Tooltip } from '@mui/material';
+import Tooltip from '@mui/material/Tooltip';
 import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
 import styled from '@mui/material/styles/styled';
 import Typography from '@mui/material/Typography';
-import { FC } from 'react';
+import { FC, memo } from 'react';
 import { useRecoilValue } from 'recoil';
 import { RowNumberProps } from './types';
 
@@ -83,4 +83,4 @@ const RowNumber: FC<RowNumberProps> = ({ rowId, sequence }) => {
   );
 };
 
-export default RowNumber;
+export default memo(RowNumber);

@@ -1,34 +1,35 @@
 //在表格页滚动滑轮，设置上层页面的 pointerEvents ='auto'，结束滚动后(200ms内没有滚动发生)，设置pointerEvents ='none'
-import { isGridScrollingState } from '@ibr/ibr-grid-view/Context';
-import { DebouncedFunc } from 'lodash';
+import useRefState from '@/core/hooks/useRefState';
 import debounce from 'lodash.debounce';
-import { useCallback, useEffect, useMemo, useRef } from 'react';
-import { useRecoilState } from 'recoil';
+import throttle from 'lodash.throttle';
+
+import { useCallback, useEffect } from 'react';
 
 export default function () {
-  const [isScrolling, setScrolling] = useRecoilState(isGridScrollingState);
-
-  const refState = useRef(isScrolling);
-
-  refState.current = isScrolling;
+  const [isScrolling, setScrolling] = useRefState(false);
 
   const endWheel = useCallback(
     debounce(() => {
       setScrolling(false);
-    }, 500),
+    }, 800),
     [],
   );
 
-  const handleOnWell = () => {
-    if (!isScrolling) {
-      setScrolling(true);
-    }
-    endWheel();
-  };
+  const handleOnWell = useCallback(
+    throttle((event: WheelEvent) => {
+      if (!isScrolling.current) {
+        setScrolling(true);
+        event.preventDefault();
+      }
+      endWheel();
+    }, 300),
+    [],
+  );
 
   useEffect(
     () => () => {
       endWheel.cancel();
+      handleOnWell.cancel();
     },
     [],
   );

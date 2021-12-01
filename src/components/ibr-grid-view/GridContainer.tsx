@@ -7,7 +7,7 @@ import {
 import RowDataContent from '@ibr/ibr-grid-view/RowDataContent';
 import MoveableDivider from '@ibr/ibr-moveable-divider/MoveableDivider';
 import styled from '@mui/material/styles/styled';
-import { FC } from 'react';
+import { FC, memo } from 'react';
 import { useRecoilValue } from 'recoil';
 import ColumnHeaderContent from './ColumnHeaderContent';
 import { GridTableComponentName } from './GridClasses';
@@ -168,4 +168,4 @@ const GridContainer: FC<Omit<IbrGridProps, 'sx'>> = () => {
   );
 };
 
-export default GridContainer;
+export default memo(GridContainer);

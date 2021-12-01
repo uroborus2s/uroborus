@@ -2,7 +2,7 @@ import AddColumnPopover from '@ibr/ibr-grid-view/addColumn/AddColumnPopover';
 import AddIcon from '@ibr/ibr-icon/AddIcon';
 import Popover from '@mui/material/Popover';
 import styled from '@mui/material/styles/styled';
-import { useState } from 'react';
+import { memo, useState } from 'react';
 
 const ColumnAddbuttonRoot = styled('div')({
   width: '96px',
@@ -70,4 +70,4 @@ const ColumnAddButton = () => {
   );
 };
 
-export default ColumnAddButton;
+export default memo(ColumnAddButton);
