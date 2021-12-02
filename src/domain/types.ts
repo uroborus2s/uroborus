@@ -279,18 +279,24 @@ type TextOptions =
       validatorName: 'email' | 'url';
     };
 
-interface AttachmentOptions {
+export interface AttachmentOptions {
   unreversed: boolean;
 }
 
-interface CheckboxOptions {
+export interface CheckboxOptions {
   color: string;
   icon: string;
 }
 
-interface SelectOptions {
+export type SelectItem = {
+  id: string;
+  name: string;
+  color: string;
+};
+
+export interface SelectOptions {
   choiceOrder: string[];
-  choices: Record<string, { id: string; name: string; color: string }>;
+  choices: Record<string, SelectItem>;
   disableColors: boolean;
 }
 

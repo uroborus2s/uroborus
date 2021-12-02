@@ -111,14 +111,14 @@ const ViewBar: FC<HTMLAttributes<HTMLDivElement>> = (props) => {
 
   const desValue = useRecoilValue(view.desc(viewId));
 
-  const { anchorElem, oppenPopover, closePopover } = usePopover();
+  const { anchorElem, openPopover, closePopover } = usePopover();
 
   const { isEdit, handleDoubleClick, handleToEdit, handleKeyboardEnter } =
     useViewInputState(viewId, viewName);
 
   const {
     anchorElem: infoElem,
-    oppenPopover: openEditInfo,
+    openPopover: openEditInfo,
     closePopover: closeEditInfo,
   } = usePopover();
 
@@ -163,7 +163,7 @@ const ViewBar: FC<HTMLAttributes<HTMLDivElement>> = (props) => {
               endIcon={<CollaborationEndIcon />}
               onClick={(e) => {
                 e.stopPropagation();
-                oppenPopover(e);
+                openPopover(e);
               }}
               ref={infoElemRef as RefObject<HTMLButtonElement>}
             >

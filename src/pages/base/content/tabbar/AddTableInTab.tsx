@@ -25,14 +25,14 @@ const AddTableInTab: FC<
     activateTabAndEditFun: (id: string) => void;
   }
 > = ({ activateTabAndEditFun, ...props }) => {
-  const { anchorElem, oppenPopover, closePopover } = usePopover();
+  const { anchorElem, openPopover, closePopover } = usePopover();
 
   return (
     <>
       <AddRoot
         onClick={(e) => {
           e.stopPropagation();
-          oppenPopover(e);
+          openPopover(e);
         }}
         {...props}
       >

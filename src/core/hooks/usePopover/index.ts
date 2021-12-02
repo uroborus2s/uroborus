@@ -2,11 +2,9 @@ import { BasicTarget, getTargetElement, TargetElement } from '@/core/util';
 import { MouseEvent, KeyboardEvent, useState } from 'react';
 
 export default function (target?: BasicTarget<TargetElement>) {
-  const [anchorElem, setAnchorEl] = useState<TargetElement | undefined | null>(
-    null,
-  );
+  const [anchorElem, setAnchorEl] = useState<TargetElement | null>(null);
 
-  const oppenPopover = (
+  const openPopover = (
     event: MouseEvent<HTMLElement> | KeyboardEvent<HTMLElement>,
     currentTarget?: BasicTarget<TargetElement>,
   ) => {
@@ -19,5 +17,5 @@ export default function (target?: BasicTarget<TargetElement>) {
     setAnchorEl(null);
   };
 
-  return { anchorElem, oppenPopover, closePopover };
+  return { anchorElem, openPopover: openPopover, closePopover };
 }

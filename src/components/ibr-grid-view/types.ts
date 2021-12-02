@@ -54,7 +54,7 @@ export type ScrollBarProps = StyeldProps &
     scrollOffsetContext: Context<number>;
   };
 
-export type FiledComponentProps = {
+export type FiledComponentProps<T extends Record<string, any> = {}> = {
   setParameters: Dispatch<SetStateAction<Record<string, any>>>;
-  parameters: Record<string, any>;
+  parameters: T;
 };

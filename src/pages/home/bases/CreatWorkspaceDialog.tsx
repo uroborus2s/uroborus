@@ -36,7 +36,6 @@ const CreatWorkspaceDialog: FC<AddWorkspaceDialogProps> = ({
           const id = res.response.workspace?.id;
           if (onClose) onClose();
           if (onScroll) onScroll(res.response.workspace.id);
-          if (id) set(workspaces.isEdit(id), true);
         });
       },
   );

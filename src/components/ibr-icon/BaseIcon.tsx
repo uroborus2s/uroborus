@@ -4,7 +4,7 @@ import {
   BaseIconComponentName,
   getBaseIconUtilityClass,
 } from '@ibr/ibr-icon/IconClasses';
-import composeClasses from '@mui/core/composeClasses';
+import composeClasses from '@mui/base/composeClasses';
 import { DefaultComponentProps } from '@mui/material/OverridableComponent';
 import { Theme } from '@mui/material/styles/createTheme';
 import styled from '@mui/material/styles/styled';

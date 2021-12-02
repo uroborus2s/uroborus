@@ -7,7 +7,7 @@ import {
 import ScrollOverlay from '@ibr/ibr-grid-view/ScrollOverlay';
 import useOnWellScroll from '@ibr/ibr-grid-view/useOnWellScroll';
 import AddIcon from '@ibr/ibr-icon/AddIcon';
-import composeClasses from '@mui/core/composeClasses';
+import composeClasses from '@mui/base/composeClasses';
 import Tooltip from '@mui/material/Tooltip';
 import Fab from '@mui/material/Fab';
 import styled from '@mui/material/styles/styled';

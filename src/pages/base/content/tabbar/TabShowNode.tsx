@@ -64,7 +64,7 @@ const TabShowNode: FC<TabTitleNodeProps> = ({
   active,
   activateTabAndEditFun,
 }) => {
-  const { anchorElem, oppenPopover, closePopover } = usePopover();
+  const { anchorElem, openPopover, closePopover } = usePopover();
 
   const deleteTableRef = useRef<HandleFun>();
   const duplicateTableRef = useRef<HandleFun>();
@@ -75,7 +75,7 @@ const TabShowNode: FC<TabTitleNodeProps> = ({
 
   const {
     anchorElem: infoElem,
-    oppenPopover: openEditInfo,
+    openPopover: openEditInfo,
     closePopover: closeEditInfo,
   } = usePopover(buttonRef);
 
@@ -106,7 +106,7 @@ const TabShowNode: FC<TabTitleNodeProps> = ({
         ref={buttonRef as LegacyRef<HTMLDivElement>}
         onClick={(e) => {
           e.stopPropagation();
-          oppenPopover(e);
+          openPopover(e);
         }}
         onDoubleClick={(e) => {
           e.stopPropagation();

@@ -25,19 +25,23 @@
     "ecmaVersion": 12,
     "sourceType": "module"
   },
-  "plugins": [
-    "react",
-    "@typescript-eslint",
-    "react-hooks"
-  ],
+  "plugins": ["react", "@typescript-eslint", "react-hooks"],
   "rules": {
+    "react/display-name": "off",
     "react/jsx-uses-react": "off",
     "react/react-in-jsx-scope": "off",
     "react/jsx-uses-vars": "error",
     "react-hooks/rules-of-hooks": "error",
     "react/prop-types": 0,
-    "@typescript-eslint/ban-ts-comment": [
-      "warn"
+    "@typescript-eslint/ban-ts-comment": ["warn"],
+    "@typescript-eslint/ban-types": [
+      "error",
+      {
+        "extendDefaults": true,
+        "types": {
+          "{}": false
+        }
+      }
     ]
   }
 }

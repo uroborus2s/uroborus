@@ -24,7 +24,7 @@ const OperationButton: FC<OperationProps> = ({
   addIcon,
   className,
 }) => {
-  const { anchorElem, oppenPopover, closePopover } = usePopover();
+  const { anchorElem, openPopover, closePopover } = usePopover();
 
   return (
     <>
@@ -32,7 +32,7 @@ const OperationButton: FC<OperationProps> = ({
         className={className}
         onClick={(e) => {
           e.stopPropagation();
-          oppenPopover(e);
+          openPopover(e);
         }}
       >
         <MenuIcon

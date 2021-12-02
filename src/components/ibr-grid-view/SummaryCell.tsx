@@ -97,7 +97,6 @@ const SummaryCell: FC<SummaryCellProps> = ({ colId }) => {
         '& .MuiOutlinedInput-notchedOutline': {
           border: 'none',
         },
-        zIndex: 2,
         '&:hover': {
           backgroundColor: 'rgba(0,0,0,0.05)',
         },

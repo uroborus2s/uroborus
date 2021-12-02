@@ -18,7 +18,7 @@ const ItemIcon = styled(ListItemIcon)({
 const AddTableInList: FC<{
   activateTabAndEditFun: (id: string) => void;
 }> = ({ activateTabAndEditFun }) => {
-  const { anchorElem, oppenPopover, closePopover } = usePopover();
+  const { anchorElem, openPopover, closePopover } = usePopover();
 
   return (
     <>
@@ -33,7 +33,7 @@ const AddTableInList: FC<{
         }}
         onClick={(e) => {
           e.stopPropagation();
-          oppenPopover(e);
+          openPopover(e);
         }}
       >
         <ItemIcon>

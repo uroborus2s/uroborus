@@ -184,7 +184,7 @@ const ViewListInSide: FC = () => {
     open: true,
   });
 
-  const { anchorElem, oppenPopover, closePopover } = usePopover();
+  const { anchorElem, openPopover, closePopover } = usePopover();
 
   const viewIdRef = useRef({ id: '', name: '' });
 
@@ -226,7 +226,7 @@ const ViewListInSide: FC = () => {
             <ViewList
               viewData={viewItem}
               key={viewItem.id}
-              openMenu={oppenPopover}
+              openMenu={openPopover}
               idRef={viewIdRef}
             />
           ))}

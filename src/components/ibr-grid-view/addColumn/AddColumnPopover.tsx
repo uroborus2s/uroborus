@@ -5,15 +5,18 @@ import {
   currentViewIdState,
   TableIdContext,
 } from '@/pages/base/content/table/TableContext';
-import CheckBoxFiled from '@ibr/ibr-grid-view/addColumn/CheckBoxFiled';
-import FiledInformation from '@ibr/ibr-grid-view/addColumn/FiledInformation';
-import SingleLineTextFiled from '@ibr/ibr-grid-view/addColumn/SingleLineTextFiled';
-import SingleSelectFiled from '@ibr/ibr-grid-view/addColumn/SingleSelectFiled';
+import CheckBoxFiled from './CheckBoxFiled';
+import FiledInformation from './FiledInformation';
+import SingleLineTextFiled from './SingleLineTextFiled';
+import SingleSelectFiled from './SingleSelectFiled';
 import AddIcon from '@ibr/ibr-icon/AddIcon';
 import ColumnHeaderIcon from '@ibr/ibr-icon/ColumnHeaderIcon';
 import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SearchIcon from '@mui/icons-material/Search';
+import InputLabel from '@mui/material/InputLabel';
+import Input from '@mui/material/Input';
+import FormControl from '@mui/material/FormControl';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
@@ -77,6 +80,11 @@ const AddColumnPopover: FC<{
 
   const { run } = useDispath(CREATCOLUMN, { manual: true });
 
+  const [desc, setDesc] = useState('');
+
+  const [editDesc, setEditDesc] = useState(false);
+
+  //新建一个新的列字段
   const handleNewColumn = () => {
     run({
       data: {
@@ -86,7 +94,7 @@ const AddColumnPopover: FC<{
         anchor_column_id: lastColId,
         options: option,
         name: filedName ?? primaryText[type][0],
-        desc: '',
+        desc: desc,
       },
     }).then();
   };
@@ -229,6 +237,31 @@ const AddColumnPopover: FC<{
           setParameters: setOption,
           parameters: option,
         })}
+      {editDesc && (
+        <FormControl variant="standard">
+          <InputLabel shrink htmlFor="input-description-of-column-filed">
+            描述信息
+          </InputLabel>
+          <Input
+            id="input-description-of-column-filed"
+            sx={{
+              width: '100%',
+              borderRadius: '3px',
+              borderWidth: '2px',
+              borderStyle: 'solid',
+              borderColor: 'rgba(0,0,0,0.05)',
+              padding: 0,
+              '&.Mui-focused': { borderColor: 'rgba(0,0,0,0.25)' },
+            }}
+            value={desc}
+            onChange={(event) => {
+              setDesc(event.target.value);
+            }}
+            placeholder="列字段描述信息(可选的)"
+            disableUnderline
+          />
+        </FormControl>
+      )}
       <ButtonGroup
         sx={{
           justifyContent: 'end',
@@ -236,15 +269,22 @@ const AddColumnPopover: FC<{
           alignItems: 'center',
         }}
       >
-        <Button
-          variant="text"
-          sx={{ alignSelf: 'start', opacity: 0.7 }}
-          startIcon={<AddIcon />}
-          color="inherit"
-          size="small"
-        >
-          添加描述信息
-        </Button>
+        {!editDesc && (
+          <Button
+            variant="text"
+            sx={{ alignSelf: 'start', opacity: 0.7 }}
+            startIcon={<AddIcon />}
+            color="inherit"
+            size="small"
+            onClick={(e) => {
+              e.stopPropagation();
+              if (editDesc) setEditDesc(false);
+              else setEditDesc(true);
+            }}
+          >
+            添加描述信息
+          </Button>
+        )}
         <div style={{ flex: 'auto' }} />
         <Button
           variant="text"
@@ -280,7 +320,7 @@ const primaryText: Record<string, string[]> = {
   checkbox: ['复选框', '标记已选/未选状态'],
   select: ['单选', '在单元格中设定多个可选项，选择单个做为结果'],
   multiSelect: ['多选', '在单元格中设定多个可选项，选择单个或多个做为结果'],
-  collaborator: ['成员', '选择项目成员'],
+  // collaborator: ['协作成员', '选择项目协作成员'],
   date: ['日期', '可以选择或者输入日期'],
   phone: ['电话号码', '可以添加电话号码格式的数据'],
   email: ['邮箱地址', '可以添加邮箱格式的数据'],
@@ -311,8 +351,14 @@ const InfoComment: Record<string, { component: FC<any>; props?: any }> = {
     },
   },
   checkbox: { component: CheckBoxFiled },
-  select: { component: SingleSelectFiled },
-  // multiSelect: SingleLineTextFiled,
+  select: {
+    component: SingleSelectFiled,
+    props: { text: '单选列表允许您从预设的下拉列表中选择单一选项。' },
+  },
+  multiSelect: {
+    component: SingleSelectFiled,
+    props: { text: '多选列表允许您从预设的下拉列表中同时选择一个或多个选项。' },
+  },
   // collaborator: SingleLineTextFiled,
   // date: SingleLineTextFiled,
   // phone: SingleLineTextFiled,
