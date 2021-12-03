@@ -22,7 +22,7 @@ export default function (
     const newName = event.currentTarget.value;
     if (newName !== oldName)
       run({
-        path: { id: id },
+        path: { id },
         data: { name: newName },
       }).then();
     setCurrentEditId('');

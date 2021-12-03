@@ -1,20 +1,19 @@
 // 当鼠标移动hover状态时，此组件展示
 import { StyeldProps } from '@/core/ibr-types';
 import ArrowDown from '@ibr/ibr-icon/ArrowDown';
-import composeClasses from '@mui/core/composeClasses';
+import composeClasses from '@mui/base/composeClasses';
 import styled from '@mui/material/styles/styled';
 import classNames from 'classnames';
 import { ComponentPropsWithRef, FC } from 'react';
 import {
   getHoverButtonUtilityClass,
-  HoverButtonClasses,
   HoverButtonName,
 } from './HoverButtonClasses';
 
-type HovweDropButtonProps = StyeldProps &
+type HoverDropButtonProps = StyeldProps &
   ComponentPropsWithRef<'div'> & { size?: number };
 
-type StateProps = Pick<HovweDropButtonProps, 'size' | 'classes'>;
+type StateProps = Pick<HoverDropButtonProps, 'size' | 'classes'>;
 
 const useUtilityClasses = (ownerState: StateProps) => {
   const { classes } = ownerState;
@@ -46,7 +45,7 @@ const DropButtonRoot = styled('div', {
   },
 }));
 
-const HovweDropButton: FC<HovweDropButtonProps> = ({
+const HovweDropButton: FC<HoverDropButtonProps> = ({
   classes: classesProps,
   children,
   size = 16,

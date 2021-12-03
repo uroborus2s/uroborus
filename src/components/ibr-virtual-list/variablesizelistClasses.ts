@@ -1,5 +1,5 @@
-import generateUtilityClass from '@mui/core/generateUtilityClass';
-import generateUtilityClasses from '@mui/core/generateUtilityClasses';
+import generateUtilityClass from '@mui/base/generateUtilityClass';
+import generateUtilityClasses from '@mui/base/generateUtilityClasses';
 
 const slots = ['root', 'content'] as const;
 

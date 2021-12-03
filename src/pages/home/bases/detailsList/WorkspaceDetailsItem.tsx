@@ -33,7 +33,7 @@ const calcWorkspaceItemHeightOfGrid = (
   globalFontSize: number,
 ) => {
   const maxWidth = maxScreen * globalFontSize;
-  const midieWidth = middleScreen * globalFontSize;
+  const middleWidth = middleScreen * globalFontSize;
   const minWidth = minScreen * globalFontSize;
 
   let height = 0;
@@ -41,7 +41,7 @@ const calcWorkspaceItemHeightOfGrid = (
   if (baseNumber !== undefined && baseNumber !== null) {
     if (listWidth >= maxWidth) {
       row = 6;
-    } else if (listWidth >= midieWidth) {
+    } else if (listWidth >= middleWidth) {
       row = 5;
     } else if (listWidth >= minWidth) {
       row = 4;
@@ -60,12 +60,12 @@ const calcWorkspaceItemHeightOfList = (
   itemNum: number,
   globalFontSize: number,
 ) => {
-  const midieWidth = middleScreen * globalFontSize;
+  const midiWidth = middleScreen * globalFontSize;
 
   let height = 0;
   let row = 1;
   if (itemNum !== undefined && itemNum !== null) {
-    if (width >= midieWidth) {
+    if (width >= midiWidth) {
       row = 2;
     } else {
       row = 1;
@@ -86,7 +86,7 @@ interface ItemProps {
   alignment: 'grid' | 'list';
 }
 
-const useStytel = makeStyles({
+const useStyle = makeStyles({
   workspaceContainer: {
     position: 'relative',
     marginBottom: '4rem',
@@ -110,7 +110,7 @@ const useStytel = makeStyles({
 
 const WorkspaceDetailsItem: FC<ItemProps> = (props) => {
   const { workspace, alignment } = props;
-  const classes = useStytel();
+  const classes = useStyle();
 
   // useEffect(() => {
   //   if (process.env.NODE_ENV !== 'production') {
@@ -136,7 +136,7 @@ const WorkspaceDetailsItem: FC<ItemProps> = (props) => {
   );
 };
 
-const useListStyel = makeStyles({
+const useListStyle = makeStyles({
   addWorkspaceButton: {
     padding: '0.5rem 0',
     marginBottom: '8rem',
@@ -158,14 +158,14 @@ const useListStyel = makeStyles({
 });
 
 const WorkspaceDetailsList: ForwardRefRenderFunction<
-  any,
+  VirtualList,
   WorkspaceDetailsListProps
 > = (
   { itemWidth, itemLeft, listWidth, listHeight, addWorkspaceClick },
   ref,
 ) => {
   const alignment = useRecoilValue(alignmentState);
-  const classes = useListStyel();
+  const classes = useListStyle();
   const workspaces = useRecoilValue(workspacesObject.workspaces);
 
   const getItemSize = useCallback(

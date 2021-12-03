@@ -109,7 +109,7 @@ const SingleSelectFiled: FC<
   const handleSortSelectItem = () => {
     const itemNames = parameters.choiceOrder.map((id) => ({
       name: parameters.choices[id].name,
-      id: id,
+      id,
     }));
     const res = textSort(itemNames, sortType, (data) => data.name);
     if (sortType == 'asce') setSortType('desc');

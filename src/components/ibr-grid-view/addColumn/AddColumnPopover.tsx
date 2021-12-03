@@ -5,24 +5,20 @@ import {
   currentViewIdState,
   TableIdContext,
 } from '@/pages/base/content/table/TableContext';
-import CheckBoxFiled from './CheckBoxFiled';
-import FiledInformation from './FiledInformation';
-import SingleLineTextFiled from './SingleLineTextFiled';
-import SingleSelectFiled from './SingleSelectFiled';
 import AddIcon from '@ibr/ibr-icon/AddIcon';
 import ColumnHeaderIcon from '@ibr/ibr-icon/ColumnHeaderIcon';
 import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SearchIcon from '@mui/icons-material/Search';
-import InputLabel from '@mui/material/InputLabel';
-import Input from '@mui/material/Input';
-import FormControl from '@mui/material/FormControl';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
+import FormControl from '@mui/material/FormControl';
+import Input from '@mui/material/Input';
 import InputBase from '@mui/material/InputBase';
+import InputLabel from '@mui/material/InputLabel';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -32,6 +28,11 @@ import Tooltip from '@mui/material/Tooltip';
 import useAutocomplete from '@mui/material/useAutocomplete';
 import { createElement, FC, memo, useContext, useState } from 'react';
 import { useRecoilValue } from 'recoil';
+import CheckBoxFiled from './CheckBoxFiled';
+import DateFiled from './DateFiled';
+import FiledInformation from './FiledInformation';
+import SingleLineTextFiled from './SingleLineTextFiled';
+import SingleSelectFiled from './SingleSelectFiled';
 
 const ItemButton = styled(ListItemButton)({
   borderRadius: '6px',
@@ -55,7 +56,7 @@ const AddColumnPopover: FC<{
   const { groupedOptions, getInputProps } = useAutocomplete({
     getOptionLabel: (option) => option.lable,
     options: Object.entries(primaryText).map(([key, value]) => ({
-      key: key,
+      key,
       lable: value[0],
     })),
     id: 'column-list-add-type',
@@ -90,11 +91,11 @@ const AddColumnPopover: FC<{
       data: {
         view_id: viewId,
         table_id: tableId,
-        type: type,
+        type,
         anchor_column_id: lastColId,
         options: option,
         name: filedName ?? primaryText[type][0],
-        desc: desc,
+        desc,
       },
     }).then();
   };
@@ -359,11 +360,27 @@ const InfoComment: Record<string, { component: FC<any>; props?: any }> = {
     component: SingleSelectFiled,
     props: { text: '多选列表允许您从预设的下拉列表中同时选择一个或多个选项。' },
   },
+  date: { component: DateFiled },
+
   // collaborator: SingleLineTextFiled,
-  // date: SingleLineTextFiled,
-  // phone: SingleLineTextFiled,
-  // email: SingleLineTextFiled,
-  // url: SingleLineTextFiled,
+  phone: {
+    component: FiledInformation,
+    props: {
+      text: '允许您输入有效的电话号码（例如：+86139000001122）',
+    },
+  },
+  email: {
+    component: FiledInformation,
+    props: {
+      text: '允许您输入有效的邮件地址（例如：any@example.com）',
+    },
+  },
+  url: {
+    component: FiledInformation,
+    props: {
+      text: '允许您输入有效的URL地址（例如：whzhsc.com.cn）',
+    },
+  },
   // decimal: SingleLineTextFiled,
   // currency: SingleLineTextFiled,
   // percent: SingleLineTextFiled,

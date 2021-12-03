@@ -5,7 +5,7 @@ import {
   TabComponentName,
   TabsClasses,
 } from '@ibr/ibr-tabs/TabClasses';
-import composeClasses from '@mui/core/composeClasses';
+import composeClasses from '@mui/base/composeClasses';
 import styled from '@mui/material/styles/styled';
 import classNames from 'classnames';
 import * as React from 'react';

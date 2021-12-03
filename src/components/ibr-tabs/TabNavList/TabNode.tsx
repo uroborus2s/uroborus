@@ -3,7 +3,7 @@ import {
   TabComponentName,
   TabsClasses,
 } from '@ibr/ibr-tabs/TabClasses';
-import composeClasses from '@mui/core/composeClasses';
+import composeClasses from '@mui/base/composeClasses';
 import styled from '@mui/material/styles/styled';
 import React, { cloneElement, ReactElement } from 'react';
 import { TabNodeElementProps, TabNodeProps, TabsState } from '../index';
@@ -79,7 +79,7 @@ const TabNode: React.FC<TabNodeProps> = ({
   const node =
     typeof tab.tab === 'object'
       ? cloneElement(tab.tab as ReactElement<TabNodeElementProps>, {
-          active: active,
+          active,
         })
       : tab.tab;
 

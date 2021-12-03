@@ -1,8 +1,9 @@
+import { TargetElement } from '@/core/util';
 import { base, CREATTABLE, useDispath } from '@/domain';
 import { table } from '@/domain/table/table.repository';
 import { BaseIdContext } from '@/pages/base/BaseContext';
 import PopDialog, { HandleFun } from '@ibr/ibr-dialog/PopDialog';
-import ExeclIcon from '@ibr/ibr-icon/ExeclIcon';
+import ExcelIcon from '@ibr/ibr-icon/ExcelIcon';
 import NewFileIcon from '@ibr/ibr-icon/NewFileIcon';
 import UploadFilePanel from '@ibr/ibr-upload-file/UploadFilePanel';
 import Backdrop from '@mui/material/Backdrop';
@@ -16,7 +17,7 @@ import { useRecoilValue } from 'recoil';
 import useUploadTableFile from './useUploadTableFile';
 
 interface NewTableMenuProps {
-  anchor: HTMLElement | null;
+  anchor: TargetElement | null;
   onClose?: () => void;
   activateTabAndEditFun: (id: string) => void;
 }
@@ -47,8 +48,8 @@ const NewTableMenu: FC<NewTableMenuProps> = ({
     while (true) {
       count += 1;
       newName = newName.concat(String(count));
-      const res = tables.findIndex((table) => table.name == newName);
-      if (res == -1) break;
+      const res = tables.findIndex((table) => table.name === newName);
+      if (res === -1) break;
     }
     run({ data: { base_id: baseId, name: newName } }).then((res) => {
       const id = res.request.params.tableId;
@@ -65,7 +66,7 @@ const NewTableMenu: FC<NewTableMenuProps> = ({
   return (
     <>
       <Menu
-        anchorEl={anchor}
+        anchorEl={anchor as HTMLElement}
         onClose={onClose}
         open={!!anchor}
         id="creat-new-table-menu"
@@ -90,7 +91,7 @@ const NewTableMenu: FC<NewTableMenuProps> = ({
             if (onClose) onClose();
           }}
         >
-          <ExeclIcon sx={{ fontSize: 13, marginRight: '0.5rem' }} />
+          <ExcelIcon sx={{ fontSize: 13, marginRight: '0.5rem' }} />
           <Typography>从Excel/CSV导入</Typography>
         </Item>
       </Menu>

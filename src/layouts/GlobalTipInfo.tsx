@@ -1,16 +1,16 @@
-import { useRecoilState } from 'recoil';
-import React, { useCallback, useEffect } from 'react';
 import { globalToastState, messageSnackPack } from '@/layouts/useGlobalToast';
 import Alert from '@mui/material/Alert';
 import Slide from '@mui/material/Slide';
 import Snackbar, { SnackbarCloseReason } from '@mui/material/Snackbar';
 import { TransitionProps } from '@mui/material/transitions';
+import { FC, SyntheticEvent, useCallback, useEffect } from 'react';
+import { useRecoilState } from 'recoil';
 
 function TransitionDown(props: TransitionProps) {
   return <Slide {...props} direction="down" />;
 }
 
-const GlobalTipInfo: React.FC = () => {
+const GlobalTipInfo: FC = () => {
   const [{ message, open, severity, key }, setState] =
     useRecoilState(globalToastState);
   const [snack, setSnack] = useRecoilState(messageSnackPack);
@@ -30,7 +30,7 @@ const GlobalTipInfo: React.FC = () => {
   }, [snack, open]);
 
   const handleClose = useCallback(
-    (event: React.SyntheticEvent<any>, reason: SnackbarCloseReason) => {
+    (event: SyntheticEvent<any>, reason: SnackbarCloseReason) => {
       if (reason === 'clickaway') {
         return;
       }

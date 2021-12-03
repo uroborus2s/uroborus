@@ -1,4 +1,5 @@
 import { CREATWORKSPACE, useDispath, workspaces } from '@/domain';
+import { currentEditWorkspaceIdState } from '@/pages/home/bases/detailsList/title/WorkspaceTitle';
 import { CancelButton, ConfimButtonGroups } from '@ibr/ibr-dialog/PopDialog';
 import LoadingButton from '@ibr/ibr-loading/LoadingButton';
 import Alert from '@mui/material/Alert';
@@ -34,8 +35,9 @@ const CreatWorkspaceDialog: FC<AddWorkspaceDialogProps> = ({
         }
         run({ data: { name: newName } }).then((res) => {
           const id = res.response.workspace?.id;
+          set(currentEditWorkspaceIdState, id);
           if (onClose) onClose();
-          if (onScroll) onScroll(res.response.workspace.id);
+          if (onScroll) onScroll(id);
         });
       },
   );

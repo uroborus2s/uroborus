@@ -1,4 +1,4 @@
-import composeClasses from '@mui/core/composeClasses';
+import composeClasses from '@mui/base/composeClasses';
 import styled from '@mui/material/styles/styled';
 import useThemeProps from '@mui/material/styles/useThemeProps';
 import classNames from 'classnames';

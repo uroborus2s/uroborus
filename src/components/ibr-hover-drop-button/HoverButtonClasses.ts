@@ -1,4 +1,4 @@
-import generateUtilityClass from '@mui/core/generateUtilityClass';
+import generateUtilityClass from '@mui/base/generateUtilityClass';
 
 const Slots = [
   /** 应用于根元素的样式。*/

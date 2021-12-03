@@ -3,11 +3,17 @@ import UserContext from '@/layouts/UserContext';
 import ScrollBarSize from '@ibr/ibr-scrollbar-size/ScrollbarSize';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { StylesProvider } from '@mui/styles';
+import dayjs from 'dayjs';
+import 'dayjs/locale/zh-cn';
+
+import localizedFormat from 'dayjs/plugin/localizedFormat';
 import { FC, StrictMode } from 'react';
 import { RecoilRoot } from 'recoil';
 import ErrorBoundary from './ErrorBoundary';
 
 import('@/domain/store');
+
+dayjs.extend(localizedFormat);
 
 const theme = createTheme({
   components: {
@@ -97,18 +103,6 @@ const theme = createTheme({
     },
   },
 });
-
-// const EntryNode: React.FC = ({ children }) => {
-//   return (
-//     <StylesProvider>
-//       <ThemeProvider theme={theme}>
-//         <UserContext>{children}</UserContext>
-//         <GlobalTipInfo />
-//         <ScrollBarSize />
-//       </ThemeProvider>
-//     </StylesProvider>
-//   );
-// };
 
 const WarpEntryNode: FC = ({ children }) => (
   <StrictMode>

@@ -1,6 +1,6 @@
 import { useRafState } from '@/core/hooks';
 import useRefState from '@/core/hooks/useRefState';
-import composeClasses from '@mui/core/composeClasses';
+import composeClasses from '@mui/base/composeClasses';
 import { Theme } from '@mui/material/styles/createTheme';
 import styled from '@mui/material/styles/styled';
 import Tooltip from '@mui/material/Tooltip';
@@ -32,11 +32,11 @@ interface MoveableDividerProps extends HTMLAttributes<HTMLElement> {
   component?: ElementType;
   classes?: Partial<MoveableDividerClasses>;
   sx?: SxProps<Theme>;
-  //默认为flase
+  //默认为false
   disabledTooltip?: boolean;
   tooltipProps?: Omit<TooltipProps, 'children'>;
-  onDiverDragEnd?: (enent: MouseEvent) => void;
-  onDragUp?: (enent: MouseEvent) => void;
+  onDiverDragEnd?: (event: MouseEvent) => void;
+  onDragUp?: (event: MouseEvent) => void;
 }
 
 const useUtilityClasses = (ownerState: InStateProps) => {
@@ -103,7 +103,7 @@ const SlideBlock = styled('div', {
   transform: 'translateY(-50%)',
 }));
 
-const useStyel = makeStyles({
+const useStyles = makeStyles({
   container: {
     width: '100%',
     height: '100%',
@@ -152,7 +152,7 @@ const MoveableDivider: FC<MoveableDividerProps> = ({
   const ownerState = { classes: classesProps, top: position, hover };
 
   const classes = useUtilityClasses(ownerState);
-  const mClasses = useStyel();
+  const mClasses = useStyles();
 
   const handleDrag = (event: MouseEvent) => {
     if (isPress.current && onDiverDragEnd) onDiverDragEnd(event);

@@ -1,7 +1,7 @@
 import { BasicTarget, getTargetElement, TargetElement } from '@/core/util';
-import { MouseEvent, KeyboardEvent, useState } from 'react';
+import { KeyboardEvent, MouseEvent, useState } from 'react';
 
-export default function (target?: BasicTarget<TargetElement>) {
+export default (target?: BasicTarget<TargetElement>) => {
   const [anchorElem, setAnchorEl] = useState<TargetElement | null>(null);
 
   const openPopover = (
@@ -17,5 +17,5 @@ export default function (target?: BasicTarget<TargetElement>) {
     setAnchorEl(null);
   };
 
-  return { anchorElem, openPopover: openPopover, closePopover };
-}
+  return { anchorElem, openPopover, closePopover };
+};

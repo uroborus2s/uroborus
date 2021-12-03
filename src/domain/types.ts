@@ -1,5 +1,4 @@
 import { BaseIconType, ColorType } from '@/core/util';
-import { ColumnTypeKey } from '@/core/util/column-types';
 import { CancelToken } from 'axios';
 import { DependencyList, Dispatch, SetStateAction } from 'react';
 import { TransactionInterface_UNSTABLE } from 'recoil';
@@ -300,11 +299,24 @@ export interface SelectOptions {
   disableColors: boolean;
 }
 
-interface DateOptions {
+//ZH:YYYY/MM/DD 2021/12/3
+//ZHL:YYYY年M月D日 2021年12月3日
+//US:MM/DD/YYYY 08/16/2021
+//USL: MMMM D, YYYY August 16, 2018
+//ISO:YYYY-MM-DD 2021-12-3
+export type DateFormat = 'ZH' | 'ZHL' | 'US' | 'USL' | 'ISO';
+
+//12小时还是24小时制
+export type TimeFormat = '12' | '24';
+
+//时区
+export type TimeZone = 'UTC';
+
+export interface DateOptions {
   isDateTime: boolean;
-  dateFormat: string;
-  timeFormat: string;
-  timeZone: string;
+  dateFormat: DateFormat;
+  timeFormat?: TimeFormat;
+  timeZone?: TimeZone;
 }
 
 interface CollaboratorOptions {

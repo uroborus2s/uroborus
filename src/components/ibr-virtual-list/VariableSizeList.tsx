@@ -1,5 +1,5 @@
 import { useEffectNomount } from '@/core/hooks';
-import composeClasses from '@mui/core/composeClasses';
+import composeClasses from '@mui/base/composeClasses';
 import styled from '@mui/material/styles/styled';
 import classNames from 'classnames';
 import {
@@ -43,8 +43,8 @@ const ListContainer = styled('div', {
   overflow: 'auto',
   WebkitOverflowScrolling: 'touch',
   willChange: 'transform',
-  height: height,
-  width: width,
+  height,
+  width,
 }));
 
 const ListContent = styled('div', {
@@ -53,9 +53,9 @@ const ListContent = styled('div', {
   overridesResolver: (props, styles) => [styles.content],
 })<{ ownerState: InStateProps }>(
   ({ ownerState: { isScrolling, direction, estimatedTotalSize } }) => ({
-    height: direction !== 'horizontal' ? estimatedTotalSize : '100%',
+    height: direction === 'horizontal' ? '100%' : estimatedTotalSize,
     pointerEvents: isScrolling ? 'none' : undefined,
-    width: direction !== 'horizontal' ? '100%' : estimatedTotalSize,
+    width: direction === 'horizontal' ? estimatedTotalSize : '100%',
   }),
 );
 
@@ -66,9 +66,9 @@ const ListItem = styled('div', {
 })<{ ownerState: InStateProps }>(
   ({ ownerState: { direction, size, offset } }) => ({
     position: 'absolute',
-    ...(direction != 'horizontal'
-      ? { height: size, top: offset }
-      : { width: size, left: offset }),
+    ...(direction == 'horizontal'
+      ? { width: size, left: offset }
+      : { height: size, top: offset }),
   }),
 );
 
@@ -104,9 +104,9 @@ const VariableSizeList: ForwardRefRenderFunction<
 
   useEffectNomount(() => {
     containerRef.current?.scrollTo({
-      ...(direction != 'horizontal'
-        ? { top: scrollIndex }
-        : { left: scrollIndex }),
+      ...(direction == 'horizontal'
+        ? { left: scrollIndex }
+        : { top: scrollIndex }),
       behavior: 'smooth',
     });
   }, [scrollIndex]);
@@ -114,7 +114,7 @@ const VariableSizeList: ForwardRefRenderFunction<
   useImperativeHandle(
     ref,
     () => ({
-      scrollTo: scrollTo,
+      scrollTo,
       scrollToItem: (index: number) => {
         const offset = getOffsetOfIndex(index, itemRectCache, props);
         scrollTo(offset);

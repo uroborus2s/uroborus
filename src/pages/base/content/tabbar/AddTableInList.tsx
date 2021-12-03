@@ -2,7 +2,7 @@ import { usePopover } from '@/core/hooks';
 import NewTableMenu from '@/pages/base/content/tabbar/NewTableMenu';
 import AddIcon from '@ibr/ibr-icon/AddIcon';
 import ArrowRightRoundedIcon from '@mui/icons-material/ArrowRightRounded';
-import { ListItem } from '@mui/material';
+import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import styled from '@mui/material/styles/styled';
 import Typography from '@mui/material/Typography';

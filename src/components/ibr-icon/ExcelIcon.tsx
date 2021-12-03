@@ -1,6 +1,6 @@
 import SvgIcon, { SvgIconProps } from '@mui/material/SvgIcon';
 
-const ExeclIcon = (props: SvgIconProps): JSX.Element => (
+const ExcelIcon = (props: SvgIconProps): JSX.Element => (
   <SvgIcon viewBox="0 0 16 16" {...props}>
     <path
       fill="currentColor"
@@ -8,4 +8,4 @@ const ExeclIcon = (props: SvgIconProps): JSX.Element => (
     />
   </SvgIcon>
 );
-export default ExeclIcon;
+export default ExcelIcon;
