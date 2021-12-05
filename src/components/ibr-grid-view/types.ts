@@ -1,5 +1,6 @@
 //表格组件的参数
 import { StyeldProps } from '@/core/ibr-types';
+import { BaseFiledType } from '@/domain/types';
 import {
   ComponentPropsWithoutRef,
   Context,
@@ -54,7 +55,7 @@ export type ScrollBarProps = StyeldProps &
     scrollOffsetContext: Context<number>;
   };
 
-export type FiledComponentProps<T extends Record<string, any> = {}> = {
-  setParameters: Dispatch<SetStateAction<Record<string, any>>>;
+export type FiledComponentProps<T extends BaseFiledType = BaseFiledType> = {
+  setParameters: Dispatch<SetStateAction<T>>;
   parameters: T;
 };

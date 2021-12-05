@@ -12,7 +12,6 @@ export default defineConfig({
     '@ibr-class': '@/core/ibr-class',
     '@hooks': '@/core/hooks',
   },
-  mfsu: {},
   chainWebpack(config) {
     config.module
       .rule('otf')
@@ -21,9 +20,10 @@ export default defineConfig({
       .loader('file-loader');
   },
   nodeModulesTransform: {
-    type: 'none',
+    type: 'all',
   },
   webpack5: {},
+  mfsu:{},
   routes: [
     {
       path: '/desktop',

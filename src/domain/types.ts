@@ -272,20 +272,20 @@ interface ColumnGenericType<T, O> {
 }
 
 //对应type='text' 单行文本/email/地址
-type TextOptions =
+export type TextOptions =
   | undefined
   | {
-      validatorName: 'email' | 'url';
+      validator: 'email' | 'url';
     };
 
 export interface AttachmentOptions {
   unreversed: boolean;
 }
 
-export interface CheckboxOptions {
+export type CheckboxOptions = {
   color: string;
   icon: string;
-}
+} & BaseFiledType;
 
 export type SelectItem = {
   id: string;
@@ -293,44 +293,68 @@ export type SelectItem = {
   color: string;
 };
 
-export interface SelectOptions {
+// 列类型基本数据
+export type BaseFiledType = { default?: string; [key: string]: unknown };
+
+// 单选和多选列字段
+export type SelectOptions = {
   choiceOrder: string[];
   choices: Record<string, SelectItem>;
   disableColors: boolean;
-}
+} & BaseFiledType;
 
+export const DateFormat = ['ZH', 'ZHL', 'US', 'USL', 'ISO'] as const;
 //ZH:YYYY/MM/DD 2021/12/3
 //ZHL:YYYY年M月D日 2021年12月3日
 //US:MM/DD/YYYY 08/16/2021
 //USL: MMMM D, YYYY August 16, 2018
 //ISO:YYYY-MM-DD 2021-12-3
-export type DateFormat = 'ZH' | 'ZHL' | 'US' | 'USL' | 'ISO';
+export type DateFormatType = typeof DateFormat[number];
+
+export const TimeFormat = ['12', '24'] as const;
 
 //12小时还是24小时制
-export type TimeFormat = '12' | '24';
+export type TimeFormatType = typeof TimeFormat[number];
+
+export const TimeZone = ['UTC'] as const;
 
 //时区
-export type TimeZone = 'UTC';
+export type TimeZoneType = typeof TimeZone[number];
 
-export interface DateOptions {
+export type DateOptions = {
   isDateTime: boolean;
-  dateFormat: DateFormat;
-  timeFormat?: TimeFormat;
-  timeZone?: TimeZone;
-}
+  dateFormat: DateFormatType;
+  timeFormat?: TimeFormatType;
+  timeZone: TimeZoneType;
+} & BaseFiledType;
 
 interface CollaboratorOptions {
   shouldNotify: boolean;
 }
 
-interface NumberOptions {
-  format: string;
+// 数字支持的格式化类型
+// integer:整数
+// integer:小数
+// percent:百分数
+// currency:货币
+export const NumberFormat = ['decimal', 'currency', 'percent', 'unit'] as const;
+
+export type NumberFormatType = typeof NumberFormat[number];
+
+// 支持人民币/美元/英镑/欧元/日元
+export const CurrencySymbol = ['$', '¥', '€', '£', 'JPY¥'] as const;
+
+export type CurrencySymbolType = typeof CurrencySymbol[number];
+
+export type NumberOptions = {
+  style: NumberFormatType;
+  // 小数的精度，1表示小数点后1位,0表示为整数
   precision: number;
+  // false 只能正数，ture 可以是非正数
   negative: boolean;
-  validatorName: string;
-  symbol?: string;
+  symbol?: CurrencySymbolType;
   durationFormat?: number;
-}
+} & BaseFiledType;
 
 interface RatingOptions {
   color: string;

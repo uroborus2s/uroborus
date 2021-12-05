@@ -1,4 +1,4 @@
-const columnTypeText = {
+export const columnTypeText = {
   text: 'single-text',
   multilineText: 'multi-text',
   attachment: 'attachment',
@@ -14,7 +14,9 @@ const columnTypeText = {
   computation: 'computation',
   autoNumber: 'autoNumber',
   foreignKey: 'foreignKey',
-};
+} as const;
+
+export type ColumnServiceTypes = keyof typeof columnTypeText;
 
 //text:单行文本/email/地址
 //multilineText:多行文本
@@ -39,7 +41,7 @@ export type ColumnIconKey =
   | 'checkbox'
   | 'select'
   | 'multiSelect'
-  | 'collaborator'
+  // | 'collaborator'
   | 'date'
   | 'phone'
   | 'email'
@@ -65,7 +67,7 @@ export function conversionToColTypeName(value: string): ColumnTypeKey {
 
 export function conversionColTypeToIconType(
   value: ColumnTypeKey,
-  typeOptions: undefined | Record<string, any>,
+  typeOptions: undefined | Record<string, unknown>,
 ): ColumnIconKey {
   if (value == 'number') {
     switch (typeOptions?.format) {

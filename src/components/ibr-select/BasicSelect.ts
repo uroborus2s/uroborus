@@ -17,7 +17,7 @@ export default styled(Select)({
     backgroundColor: 'rgba(0, 0, 0, 0)',
   },
   'label+&': {
-    marginTop: '1.5rem',
+    marginTop: '1.6rem',
   },
   '&:before,&:hover:not(.Mui-disabled):before,&:after': {
     border: 'none',

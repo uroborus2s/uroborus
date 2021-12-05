@@ -1,15 +1,20 @@
+import { CheckboxOptions } from '@/domain/types';
+import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import SvgIcon from '@mui/material/SvgIcon';
-
-import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
-import { useState } from 'react';
+import { FC } from 'react';
+import { FiledComponentProps } from '../types';
+import { FiledOptionRoot } from './OptionRoot';
 
-const CheckBoxFiled = () => {
-  const [state, setState] = useState('green:check');
+const CheckBoxFiled: FC<FiledComponentProps<CheckboxOptions>> = ({
+  parameters,
+  setParameters,
+}) => {
+  const { color, icon } = parameters;
 
   return (
-    <div style={{ padding: '0.5rem 0' }}>
+    <FiledOptionRoot>
       <Typography sx={{ opacity: 0.75 }}>
         您可以选中或取消选中的复选框
       </Typography>
@@ -63,9 +68,11 @@ const CheckBoxFiled = () => {
             },
           },
         }}
-        value={state}
+        value={`${color}:${icon}`}
         onChange={(e) => {
-          setState(e.target.value);
+          e.stopPropagation;
+          const [newColor, newIcon] = e.target.value.split(':', 2);
+          setParameters((p) => ({ ...p, color: newColor, icon: newIcon }));
         }}
       >
         {Object.entries(iColors)
@@ -87,13 +94,13 @@ const CheckBoxFiled = () => {
                 }}
               >
                 <SvgIcon viewBox="0 0 24 24" sx={{ fontSize: '16px' }}>
-                  <path d={iconHex} fill={colorKey} />
+                  <path d={iconHex} fill={colorHex} />
                 </SvgIcon>
               </MenuItem>
             )),
           )}
       </Select>
-    </div>
+    </FiledOptionRoot>
   );
 };
 

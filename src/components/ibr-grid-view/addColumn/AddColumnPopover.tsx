@@ -1,5 +1,12 @@
+import LoadingButton from '@/components/ibr-loading/LoadingButton';
+import {
+  ColumnIconKey,
+  ColumnServiceTypes,
+  columnTypeText,
+} from '@/core/util/column-types';
 import filterSearchValue from '@/core/util/filterSearchValue';
 import { CREATCOLUMN, useDispath } from '@/domain';
+import { BaseFiledType, DateFormat, TimeZone } from '@/domain/types';
 import { view } from '@/domain/view/view.repository';
 import {
   currentViewIdState,
@@ -31,8 +38,10 @@ import { useRecoilValue } from 'recoil';
 import CheckBoxFiled from './CheckBoxFiled';
 import DateFiled from './DateFiled';
 import FiledInformation from './FiledInformation';
+import NumberFiled from './NumberFiled';
 import SingleLineTextFiled from './SingleLineTextFiled';
 import SingleSelectFiled from './SingleSelectFiled';
+import { FiledComponentProps } from '../types';
 
 const ItemButton = styled(ListItemButton)({
   borderRadius: '6px',
@@ -48,6 +57,77 @@ const ItemText = styled(ListItemText)({
   flex: 'auto',
 });
 
+const preOptions = () => ({
+  //选择项目排序顺序
+  choiceOrder: [],
+  //是否包含颜色属性
+  disableColors: false,
+  //选择项目属性，字段结构：{id:string,name:string,color:string}
+  choices: {},
+  default: '',
+  // 日期格式化方式
+  dateFormat: DateFormat[0],
+  // 是否显示时间
+  isDateTime: false,
+  // 时区
+  timeZone: TimeZone[0],
+  // checkbox 的勾选颜色
+  color: 'green',
+  // checkbox 的勾选样式
+  icon: 'check',
+  format: 'decimal',
+  precision: 0,
+  negative: false,
+});
+
+const postOptions = (option: BaseFiledType, type: ColumnServiceTypes) => {
+  let newOptions = {};
+  switch (type) {
+    case 'text':
+      newOptions = {
+        validator: option.validator,
+      };
+      break;
+    case 'multilineText':
+      break;
+    case 'attachment':
+      break;
+    case 'checkbox':
+      newOptions = {
+        color: option.color,
+        icon: option.icon,
+      };
+      break;
+    case 'select':
+    case 'multiSelect':
+      newOptions = {
+        choiceOrder: option.choiceOrder,
+        choices: option.choices,
+        disableColors: option.disableColors,
+      };
+      break;
+    case 'date':
+      newOptions = {
+        isDateTime: option.isDateTime,
+        dateFormat: option.dateFormat,
+        timeFormat: option.timeFormat,
+        timeZone: option.timeZone,
+      };
+      break;
+    case 'phone':
+      break;
+    case 'number':
+      break;
+    case 'rating':
+      break;
+    case 'formula':
+      break;
+    default:
+      break;
+  }
+  return { ...newOptions, default: option.default };
+};
+
 const AddColumnPopover: FC<{
   expanded: boolean;
   setExpanded: (exp: boolean) => void;
@@ -57,7 +137,7 @@ const AddColumnPopover: FC<{
     getOptionLabel: (option) => option.lable,
     options: Object.entries(primaryText).map(([key, value]) => ({
       key,
-      lable: value[0],
+      lable: value.name,
     })),
     id: 'column-list-add-type',
     filterOptions: filterSearchValue,
@@ -72,14 +152,14 @@ const AddColumnPopover: FC<{
   const lastColId = [...useRecoilValue(view.columnOrders(viewId))].pop();
 
   //当前选中的列状态
-  const [type, setType] = useState('text');
+  const [type, setType] = useState<ColumnIconKey>('text');
 
   //新建列的默认参数数据，对应接口中的options 字段
-  const [option, setOption] = useState({});
+  const [option, setOption] = useState(preOptions);
 
   const [filedName, setFiledName] = useState<string>();
 
-  const { run } = useDispath(CREATCOLUMN, { manual: true });
+  const { run, loading } = useDispath(CREATCOLUMN, { manual: true });
 
   const [desc, setDesc] = useState('');
 
@@ -91,13 +171,16 @@ const AddColumnPopover: FC<{
       data: {
         view_id: viewId,
         table_id: tableId,
-        type,
+        type: columnTypeText[primaryText[type].type],
         anchor_column_id: lastColId,
-        options: option,
-        name: filedName ?? primaryText[type][0],
+        options: JSON.stringify(postOptions(option, primaryText[type].type)),
+        name: filedName ?? primaryText[type].name,
         desc,
+        direction: 1,
       },
-    }).then();
+    }).finally(() => {
+      closePopover();
+    });
   };
 
   return (
@@ -184,7 +267,7 @@ const AddColumnPopover: FC<{
             }}
           >
             <ColumnHeaderIcon type={type} />
-            <ItemText primary={primaryText[type][0]} />
+            <ItemText primary={primaryText[type].name} />
           </ListItem>
         </AccordionSummary>
         <AccordionDetails sx={{ padding: 0 }}>
@@ -203,8 +286,8 @@ const AddColumnPopover: FC<{
                 title={
                   <ListItemText
                     sx={{ '& .MuiListItemText-secondary': { color: '#fff' } }}
-                    primary={primaryText[option.key][0]}
-                    secondary={primaryText[option.key][1]}
+                    primary={primaryText[option.key as ColumnIconKey].name}
+                    secondary={primaryText[option.key as ColumnIconKey].tip}
                   />
                 }
                 placement="left-start"
@@ -215,12 +298,14 @@ const AddColumnPopover: FC<{
                   selected={option.key === type}
                   onClick={(e) => {
                     e.stopPropagation();
-                    setType(option.key as string);
+                    setType(option.key as ColumnIconKey);
                     setExpanded(false);
                   }}
                 >
-                  <ColumnHeaderIcon type={option.key as string} />
-                  <ItemText primary={primaryText[option.key][0]} />
+                  <ColumnHeaderIcon type={option.key as ColumnIconKey} />
+                  <ItemText
+                    primary={primaryText[option.key as ColumnIconKey].name}
+                  />
                   {option.key === 'foreignKey' && (
                     <ArrowForwardIosRoundedIcon
                       sx={{ opacity: 0.5, fontSize: '12px' }}
@@ -233,8 +318,8 @@ const AddColumnPopover: FC<{
         </AccordionDetails>
       </Accordion>
       {!expanded &&
-        createElement(InfoComment[type].component, {
-          ...InfoComment[type].props,
+        createElement(primaryText[type].component, {
+          ...primaryText[type].props,
           setParameters: setOption,
           parameters: option,
         })}
@@ -296,16 +381,16 @@ const AddColumnPopover: FC<{
         >
           取消
         </Button>
-        <Button
+        <LoadingButton
+          loading={loading}
           variant="contained"
           sx={{
             marginLeft: '1rem',
             display: expanded ? 'none' : 'inline-flex',
           }}
           onClick={handleNewColumn}
-        >
-          创建列字段
-        </Button>
+          titleNode="创建新列"
+        />
       </ButtonGroup>
     </>
   );
@@ -313,83 +398,167 @@ const AddColumnPopover: FC<{
 
 export default memo(AddColumnPopover);
 
-const primaryText: Record<string, string[]> = {
-  foreignKey: ['外键关联', '引用其他关联表的记录'],
-  text: ['单行文本', '适合存放简单的文字，不支持换行'],
-  multilineText: ['多行文本', '存放大段文字，可换行'],
-  attachment: ['附件', '单元格支持添加各种类型的附件'],
-  checkbox: ['复选框', '标记已选/未选状态'],
-  select: ['单选', '在单元格中设定多个可选项，选择单个做为结果'],
-  multiSelect: ['多选', '在单元格中设定多个可选项，选择单个或多个做为结果'],
-  // collaborator: ['协作成员', '选择项目协作成员'],
-  date: ['日期', '可以选择或者输入日期'],
-  phone: ['电话号码', '可以添加电话号码格式的数据'],
-  email: ['邮箱地址', '可以添加邮箱格式的数据'],
-  url: ['网址', '可以添加网址'],
-  decimal: ['数字', '可以添加设置精度的数字'],
-  currency: ['货币', '设置货币符号，自动填充货币符号'],
-  percent: ['百分比', '输入数字自动转换为百分比'],
-  duration: ['持续时间', ''],
-  rating: ['评分', '标记评分'],
-  formula: ['函数公式', ''],
-  createdTime: ['创建时间', '显示记录的创建时间，不可更改'],
-  lastModifiedTime: ['修改时间', '显示记录的最后修改时间，不可更改'],
-  createdBy: ['创建人', '显示记录的创建人，不可修改'],
-  lastModifiedBy: ['修改人', '显示记录的最后修改人，不可修改'],
-  autoNumber: ['自增序列号', '为记录添加一个唯一且顺序自增的序列号'],
+type ColumnUiData<T extends Record<string, unknown> = any> = {
+  type: ColumnServiceTypes;
+  name: string;
+  tip: string;
+  component: FC<T & FiledComponentProps>;
+  props?: T;
 };
 
-const InfoComment: Record<string, { component: FC<any>; props?: any }> = {
-  text: { component: SingleLineTextFiled },
+const primaryText: Record<ColumnIconKey, ColumnUiData> = {
+  foreignKey: {
+    type: 'foreignKey',
+    name: '外键关联',
+    tip: '引用其他关联表的记录',
+    component: FiledInformation,
+  },
+  text: {
+    type: 'text',
+    name: '单行文本',
+    tip: '适合存放简单的文字，不支持换行',
+    component: SingleLineTextFiled,
+  },
   multilineText: {
+    type: 'multilineText',
+    name: '多行文本',
+    tip: '存放大段文字，可换行',
     component: FiledInformation,
     props: { text: '您可以填入多行长文本' },
   },
   attachment: {
+    type: 'attachment',
+    name: '附件',
+    tip: '单元格支持添加各种类型的附件',
     component: FiledInformation,
     props: {
       text: '附件字段允许您添加图像、文档或其他文件，然后可以查看或下载这些文件。',
     },
   },
-  checkbox: { component: CheckBoxFiled },
+  checkbox: {
+    type: 'checkbox',
+    name: '复选框',
+    tip: '标记已选/未选状态',
+    component: CheckBoxFiled,
+  },
   select: {
+    type: 'select',
+    name: '单选',
+    tip: '在单元格中设定多个可选项，选择单个做为结果',
     component: SingleSelectFiled,
-    props: { text: '单选列表允许您从预设的下拉列表中选择单一选项。' },
+    props: { text: '单选列' },
   },
   multiSelect: {
+    type: 'multiSelect',
+    name: '多选',
+    tip: '在单元格中设定多个可选项，选择单个或多个做为结果',
     component: SingleSelectFiled,
     props: { text: '多选列表允许您从预设的下拉列表中同时选择一个或多个选项。' },
   },
-  date: { component: DateFiled },
-
-  // collaborator: SingleLineTextFiled,
+  // collaborator: ['协作成员', '选择项目协作成员'],
+  date: {
+    type: 'date',
+    name: '日期',
+    tip: '可以选择或者输入日期',
+    component: DateFiled,
+  },
   phone: {
+    type: 'phone',
+    name: '电话号码',
+    tip: '可以添加电话号码格式的数据',
     component: FiledInformation,
     props: {
       text: '允许您输入有效的电话号码（例如：+86139000001122）',
     },
   },
   email: {
+    type: 'text',
+    name: '邮箱地址',
+    tip: '可以添加邮箱格式的数据',
     component: FiledInformation,
     props: {
       text: '允许您输入有效的邮件地址（例如：any@example.com）',
     },
   },
   url: {
+    type: 'text',
+    name: '网址',
+    tip: '可以添加网址',
     component: FiledInformation,
     props: {
       text: '允许您输入有效的URL地址（例如：whzhsc.com.cn）',
     },
   },
-  // decimal: SingleLineTextFiled,
-  // currency: SingleLineTextFiled,
-  // percent: SingleLineTextFiled,
-  // duration: SingleLineTextFiled,
-  // rating: SingleLineTextFiled,
-  // formula: SingleLineTextFiled,
-  // createdTime: SingleLineTextFiled,
-  // lastModifiedTime: SingleLineTextFiled,
-  // createdBy: SingleLineTextFiled,
-  // lastModifiedBy: SingleLineTextFiled,
-  // autoNumber: SingleLineTextFiled,
+  decimal: {
+    type: 'number',
+    name: '数字',
+    tip: '可以添加设置精度的数字',
+    component: NumberFiled,
+    props: {
+      format: 'decimal',
+    },
+  },
+  currency: {
+    type: 'number',
+    name: '货币',
+    tip: '设置货币符号，自动填充货币符号',
+    component: NumberFiled,
+    props: {
+      format: 'currency',
+    },
+  },
+  percent: {
+    type: 'number',
+    name: '百分比',
+    tip: '输入数字自动转换为百分比',
+    component: FiledInformation,
+  },
+  duration: {
+    type: 'number',
+    name: '持续时间',
+    tip: '',
+    component: FiledInformation,
+  },
+  rating: {
+    type: 'rating',
+    name: '评分',
+    tip: '标记评分',
+    component: FiledInformation,
+  },
+  formula: {
+    type: 'formula',
+    name: '函数公式',
+    tip: '',
+    component: FiledInformation,
+  },
+  createdTime: {
+    type: 'formula',
+    name: '创建时间',
+    tip: '显示记录的创建时间，不可更改',
+    component: FiledInformation,
+  },
+  lastModifiedTime: {
+    type: 'formula',
+    name: '修改时间',
+    tip: '显示记录的最后修改时间，不可更改',
+    component: FiledInformation,
+  },
+  createdBy: {
+    type: 'formula',
+    name: '创建人',
+    tip: '显示记录的创建人，不可修改',
+    component: FiledInformation,
+  },
+  lastModifiedBy: {
+    type: 'formula',
+    name: '修改人',
+    tip: '显示记录的最后修改人，不可修改',
+    component: FiledInformation,
+  },
+  autoNumber: {
+    type: 'autoNumber',
+    name: '自增序列号',
+    tip: '为记录添加一个唯一且顺序自增的序列号',
+    component: FiledInformation,
+  },
 };

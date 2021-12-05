@@ -1,5 +1,10 @@
 import BasicSelect from '@/components/ibr-select/BasicSelect';
-import { DateOptions } from '@/domain/types';
+import {
+  DateFormat,
+  DateFormatType,
+  DateOptions,
+  TimeFormatType,
+} from '@/domain/types';
 import { FiledComponentProps } from '@ibr/ibr-grid-view/types';
 import IosSwitch from '@ibr/ibr-switch/IosSwitch';
 import FormControl from '@mui/material/FormControl';
@@ -8,9 +13,32 @@ import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import styled from '@mui/styles/styled';
 import dayjs from 'dayjs';
-import { FC, memo, useLayoutEffect } from 'react';
+import { FC, memo } from 'react';
+import { FiledOptionRoot } from './OptionRoot';
 
-const Root = styled('div')({ padding: '0.5rem 0' });
+const dateSelectText = (index: number) => {
+  let text = '';
+  switch (index) {
+    case 0:
+      text = dayjs().locale('zh-cn').format('[年/月/日（]L[)]');
+      break;
+    case 1:
+      text = dayjs().locale('zh-cn').format('[年月日（]LL[)]');
+      break;
+    case 2:
+      text = dayjs().format('[月/日/年（]L[)]');
+      break;
+    case 3:
+      text = dayjs().format('[月 日, 年（]LL[)]');
+      break;
+    case 4:
+      text = dayjs().format('[年-月-日（]YYYY-MM-DD[)]');
+      break;
+    default:
+      break;
+  }
+  return text;
+};
 
 const TimeSelect = styled('div')({
   marginTop: '1rem',
@@ -22,14 +50,8 @@ const DateFiled: FC<FiledComponentProps<DateOptions>> = ({
   setParameters,
   parameters,
 }) => {
-  useLayoutEffect(() => {
-    if (!parameters.dateFormat) {
-      setParameters((p) => ({ ...p, dateFormat: 'ZH', isDateTime: false }));
-    }
-  }, []);
-
   return (
-    <Root>
+    <FiledOptionRoot>
       <Typography
         sx={{ opacity: 0.7, marginBottom: '0.5rem', fontSize: '13px' }}
       >
@@ -47,22 +69,17 @@ const DateFiled: FC<FiledComponentProps<DateOptions>> = ({
           id="data-dateformat-of-column-filed"
           value={parameters.dateFormat ?? 'ZH'}
           onChange={(event) => {
-            setParameters((p) => ({ ...p, dateFormat: event.target.value }));
+            setParameters((p) => ({
+              ...p,
+              dateFormat: event.target.value as DateFormatType,
+            }));
           }}
         >
-          <MenuItem value="ZH">
-            {dayjs().locale('zh-cn').format('[年/月/日（]L[)]')}
-          </MenuItem>
-          <MenuItem value="ZHL">
-            {dayjs().locale('zh-cn').format('[年月日（]LL[)]')}
-          </MenuItem>
-          <MenuItem value="US">{dayjs().format('[月/日/年（]L[)]')}</MenuItem>
-          <MenuItem value="USL">
-            {dayjs().format('[月 日, 年（]LL[)]')}
-          </MenuItem>
-          <MenuItem value="ISO">
-            {dayjs().format('[年-月-日（]YYYY-MM-DD[)]')}
-          </MenuItem>
+          {DateFormat.map((data, index) => (
+            <MenuItem key={index} value={data}>
+              {dateSelectText(index)}
+            </MenuItem>
+          ))}
         </BasicSelect>
       </FormControl>
       <TimeSelect>
@@ -96,7 +113,7 @@ const DateFiled: FC<FiledComponentProps<DateOptions>> = ({
             onChange={(event) => {
               setParameters((p) => ({
                 ...p,
-                timeFormat: event.target.value,
+                timeFormat: event.target.value as TimeFormatType,
                 timeZone: 'UTC',
               }));
             }}
@@ -106,7 +123,7 @@ const DateFiled: FC<FiledComponentProps<DateOptions>> = ({
           </BasicSelect>
         </FormControl>
       )}
-    </Root>
+    </FiledOptionRoot>
   );
 };
 

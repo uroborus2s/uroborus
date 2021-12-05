@@ -16,15 +16,15 @@ import ListItemButton from '@mui/material/ListItemButton';
 import Popover from '@mui/material/Popover';
 import Typography from '@mui/material/Typography';
 import styled from '@mui/styles/styled';
-import { ChangeEvent, FC, memo, MouseEvent, useEffect, useState } from 'react';
+import { ChangeEvent, FC, memo, MouseEvent, useState } from 'react';
 import {
   DragDropContext,
   Draggable,
   Droppable,
   DropResult,
-  ResponderProvided,
 } from 'react-beautiful-dnd';
 import { FiledComponentProps } from '../types';
+import { FiledOptionRoot } from './OptionRoot';
 
 const ColorOptionCol = styled('div')({
   display: 'flex',
@@ -50,17 +50,6 @@ const ColorPopover = styled('div')({
 const SingleSelectFiled: FC<
   FiledComponentProps<SelectOptions> & { text: string }
 > = ({ setParameters, parameters, text }) => {
-  useEffect(() => {
-    setParameters({
-      //选择项目排序顺序
-      choiceOrder: [],
-      //是否包含颜色属性
-      disableColors: false,
-      //选择项目属性，字段结构：{id:string,name:string,color:string}
-      choices: {},
-    });
-  }, []);
-
   const [colorEl, setColorEl] = useState<HTMLElement | null>(null);
 
   const handleClick = (event: MouseEvent<HTMLElement>) => {
@@ -119,10 +108,7 @@ const SingleSelectFiled: FC<
 
   const textColorType = Object.keys(textColors);
 
-  const onDragEnd = (
-    { destination, source }: DropResult,
-    provided: ResponderProvided,
-  ) => {
+  const onDragEnd = ({ destination, source }: DropResult) => {
     if (!destination || destination.index === source.index) {
       return;
     }
@@ -134,7 +120,7 @@ const SingleSelectFiled: FC<
   };
 
   return (
-    <div style={{ padding: '0.5rem 0' }}>
+    <FiledOptionRoot>
       <Typography sx={{ opacity: 0.75, marginBottom: '0.5rem' }}>
         {text}
       </Typography>
@@ -184,7 +170,7 @@ const SingleSelectFiled: FC<
               droppableId="column-single-select-item"
               type="SELECT-ITEM"
             >
-              {(provided, snapshot) => (
+              {(provided) => (
                 <div {...provided.droppableProps} ref={provided.innerRef}>
                   <SelectItemList
                     parameters={parameters}
@@ -293,7 +279,7 @@ const SingleSelectFiled: FC<
           ))}
         </ColorPopover>
       </Popover>
-    </div>
+    </FiledOptionRoot>
   );
 };
 
@@ -320,7 +306,7 @@ const SelectItemList = memo(
       <>
         {choiceOrder.map((id, index) => (
           <Draggable key={id} draggableId={id} index={index}>
-            {(provided, snapshot) => (
+            {(provided) => (
               <EditSelectItem
                 ref={provided.innerRef}
                 {...provided.draggableProps}

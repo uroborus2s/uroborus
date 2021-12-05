@@ -1,7 +1,10 @@
 import Typography from '@mui/material/Typography';
 import { FC } from 'react';
+import { FiledComponentProps } from '../types';
 
-const FiledInformation: FC<{ text: string }> = ({ text }) => {
+const FiledInformation: FC<FiledComponentProps & { text: string }> = ({
+  text,
+}) => {
   return (
     <Typography sx={{ opacity: 0.7, padding: '1rem 0 0.5rem 0' }}>
       {text}
