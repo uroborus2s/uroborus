@@ -9,14 +9,13 @@ export const columnTypeText = {
   date: 'datetime',
   phone: 'phone',
   number: 'number',
+  timeDuration: 'timeDuration',
   rating: 'rating',
   formula: 'formula',
   computation: 'computation',
   autoNumber: 'autoNumber',
   foreignKey: 'foreignKey',
 } as const;
-
-export type ColumnServiceTypes = keyof typeof columnTypeText;
 
 //text:单行文本/email/地址
 //multilineText:多行文本
@@ -54,9 +53,9 @@ export type ColumnIconKey =
   | 'formula'
   | 'createdTime'
   | 'lastModifiedTime'
-  | 'createdBy'
-  | 'lastModifiedBy'
-  | 'autoNumber'
+  // | 'createdBy'
+  // | 'lastModifiedBy'
+  // | 'autoNumber'
   | 'foreignKey';
 
 export function conversionToColTypeName(value: string): ColumnTypeKey {
@@ -69,46 +68,5 @@ export function conversionColTypeToIconType(
   value: ColumnTypeKey,
   typeOptions: undefined | Record<string, unknown>,
 ): ColumnIconKey {
-  if (value == 'number') {
-    switch (typeOptions?.format) {
-      case 'decimal':
-      case 'currency':
-      case 'percent':
-      case 'duration':
-        return typeOptions.format;
-      default:
-        throw new Error(`number属性的${typeOptions?.format}类型不正确！`);
-    }
-  } else if (value == 'text') {
-    if (typeOptions == undefined) return value;
-    else {
-      switch (typeOptions.validatorName) {
-        case 'email':
-        case 'url':
-          return typeOptions.validatorName;
-        default:
-          throw new Error(`text属性的${typeOptions.validatorName}类型不正确！`);
-      }
-    }
-  } else if (value == 'formula') {
-    switch (typeOptions?.displayType) {
-      case 'createdTime':
-      case 'lastModifiedTime':
-        return typeOptions.displayType;
-      case undefined:
-        return value;
-      default:
-        throw new Error(`formula属性的${typeOptions?.displayType}类型不正确！`);
-    }
-  } else if (value == 'computation') {
-    switch (typeOptions?.computation) {
-      case 'createdBy':
-      case 'lastModifiedBy':
-        return typeOptions.computation;
-      default:
-        throw new Error(
-          `computation属性的${typeOptions?.computation}类型不正确！`,
-        );
-    }
-  } else return value;
+    
 }

@@ -61,12 +61,12 @@ const DateFiled: FC<FiledComponentProps<DateOptions>> = ({
         <InputLabel
           sx={{ fontSize: '14px', transform: 'scale(1)' }}
           shrink
-          htmlFor="data-dateformat-of-column-filed"
+          htmlFor="date-dateformat-of-column-filed"
         >
           日期格式
         </InputLabel>
         <BasicSelect
-          id="data-dateformat-of-column-filed"
+          id="date-dateformat-of-column-filed"
           value={parameters.dateFormat ?? 'ZH'}
           onChange={(event) => {
             setParameters((p) => ({
@@ -102,12 +102,12 @@ const DateFiled: FC<FiledComponentProps<DateOptions>> = ({
           <InputLabel
             sx={{ fontSize: '14px', transform: 'scale(1)' }}
             shrink
-            htmlFor="data-dateformat-of-column-filed"
+            htmlFor="time-dateformat-of-column-filed"
           >
             时间格式
           </InputLabel>
           <BasicSelect
-            id="data-dateformat-of-column-filed"
+            id="time-dateformat-of-column-filed"
             value={parameters.timeFormat}
             defaultValue="12"
             onChange={(event) => {

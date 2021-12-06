@@ -1,7 +1,7 @@
 import LoadingButton from '@/components/ibr-loading/LoadingButton';
 import {
   ColumnIconKey,
-  ColumnServiceTypes,
+  ColumnTypeKey,
   columnTypeText,
 } from '@/core/util/column-types';
 import filterSearchValue from '@/core/util/filterSearchValue';
@@ -33,15 +33,24 @@ import ListItemText from '@mui/material/ListItemText';
 import styled from '@mui/material/styles/styled';
 import Tooltip from '@mui/material/Tooltip';
 import useAutocomplete from '@mui/material/useAutocomplete';
-import { createElement, FC, memo, useContext, useState } from 'react';
+import {
+  createElement,
+  FC,
+  memo,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 import { useRecoilValue } from 'recoil';
+import { FiledComponentProps } from '../types';
 import CheckBoxFiled from './CheckBoxFiled';
 import DateFiled from './DateFiled';
 import FiledInformation from './FiledInformation';
 import NumberFiled from './NumberFiled';
+import RatingFiled from './RatingFiled';
 import SingleLineTextFiled from './SingleLineTextFiled';
 import SingleSelectFiled from './SingleSelectFiled';
-import { FiledComponentProps } from '../types';
+import TimeDurationFiled from './TimeDurationFiled';
 
 const ItemButton = styled(ListItemButton)({
   borderRadius: '6px',
@@ -75,22 +84,20 @@ const preOptions = () => ({
   color: 'green',
   // checkbox 的勾选样式
   icon: 'check',
-  format: 'decimal',
-  precision: 0,
-  negative: false,
+  style: 'decimal',
+  useGrouping: true,
+  precision: '0',
+  durationFormat: 'd',
+  max: 5,
 });
 
-const postOptions = (option: BaseFiledType, type: ColumnServiceTypes) => {
+const postOptions = (option: BaseFiledType, type: ColumnTypeKey) => {
   let newOptions = {};
   switch (type) {
     case 'text':
       newOptions = {
         validator: option.validator,
       };
-      break;
-    case 'multilineText':
-      break;
-    case 'attachment':
       break;
     case 'checkbox':
       newOptions = {
@@ -114,14 +121,32 @@ const postOptions = (option: BaseFiledType, type: ColumnServiceTypes) => {
         timeZone: option.timeZone,
       };
       break;
-    case 'phone':
-      break;
     case 'number':
+      newOptions = {
+        style: option.style,
+        useGrouping: option.useGrouping,
+        precision: option.precision,
+        currencyDisplay: option.currencyDisplay,
+        currency: option.currency,
+      };
+      break;
+    case 'timeDuration':
+      newOptions = {
+        durationFormat: option.durationFormat,
+      };
       break;
     case 'rating':
+      newOptions = {
+        color: option.color,
+        icon: option.icon,
+        max: option.max,
+      };
       break;
     case 'formula':
       break;
+    case 'multilineText':
+    case 'attachment':
+    case 'phone':
     default:
       break;
   }
@@ -164,6 +189,23 @@ const AddColumnPopover: FC<{
   const [desc, setDesc] = useState('');
 
   const [editDesc, setEditDesc] = useState(false);
+
+  useEffect(() => {
+    if (type == 'currency') {
+      setOption((preState) => ({
+        ...preState,
+        style: 'currency',
+        currency: 'CNY',
+        currencyDisplay: 'symbol',
+      }));
+    } else if (type == 'decimal') {
+      setOption((preState) => ({ ...preState, style: 'decimal' }));
+    } else if (type == 'percent') {
+      setOption((preState) => ({ ...preState, style: 'percent' }));
+    } else if (type === 'rating') {
+      setOption((preState) => ({ ...preState, icon: 'star' }));
+    }
+  }, [type]);
 
   //新建一个新的列字段
   const handleNewColumn = () => {
@@ -399,7 +441,7 @@ const AddColumnPopover: FC<{
 export default memo(AddColumnPopover);
 
 type ColumnUiData<T extends Record<string, unknown> = any> = {
-  type: ColumnServiceTypes;
+  type: ColumnTypeKey;
   name: string;
   tip: string;
   component: FC<T & FiledComponentProps>;
@@ -494,36 +536,30 @@ const primaryText: Record<ColumnIconKey, ColumnUiData> = {
     name: '数字',
     tip: '可以添加设置精度的数字',
     component: NumberFiled,
-    props: {
-      format: 'decimal',
-    },
   },
   currency: {
     type: 'number',
     name: '货币',
     tip: '设置货币符号，自动填充货币符号',
     component: NumberFiled,
-    props: {
-      format: 'currency',
-    },
   },
   percent: {
     type: 'number',
     name: '百分比',
     tip: '输入数字自动转换为百分比',
-    component: FiledInformation,
+    component: NumberFiled,
   },
   duration: {
-    type: 'number',
+    type: 'timeDuration',
     name: '持续时间',
     tip: '',
-    component: FiledInformation,
+    component: TimeDurationFiled,
   },
   rating: {
     type: 'rating',
     name: '评分',
     tip: '标记评分',
-    component: FiledInformation,
+    component: RatingFiled,
   },
   formula: {
     type: 'formula',
@@ -543,22 +579,22 @@ const primaryText: Record<ColumnIconKey, ColumnUiData> = {
     tip: '显示记录的最后修改时间，不可更改',
     component: FiledInformation,
   },
-  createdBy: {
-    type: 'formula',
-    name: '创建人',
-    tip: '显示记录的创建人，不可修改',
-    component: FiledInformation,
-  },
-  lastModifiedBy: {
-    type: 'formula',
-    name: '修改人',
-    tip: '显示记录的最后修改人，不可修改',
-    component: FiledInformation,
-  },
-  autoNumber: {
-    type: 'autoNumber',
-    name: '自增序列号',
-    tip: '为记录添加一个唯一且顺序自增的序列号',
-    component: FiledInformation,
-  },
+  // createdBy: {
+  //   type: 'formula',
+  //   name: '创建人',
+  //   tip: '显示记录的创建人，不可修改',
+  //   component: FiledInformation,
+  // },
+  // lastModifiedBy: {
+  //   type: 'formula',
+  //   name: '修改人',
+  //   tip: '显示记录的最后修改人，不可修改',
+  //   component: FiledInformation,
+  // },
+  // autoNumber: {
+  //   type: 'autoNumber',
+  //   name: '自增序列号',
+  //   tip: '为记录添加一个唯一且顺序自增的序列号',
+  //   component: FiledInformation,
+  // },
 };

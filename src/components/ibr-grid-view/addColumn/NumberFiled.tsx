@@ -1,6 +1,12 @@
 import BasicSelect from '@/components/ibr-select/BasicSelect';
 import IosSwitch from '@/components/ibr-switch/IosSwitch';
-import { CurrencySymbol, NumberOptions } from '@/domain/types';
+import {
+  CurrencyDisplay,
+  CurrencyDisplayType,
+  CurrencySymbol,
+  CurrencySymbolType,
+  NumberOptions,
+} from '@/domain/types';
 import FormControl from '@mui/material/FormControl';
 import Input from '@mui/material/Input';
 import InputLabel from '@mui/material/InputLabel';
@@ -8,7 +14,6 @@ import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import styled from '@mui/styles/styled';
 import { FC } from 'react';
-import { useEffect } from 'react-transition-group/node_modules/@types/react';
 import { FiledComponentProps } from '../types';
 import { FiledOptionRoot } from './OptionRoot';
 
@@ -18,29 +23,105 @@ const NegativeOptionCol = styled('div')({
   alignItems: 'center',
 });
 
-const NumberFiled: FC<
-  FiledComponentProps<NumberOptions> & { format: string }
-> = ({ setParameters, parameters, format }) => {
-  useEffect(() => {
-    let currency = undefined;
-    if (format === 'currency') currency = CurrencySymbol[0];
-    setParameters((p) => ({ ...p, format: format, symbol: currency }));
-  }, []);
+const CurrencyRoot = styled('div')({
+  display: 'flex',
+  padding: '0.5rem 0',
+  alignItems: 'center',
+});
+
+const NumberFiled: FC<FiledComponentProps<NumberOptions>> = ({
+  setParameters,
+  parameters,
+}) => {
+  console.log(parameters);
 
   return (
     <FiledOptionRoot>
-      {format === 'currency' && (
+      <NegativeOptionCol>
+        <IosSwitch
+          checked={parameters.useGrouping}
+          onChange={(event, checked) => {
+            setParameters((pstate) => ({ ...pstate, useGrouping: checked }));
+            event.preventDefault();
+            event.stopPropagation();
+          }}
+        />
+        <Typography sx={{ opacity: 0.8, marginLeft: '0.25rem' }}>
+          是否使用千分位分割
+        </Typography>
+      </NegativeOptionCol>
+      {parameters.style === 'currency' && (
+        <CurrencyRoot>
+          <FormControl variant="standard" sx={{ paddingRight: '1rem' }}>
+            <InputLabel
+              sx={{ fontSize: '14px', transform: 'scale(1)' }}
+              shrink
+              htmlFor="currency-of-column-filed"
+            >
+              货币显示格式
+            </InputLabel>
+            <BasicSelect
+              style={{ minWidth: '32px' }}
+              id="currency-of-column-filed"
+              value={parameters.currencyDisplay}
+              onChange={(event) => {
+                console.log(event.target.value);
+                console.log(typeof event.target.value);
+                setParameters((p) => ({
+                  ...p,
+                  currencyDisplay: event.target.value as CurrencyDisplayType,
+                }));
+              }}
+            >
+              {Object.entries(CurrencyDisplay).map(([t, tName], index) => (
+                <MenuItem key={index} value={t}>
+                  {tName}
+                </MenuItem>
+              ))}
+            </BasicSelect>
+          </FormControl>
+          <FormControl variant="standard">
+            <InputLabel
+              sx={{ fontSize: '14px', transform: 'scale(1)' }}
+              shrink
+              htmlFor="currency-code-of-column-filed"
+            >
+              货币种类
+            </InputLabel>
+            <BasicSelect
+              style={{ minWidth: '128px', paddingLeft: '1rem' }}
+              id="currency-code-of-column-filed"
+              value={parameters.currency}
+              onChange={(event) => {
+                console.log(event.target.value);
+                console.log(typeof event.target.value);
+                setParameters((p) => ({
+                  ...p,
+                  currency: event.target.value as CurrencySymbolType,
+                }));
+              }}
+            >
+              {Object.entries(CurrencySymbol).map(([code, name], index) => (
+                <MenuItem key={index} value={code}>
+                  {name}
+                </MenuItem>
+              ))}
+            </BasicSelect>
+          </FormControl>
+        </CurrencyRoot>
+      )}
+      {parameters.style !== 'currency' && (
         <FormControl variant="standard">
           <InputLabel
             sx={{ fontSize: '14px', transform: 'scale(1)' }}
             shrink
-            htmlFor="data-dateformat-of-column-filed"
+            htmlFor="precision-numberformat-of-column-filed"
           >
-            货币符号
+            数字精度
           </InputLabel>
           <BasicSelect
-            id="data-dateformat-of-column-filed"
-            value={parameters.symbol ?? CurrencySymbol[0]}
+            id="precision-numberformat-of-column-filed"
+            value={parameters.precision}
             onChange={(event) => {
               console.log(event.target.value);
               console.log(typeof event.target.value);
@@ -50,54 +131,14 @@ const NumberFiled: FC<
               }));
             }}
           >
-            {CurrencySymbol.map((sym, index) => (
-              <MenuItem key={index} value={sym}>
-                {sym}
+            {precisionItem.map((prec, index) => (
+              <MenuItem key={index} value={prec}>
+                {prec ? '1.'.padEnd(prec + 2, '0') : '1'}
               </MenuItem>
             ))}
           </BasicSelect>
         </FormControl>
       )}
-      <FormControl variant="standard">
-        <InputLabel
-          sx={{ fontSize: '14px', transform: 'scale(1)' }}
-          shrink
-          htmlFor="data-dateformat-of-column-filed"
-        >
-          数字精度
-        </InputLabel>
-        <BasicSelect
-          id="data-dateformat-of-column-filed"
-          value={parameters.precision}
-          onChange={(event) => {
-            console.log(event.target.value);
-            console.log(typeof event.target.value);
-            setParameters((p) => ({
-              ...p,
-              precision: event.target.value as number,
-            }));
-          }}
-        >
-          {precisionItem.map((prec, index) => (
-            <MenuItem key={index} value={prec}>
-              {prec ? '1.'.padEnd(prec + 2, '0') : '1'}
-            </MenuItem>
-          ))}
-        </BasicSelect>
-      </FormControl>
-      <NegativeOptionCol>
-        <IosSwitch
-          checked={parameters.negative}
-          onChange={(event, checked) => {
-            setParameters((pstate) => ({ ...pstate, negative: checked }));
-            event.preventDefault();
-            event.stopPropagation();
-          }}
-        />
-        <Typography sx={{ opacity: 0.8, marginLeft: '0.25rem' }}>
-          允许负数
-        </Typography>
-      </NegativeOptionCol>
       <Typography
         sx={{
           marginTop: '0.5rem',
@@ -124,7 +165,7 @@ const NumberFiled: FC<
         onChange={(event) => {
           setParameters((p) => ({ ...p, default: event.target.value }));
         }}
-        placeholder="默认值填入新单元格"
+        placeholder="新单元格默认值"
         disableUnderline
       />
     </FiledOptionRoot>

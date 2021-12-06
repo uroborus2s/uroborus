@@ -342,25 +342,60 @@ export const NumberFormat = ['decimal', 'currency', 'percent', 'unit'] as const;
 export type NumberFormatType = typeof NumberFormat[number];
 
 // 支持人民币/美元/英镑/欧元/日元
-export const CurrencySymbol = ['$', '¥', '€', '£', 'JPY¥'] as const;
+export const CurrencySymbol = {
+  CNY: '人民币',
+  EUR: '欧元',
+  ' GBR': '英镑',
+  JPY: '日元',
+  USD: '美元',
+  AUD: '澳元',
+  CAD: '加元',
+  HKD: '港币',
+  KRW: '韩元',
+  SGD: '新加坡元',
+} as const;
 
-export type CurrencySymbolType = typeof CurrencySymbol[number];
+export type CurrencySymbolType = keyof typeof CurrencySymbol;
+
+export const CurrencyDisplay = {
+  symbol: '货币符号',
+  code: '货币编码',
+  dollar: '货币名称',
+};
+
+export type CurrencyDisplayType = keyof typeof CurrencyDisplay;
 
 export type NumberOptions = {
   style: NumberFormatType;
+  useGrouping: boolean;
   // 小数的精度，1表示小数点后1位,0表示为整数
   precision: number;
-  // false 只能正数，ture 可以是非正数
-  negative: boolean;
-  symbol?: CurrencySymbolType;
-  durationFormat?: number;
+  currencyDisplay?: CurrencyDisplayType;
+  currency?: CurrencySymbolType;
 } & BaseFiledType;
 
-interface RatingOptions {
+export const DurationFormat = {
+  y: '年',
+  M: '月',
+  w: '周',
+  d: '天',
+  h: '小时',
+  m: '分钟',
+  s: '秒',
+  ms: '毫秒',
+};
+
+export type DurationFormatType = keyof typeof DurationFormat;
+//持续时间的单位
+export type TimeDurationOptions = {
+  durationFormat: DurationFormatType;
+};
+
+export type RatingOptions = {
   color: string;
   icon: string;
   max: number;
-}
+} & BaseFiledType;
 
 interface FormulaOptions {
   resultType: number;
