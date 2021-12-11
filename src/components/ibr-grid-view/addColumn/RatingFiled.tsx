@@ -25,7 +25,7 @@ const RatingFiled: FC<FiledComponentProps<RatingOptions>> = ({
           样式
         </InputLabel>
         <BasicSelect
-          style={{ minWidth: '32px' }}
+          style={{ minWidth: '24px' }}
           id="style-rating-of-column-filed"
           MenuProps={{
             anchorOrigin: {
@@ -97,7 +97,7 @@ const RatingFiled: FC<FiledComponentProps<RatingOptions>> = ({
           最大值
         </InputLabel>
         <BasicSelect
-          style={{ minWidth: '32px', paddingLeft: '1rem' }}
+          style={{ minWidth: '24px', paddingLeft: '1rem' }}
           id="rating-maxnumber-of-column-filed"
           value={parameters.max}
           onChange={(event) => {

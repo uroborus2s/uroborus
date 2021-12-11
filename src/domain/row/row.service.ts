@@ -2,7 +2,7 @@
 import { cmdDispatcher, transformResponse } from '@/domain/core';
 import request from '@/domain/request/request';
 import { CommandOptions } from '@/domain/types';
-import { api, CREATROW } from '../domain.command';
+import { api, CREATROW, EDITROW } from '../domain.command';
 
 const newRow = async function (options: CommandOptions) {
   const [err, res] = await request(api.path.newRow, {
@@ -33,6 +33,15 @@ const readRowOrders = async function (options: CommandOptions) {
   return transformResponse(options, err, res);
 };
 
+const editRow = async function (options: CommandOptions) {
+  const [err, res] = await request(api.path.row(options.request?.path?.id), {
+    method: 'put',
+    data: { ...options.request?.data },
+  });
+  return transformResponse(options, err, res);
+};
+
 export default cmdDispatcher({
   [CREATROW]: newRow,
+  [EDITROW]: editRow,
 });

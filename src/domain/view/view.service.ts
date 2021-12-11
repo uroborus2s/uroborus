@@ -5,6 +5,7 @@ import {
   DELETEVIEW,
   DUPLIACTEVIEW,
   EDITVIEW,
+  GETVIEWLIST,
   READVIEW,
 } from '../domain.command';
 import { NullResponseError } from '../error';
@@ -77,4 +78,5 @@ export default cmdDispatcher({
   [DUPLIACTEVIEW]: creatView(api.path.copyView),
   [DELETEVIEW]: deleteView,
   [READVIEW]: readOneView,
+  [GETVIEWLIST]: readAllViews,
 });

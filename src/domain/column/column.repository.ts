@@ -1,11 +1,8 @@
-import {
-  ColumnTypeKey,
-  conversionToColTypeName,
-} from '@/core/util/column-types';
 import { READTABLE } from '../domain.command';
 import { pureDispatcher } from '../core';
 import { ColumnRsp, CommandOptions, OptionsType } from '../types';
 import { atomFamily, RecoilState, TransactionInterface_UNSTABLE } from 'recoil';
+import { ColumnTypeKey } from '@ibr/ibr-grid-view/types';
 
 export const column = (function () {
   class c {
@@ -65,7 +62,7 @@ function wirteColumns(
       if (color) set(column.color(id), color);
       if (desc) set(column.desc(id), desc);
       if (options) set(column.options(id), options);
-      if (type) set(column.type(id), conversionToColTypeName(type));
+      if (type) set(column.type(id), type);
       if (primary) set(column.primary(id), primary);
     });
   }

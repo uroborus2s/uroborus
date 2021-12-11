@@ -51,7 +51,7 @@ const ColumnAddButton = () => {
             borderRadius: '6px',
             boxShadow: '0 0 0 2px rgb(0 0 0 / 25%)',
             padding: '0.5rem 1rem',
-            minWidth: '360px',
+            width: '22rem',
             display: 'flex',
             flexDirection: 'column',
           },

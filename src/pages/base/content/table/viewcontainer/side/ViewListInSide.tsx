@@ -115,8 +115,9 @@ const ViewList: FC<{
         run({
           path: { id: tableId },
           data: { selected_view_id: viewData.id },
-        }).then();
-        if (!isActive) setCurrentViewId(viewData.id);
+        }).then(() => {
+          if (!isActive) setCurrentViewId(viewData.id);
+        });
       }}
       onDoubleClick={handleDoubleClick}
     >

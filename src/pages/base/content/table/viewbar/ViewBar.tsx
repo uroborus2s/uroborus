@@ -196,7 +196,7 @@ const ViewBar: FC<HTMLAttributes<HTMLDivElement>> = (props) => {
           )}
         </ViewSwitcherContainer>
         <ViewButtonGroup />
-        <SearchButton></SearchButton>
+        <SearchButton />
       </ViewBarRoot>
       <ViewMenu
         anchorElem={anchorElem}

@@ -1,8 +1,11 @@
-import { conversionColTypeToIconType } from '@/core/util/column-types';
 import { column } from '@/domain/column/column.repository';
 import { view } from '@/domain/view/view.repository';
 import { GridTableComponentName } from '@ibr/ibr-grid-view/GridClasses';
-import { ColumnHeaderProps, OwnerStateType } from '@ibr/ibr-grid-view/types';
+import {
+  ColumnHeaderProps,
+  converColumnTypeFromService,
+  OwnerStateType,
+} from '@ibr/ibr-grid-view/types';
 import ArrowDown from '@ibr/ibr-icon/ArrowDown';
 import ColumnHeaderIcon from '@ibr/ibr-icon/ColumnHeaderIcon';
 import styled from '@mui/material/styles/styled';
@@ -86,7 +89,6 @@ const ColumnHeader: FC<ColumnHeaderProps> = ({ colId }) => {
   const columnWidth = useRecoilValue(view.columnWidth(colId));
   const columnName = useRecoilValue(column.name(colId));
   const columnType = useRecoilValue(column.type(colId));
-  const columnOption = useRecoilValue(column.options(colId));
 
   const ownerState = { columnWidth };
   return (
@@ -94,7 +96,7 @@ const ColumnHeader: FC<ColumnHeaderProps> = ({ colId }) => {
       <HeaderContent>
         <ColumnHeaderIcon
           sx={{ fontSize: '16px' }}
-          type={conversionColTypeToIconType(columnType, columnOption)}
+          type={converColumnTypeFromService(columnType)}
         />
         <Typography
           sx={{

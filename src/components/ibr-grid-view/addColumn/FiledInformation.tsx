@@ -6,7 +6,14 @@ const FiledInformation: FC<FiledComponentProps & { text: string }> = ({
   text,
 }) => {
   return (
-    <Typography sx={{ opacity: 0.7, padding: '1rem 0 0.5rem 0' }}>
+    <Typography
+      sx={{
+        opacity: 0.7,
+        padding: '1rem 0 0.5rem 0',
+        whiteSpace: 'pre-wrap',
+        wordWrap: 'break-word',
+      }}
+    >
       {text}
     </Typography>
   );

@@ -4,6 +4,7 @@ import GridTable from '@ibr/ibr-grid-view/GridTable';
 import LoadingWithNumber from '@ibr/ibr-loading/LoadingWithNumber';
 import styled from '@mui/styles/styled';
 import { useRecoilValue } from 'recoil';
+import { useEffect } from 'react';
 
 const ViewPaneContainerRoot = styled('div')({
   flex: 'auto',
@@ -16,9 +17,11 @@ const ViewPaneContainerRoot = styled('div')({
 const ViewPaneContainer = () => {
   const viewId = useRecoilValue(currentViewIdState);
 
-  const { loading } = useDispath(READVIEW, {
-    request: { path: { id: viewId } },
-  });
+  const { loading, run } = useDispath(READVIEW, { manual: true });
+
+  useEffect(() => {
+    run({ path: { id: viewId } });
+  }, [viewId]);
 
   return (
     <ViewPaneContainerRoot>

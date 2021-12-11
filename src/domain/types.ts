@@ -278,14 +278,14 @@ export type TextOptions =
       validator: 'email' | 'url';
     };
 
-export interface AttachmentOptions {
+export interface AttachmentOptions extends BaseFiledType {
   unreversed: boolean;
 }
 
-export type CheckboxOptions = {
+export interface CheckboxOptions extends BaseFiledType {
   color: string;
   icon: string;
-} & BaseFiledType;
+}
 
 export type SelectItem = {
   id: string;
@@ -294,14 +294,16 @@ export type SelectItem = {
 };
 
 // 列类型基本数据
-export type BaseFiledType = { default?: string; [key: string]: unknown };
+export interface BaseFiledType {
+  default?: string;
+}
 
 // 单选和多选列字段
-export type SelectOptions = {
+export interface SelectOptions extends BaseFiledType {
   choiceOrder: string[];
   choices: Record<string, SelectItem>;
   disableColors: boolean;
-} & BaseFiledType;
+}
 
 export const DateFormat = ['ZH', 'ZHL', 'US', 'USL', 'ISO'] as const;
 //ZH:YYYY/MM/DD 2021/12/3
@@ -321,12 +323,12 @@ export const TimeZone = ['UTC'] as const;
 //时区
 export type TimeZoneType = typeof TimeZone[number];
 
-export type DateOptions = {
+export interface DateOptions extends BaseFiledType {
   isDateTime: boolean;
   dateFormat: DateFormatType;
   timeFormat?: TimeFormatType;
   timeZone: TimeZoneType;
-} & BaseFiledType;
+}
 
 interface CollaboratorOptions {
   shouldNotify: boolean;
@@ -365,14 +367,26 @@ export const CurrencyDisplay = {
 
 export type CurrencyDisplayType = keyof typeof CurrencyDisplay;
 
-export type NumberOptions = {
+export interface NumberOptions extends BaseFiledType {
   style: NumberFormatType;
   useGrouping: boolean;
   // 小数的精度，1表示小数点后1位,0表示为整数
   precision: number;
   currencyDisplay?: CurrencyDisplayType;
   currency?: CurrencySymbolType;
-} & BaseFiledType;
+}
+
+export interface ForeignKeyOptions extends BaseFiledType {
+  relationColumnId: string;
+  foreignTableRollupColumnId: string;
+  canUseSelectResultType: boolean;
+  //关联关系
+  relationship: 'one' | 'many';
+  //是否只能从view中选取字段
+  viewIdForRecordSelection?: string;
+  //关联表Id
+  foreignTableId: string;
+}
 
 export const DurationFormat = {
   y: '年',
@@ -405,12 +419,6 @@ interface AutoNumberOptions {
   maxUsedAutoNumber: number;
 }
 
-interface ForeignKeyOptions {
-  relationColumnId: string;
-  foreignTableRollupColumnId: string;
-  canUseSelectResultType: boolean;
-}
-
 export type OptionsType =
   | ForeignKeyOptions
   | AutoNumberOptions
@@ -431,14 +439,15 @@ type ColumnType =
   | ColumnGenericType<'checkbox', CheckboxOptions>
   | ColumnGenericType<'select', SelectOptions>
   | ColumnGenericType<'multiSelect', SelectOptions>
-  | ColumnGenericType<'collaborator', CollaboratorOptions>
+  // | ColumnGenericType<'collaborator', CollaboratorOptions>
   | ColumnGenericType<'date', DateOptions>
   | ColumnGenericType<'phone', undefined>
-  | ColumnGenericType<'number', NumberOptions>
+  | ColumnGenericType<'email', undefined>
+  | ColumnGenericType<'url', undefined>
   | ColumnGenericType<'rating', RatingOptions>
   | ColumnGenericType<'formula', FormulaOptions>
-  | ColumnGenericType<'computation', FormulaOptions>
-  | ColumnGenericType<'autoNumber', AutoNumberOptions>
+  // | ColumnGenericType<'computation', FormulaOptions>
+  // | ColumnGenericType<'autoNumber', AutoNumberOptions>
   | ColumnGenericType<'foreignKey', ForeignKeyOptions>;
 
 export type ColumnRsp = ColumnType & {

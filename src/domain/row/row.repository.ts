@@ -1,4 +1,4 @@
-import { CREATROW, READTABLE } from '../domain.command';
+import { CREATROW, EDITROW, READTABLE } from '../domain.command';
 import { pureDispatcher } from '../core';
 import { CommandOptions } from '../types';
 import { atomFamily, RecoilState, TransactionInterface_UNSTABLE } from 'recoil';
@@ -49,7 +49,22 @@ function wirteCellByNewRow(
   });
 }
 
+function wirteCells(
+  { set }: TransactionInterface_UNSTABLE,
+  options: CommandOptions,
+) {
+  const rowId = options.request?.path?.id;
+  const data = options.request?.data;
+  if (rowId && data && typeof data === 'object') {
+    Object.entries(data).forEach(([colId, value]) => {
+      const cellId = rowId.concat('/', colId);
+      set(row.cellValue(cellId), value);
+    });
+  }
+}
+
 export default pureDispatcher({
   [READTABLE]: wirteColumnIdsOfRow,
   [CREATROW]: wirteCellByNewRow,
+  [EDITROW]: wirteCells,
 });

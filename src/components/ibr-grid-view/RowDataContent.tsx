@@ -39,38 +39,39 @@ const RowDataRoot = styled('div', {
   borderBottom: '1px solid #ccc',
 });
 
-const RowDataFC: FC<{ rowId: string; sequence: number } & RowDataContentProps> =
-  ({ rowId, position, sequence }) => {
-    const viewId = useRecoilValue(currentViewIdState);
+const RowDataFC: FC<
+  { rowId: string; sequence: number } & RowDataContentProps
+> = ({ rowId, position, sequence }) => {
+  const viewId = useRecoilValue(currentViewIdState);
 
-    const frozenIndex = useRecoilValue(view.frozenIndex(viewId));
+  const frozenIndex = useRecoilValue(view.frozenIndex(viewId));
 
-    const colOrders = [...useRecoilValue(view.columnOrders(viewId))];
+  const colOrders = [...useRecoilValue(view.columnOrders(viewId))];
 
-    const [hover, setHover] = useRecoilState(rowHoverState(rowId));
+  const [hover, setHover] = useRecoilState(rowHoverState(rowId));
 
-    const rHeight = useRecoilValue(rowHeight);
+  const rHeight = useRecoilValue(rowHeight);
 
-    return (
-      <RowDataRoot
-        sx={{ backgroundColor: hover ? '#f8f8f8' : 'inherit', height: rHeight }}
-        onMouseEnter={() => {
-          setHover(true);
-        }}
-        onMouseLeave={() => {
-          setHover(false);
-        }}
-      >
-        {position === 'left' && <RowNumber rowId={rowId} sequence={sequence} />}
-        {(position === 'left'
-          ? colOrders.slice(0, frozenIndex)
-          : colOrders.slice(frozenIndex, colOrders.length)
-        ).map((colId) => (
-          <CellData key={`${rowId}/${colId}`} cellId={`${rowId}/${colId}`} />
-        ))}
-      </RowDataRoot>
-    );
-  };
+  return (
+    <RowDataRoot
+      sx={{ backgroundColor: hover ? '#f8f8f8' : 'inherit', height: rHeight }}
+      onMouseEnter={() => {
+        setHover(true);
+      }}
+      onMouseLeave={() => {
+        setHover(false);
+      }}
+    >
+      {position === 'left' && <RowNumber rowId={rowId} sequence={sequence} />}
+      {(position === 'left'
+        ? colOrders.slice(0, frozenIndex)
+        : colOrders.slice(frozenIndex, colOrders.length)
+      ).map((colId) => (
+        <CellData key={`${rowId}/${colId}`} cellId={`${rowId}/${colId}`} />
+      ))}
+    </RowDataRoot>
+  );
+};
 
 const RowData = memo(RowDataFC);
 

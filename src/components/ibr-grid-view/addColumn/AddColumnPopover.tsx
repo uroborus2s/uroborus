@@ -1,12 +1,7 @@
 import LoadingButton from '@/components/ibr-loading/LoadingButton';
-import {
-  ColumnIconKey,
-  ColumnTypeKey,
-  columnTypeText,
-} from '@/core/util/column-types';
 import filterSearchValue from '@/core/util/filterSearchValue';
-import { CREATCOLUMN, useDispath } from '@/domain';
-import { BaseFiledType, DateFormat, TimeZone } from '@/domain/types';
+import { CREATCOLUMN, table, useDispath } from '@/domain';
+import { DateFormat, TimeZone } from '@/domain/types';
 import { view } from '@/domain/view/view.repository';
 import {
   currentViewIdState,
@@ -33,16 +28,8 @@ import ListItemText from '@mui/material/ListItemText';
 import styled from '@mui/material/styles/styled';
 import Tooltip from '@mui/material/Tooltip';
 import useAutocomplete from '@mui/material/useAutocomplete';
-import {
-  createElement,
-  FC,
-  memo,
-  useContext,
-  useEffect,
-  useState,
-} from 'react';
 import { useRecoilValue } from 'recoil';
-import { FiledComponentProps } from '../types';
+import { ColumnTypeKey, columnTypeText, FiledComponentProps } from '../types';
 import CheckBoxFiled from './CheckBoxFiled';
 import DateFiled from './DateFiled';
 import FiledInformation from './FiledInformation';
@@ -51,6 +38,15 @@ import RatingFiled from './RatingFiled';
 import SingleLineTextFiled from './SingleLineTextFiled';
 import SingleSelectFiled from './SingleSelectFiled';
 import TimeDurationFiled from './TimeDurationFiled';
+import {
+  createElement,
+  FC,
+  memo,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
+import ForeignKeyFiled from '@ibr/ibr-grid-view/addColumn/ForeignKeyFiled';
 
 const ItemButton = styled(ListItemButton)({
   borderRadius: '6px',
@@ -64,6 +60,11 @@ const ItemText = styled(ListItemText)({
   margin: '0 0.5rem',
   fontWeight: 500,
   flex: 'auto',
+  '& .MuiListItemText-primary': {
+    whiteSpace: 'nowrap',
+    textOverflow: 'ellipsis',
+    overflow: 'hidden',
+  },
 });
 
 const preOptions = () => ({
@@ -89,12 +90,18 @@ const preOptions = () => ({
   precision: '0',
   durationFormat: 'd',
   max: 5,
+  //  关联的外键
+  foreignTableId: '',
+  // 外键关联关系。1对多，1对1，多对多
+  relationship: 'one',
 });
 
-const postOptions = (option: BaseFiledType, type: ColumnTypeKey) => {
+const postOptions = (option: Record<string, unknown>, type: ColumnTypeKey) => {
   let newOptions = {};
   switch (type) {
     case 'text':
+    case 'email':
+    case 'url':
       newOptions = {
         validator: option.validator,
       };
@@ -121,7 +128,9 @@ const postOptions = (option: BaseFiledType, type: ColumnTypeKey) => {
         timeZone: option.timeZone,
       };
       break;
-    case 'number':
+    case 'decimal':
+    case 'currency':
+    case 'percent':
       newOptions = {
         style: option.style,
         useGrouping: option.useGrouping,
@@ -130,7 +139,7 @@ const postOptions = (option: BaseFiledType, type: ColumnTypeKey) => {
         currency: option.currency,
       };
       break;
-    case 'timeDuration':
+    case 'duration':
       newOptions = {
         durationFormat: option.durationFormat,
       };
@@ -142,6 +151,8 @@ const postOptions = (option: BaseFiledType, type: ColumnTypeKey) => {
         max: option.max,
       };
       break;
+    case 'createdTime':
+    case 'lastModifiedTime':
     case 'formula':
       break;
     case 'multilineText':
@@ -177,10 +188,12 @@ const AddColumnPopover: FC<{
   const lastColId = [...useRecoilValue(view.columnOrders(viewId))].pop();
 
   //当前选中的列状态
-  const [type, setType] = useState<ColumnIconKey>('text');
+  const [type, setType] = useState<ColumnTypeKey>('text');
 
   //新建列的默认参数数据，对应接口中的options 字段
   const [option, setOption] = useState(preOptions);
+
+  const foreignTableName = useRecoilValue(table.name(option.foreignTableId));
 
   const [filedName, setFiledName] = useState<string>();
 
@@ -209,13 +222,14 @@ const AddColumnPopover: FC<{
 
   //新建一个新的列字段
   const handleNewColumn = () => {
+    const parms = postOptions(option, type);
     run({
       data: {
         view_id: viewId,
         table_id: tableId,
-        type: columnTypeText[primaryText[type].type],
+        type: columnTypeText[type],
         anchor_column_id: lastColId,
-        options: JSON.stringify(postOptions(option, primaryText[type].type)),
+        options: JSON.stringify(parms),
         name: filedName ?? primaryText[type].name,
         desc,
         direction: 1,
@@ -283,6 +297,8 @@ const AddColumnPopover: FC<{
               margin: 0,
               minHeight: '36px',
               alignItems: 'center',
+              overflow: 'hidden',
+              flex: 'auto',
               '&.Mui-expanded': {},
             },
             backgroundColor: '#d0f0fd',
@@ -309,54 +325,64 @@ const AddColumnPopover: FC<{
             }}
           >
             <ColumnHeaderIcon type={type} />
-            <ItemText primary={primaryText[type].name} />
+            <ItemText
+              primary={
+                !expanded && foreignTableName
+                  ? `关联到表格 ${foreignTableName}`
+                  : primaryText[type].name
+              }
+            />
           </ListItem>
         </AccordionSummary>
         <AccordionDetails sx={{ padding: 0 }}>
-          <List
-            sx={{
-              margin: '0.25rem',
-              padding: 0,
-              height: '450px',
-              overflow: 'auto',
-            }}
-            className="scrollbar"
-          >
-            {groupedOptions.map((option, index) => (
-              <Tooltip
-                key={index}
-                title={
-                  <ListItemText
-                    sx={{ '& .MuiListItemText-secondary': { color: '#fff' } }}
-                    primary={primaryText[option.key as ColumnIconKey].name}
-                    secondary={primaryText[option.key as ColumnIconKey].tip}
-                  />
-                }
-                placement="left-start"
-              >
-                <ItemButton
-                  disableRipple
-                  disableTouchRipple
-                  selected={option.key === type}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setType(option.key as ColumnIconKey);
-                    setExpanded(false);
-                  }}
-                >
-                  <ColumnHeaderIcon type={option.key as ColumnIconKey} />
-                  <ItemText
-                    primary={primaryText[option.key as ColumnIconKey].name}
-                  />
-                  {option.key === 'foreignKey' && (
-                    <ArrowForwardIosRoundedIcon
-                      sx={{ opacity: 0.5, fontSize: '12px' }}
+          {expanded && (
+            <List
+              sx={{
+                margin: '0.25rem',
+                padding: 0,
+                height: '450px',
+                overflow: 'auto',
+              }}
+              className="scrollbar"
+            >
+              {groupedOptions.map((option, index) => (
+                <Tooltip
+                  key={index}
+                  title={
+                    <ListItemText
+                      sx={{
+                        '& .MuiListItemText-secondary': { color: '#fff' },
+                      }}
+                      primary={primaryText[option.key as ColumnTypeKey].name}
+                      secondary={primaryText[option.key as ColumnTypeKey].tip}
                     />
-                  )}
-                </ItemButton>
-              </Tooltip>
-            ))}
-          </List>
+                  }
+                  placement="left-start"
+                >
+                  <ItemButton
+                    disableRipple
+                    disableTouchRipple
+                    selected={option.key === type}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setType(option.key as ColumnTypeKey);
+                      setExpanded(false);
+                    }}
+                  >
+                    <ColumnHeaderIcon type={option.key as ColumnTypeKey} />
+                    <ItemText
+                      primary={primaryText[option.key as ColumnTypeKey].name}
+                    />
+                    {option.key === 'foreignKey' && (
+                      <ArrowForwardIosRoundedIcon
+                        sx={{ opacity: 0.5, fontSize: '12px' }}
+                      />
+                    )}
+                  </ItemButton>
+                </Tooltip>
+              ))}
+            </List>
+          )}
         </AccordionDetails>
       </Accordion>
       {!expanded &&
@@ -441,35 +467,30 @@ const AddColumnPopover: FC<{
 export default memo(AddColumnPopover);
 
 type ColumnUiData<T extends Record<string, unknown> = any> = {
-  type: ColumnTypeKey;
   name: string;
   tip: string;
   component: FC<T & FiledComponentProps>;
   props?: T;
 };
 
-const primaryText: Record<ColumnIconKey, ColumnUiData> = {
+const primaryText: Record<ColumnTypeKey, ColumnUiData> = {
   foreignKey: {
-    type: 'foreignKey',
-    name: '外键关联',
-    tip: '引用其他关联表的记录',
-    component: FiledInformation,
+    name: '关联表格',
+    tip: '引用其他关联表',
+    component: ForeignKeyFiled,
   },
   text: {
-    type: 'text',
     name: '单行文本',
     tip: '适合存放简单的文字，不支持换行',
     component: SingleLineTextFiled,
   },
   multilineText: {
-    type: 'multilineText',
     name: '多行文本',
     tip: '存放大段文字，可换行',
     component: FiledInformation,
     props: { text: '您可以填入多行长文本' },
   },
   attachment: {
-    type: 'attachment',
     name: '附件',
     tip: '单元格支持添加各种类型的附件',
     component: FiledInformation,
@@ -478,20 +499,17 @@ const primaryText: Record<ColumnIconKey, ColumnUiData> = {
     },
   },
   checkbox: {
-    type: 'checkbox',
     name: '复选框',
     tip: '标记已选/未选状态',
     component: CheckBoxFiled,
   },
   select: {
-    type: 'select',
     name: '单选',
     tip: '在单元格中设定多个可选项，选择单个做为结果',
     component: SingleSelectFiled,
     props: { text: '单选列' },
   },
   multiSelect: {
-    type: 'multiSelect',
     name: '多选',
     tip: '在单元格中设定多个可选项，选择单个或多个做为结果',
     component: SingleSelectFiled,
@@ -499,13 +517,11 @@ const primaryText: Record<ColumnIconKey, ColumnUiData> = {
   },
   // collaborator: ['协作成员', '选择项目协作成员'],
   date: {
-    type: 'date',
     name: '日期',
     tip: '可以选择或者输入日期',
     component: DateFiled,
   },
   phone: {
-    type: 'phone',
     name: '电话号码',
     tip: '可以添加电话号码格式的数据',
     component: FiledInformation,
@@ -514,7 +530,6 @@ const primaryText: Record<ColumnIconKey, ColumnUiData> = {
     },
   },
   email: {
-    type: 'text',
     name: '邮箱地址',
     tip: '可以添加邮箱格式的数据',
     component: FiledInformation,
@@ -523,7 +538,6 @@ const primaryText: Record<ColumnIconKey, ColumnUiData> = {
     },
   },
   url: {
-    type: 'text',
     name: '网址',
     tip: '可以添加网址',
     component: FiledInformation,
@@ -532,49 +546,41 @@ const primaryText: Record<ColumnIconKey, ColumnUiData> = {
     },
   },
   decimal: {
-    type: 'number',
     name: '数字',
     tip: '可以添加设置精度的数字',
     component: NumberFiled,
   },
   currency: {
-    type: 'number',
     name: '货币',
     tip: '设置货币符号，自动填充货币符号',
     component: NumberFiled,
   },
   percent: {
-    type: 'number',
     name: '百分比',
     tip: '输入数字自动转换为百分比',
     component: NumberFiled,
   },
   duration: {
-    type: 'timeDuration',
     name: '持续时间',
     tip: '',
     component: TimeDurationFiled,
   },
   rating: {
-    type: 'rating',
     name: '评分',
     tip: '标记评分',
     component: RatingFiled,
   },
   formula: {
-    type: 'formula',
     name: '函数公式',
     tip: '',
     component: FiledInformation,
   },
   createdTime: {
-    type: 'formula',
     name: '创建时间',
     tip: '显示记录的创建时间，不可更改',
     component: FiledInformation,
   },
   lastModifiedTime: {
-    type: 'formula',
     name: '修改时间',
     tip: '显示记录的最后修改时间，不可更改',
     component: FiledInformation,

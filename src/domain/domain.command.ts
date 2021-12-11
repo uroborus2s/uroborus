@@ -84,9 +84,11 @@ export const EDITVIEW = 'EDITVIEW';
 export const DUPLIACTEVIEW = 'DUPLIACTEVIEW';
 export const DELETEVIEW = 'DELETEVIEW';
 export const READVIEW = 'READVIEW';
+export const GETVIEWLIST = 'GETVIEWLIST';
 
 //row
 export const CREATROW = 'CREATROW';
+export const EDITROW = 'EDITROW';
 
 //column
 export const CREATCOLUMN = 'CREATCOLUMN';

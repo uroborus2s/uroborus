@@ -22,6 +22,7 @@ import {
   ViewRsp,
   ViewSchemaType,
 } from '../types';
+import { column } from '@/domain/column/column.repository';
 
 export const view = (function () {
   class c {
@@ -89,9 +90,7 @@ export const view = (function () {
           (viewId) =>
           ({ get }) => {
             const colIds = [...get(this.columnOrders(viewId))];
-            const endIndex = colIds.findIndex(
-              (id) => get(this.columnFrozen(id)) === 0,
-            );
+            const endIndex = get(this.frozenIndex(viewId));
 
             return colIds
               .slice(0, endIndex)
@@ -108,9 +107,7 @@ export const view = (function () {
           (viewId) =>
           ({ get }) => {
             const colIds = [...get(this.columnOrders(viewId))];
-            const startIndex = colIds.findIndex(
-              (id) => get(this.columnFrozen(id)) === 0,
-            );
+            const startIndex = get(this.frozenIndex(viewId));
             return colIds
               .slice(startIndex, colIds.length)
               .reduce(
@@ -139,7 +136,10 @@ export const view = (function () {
           (viewId) =>
           ({ get }) => {
             const colIds = [...get(this.columnOrders(viewId))];
-            return colIds.findIndex((id) => get(this.columnFrozen(id)) === 0);
+            return colIds.findIndex(
+              (id) =>
+                get(this.columnFrozen(id)) === 0 && !get(column.primary(id)),
+            );
           },
       });
 
@@ -190,7 +190,11 @@ function editView(
   const len = options.response ? Object.keys(options.response).length : 0;
 
   const { name, desc, type, view_columns, view_rows } =
-    len > 0 ? options.response : options.request?.data;
+    len > 0
+      ? options.response
+      : options.request
+      ? options.request.data
+      : undefined;
   if (id) {
     if (name) set(view.name(id), name);
     if (desc) set(view.desc(id), desc);
