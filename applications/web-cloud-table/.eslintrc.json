@@ -1,0 +1,17 @@
+{
+  "extends": ["plugin:react/recommended", "plugin:react-hooks/recommended"],
+  "settings": {
+    //自动发现React的版本，从而进行规范react代码
+    "react": {
+      "pragma": "React",
+      "version": "detect"
+    }
+  },
+  "plugins": ["react", "react-hooks"],
+  "rules": {
+    "react/jsx-uses-react": "error",
+    "react/jsx-uses-vars": "error",
+    "react-hooks/rules-of-hooks": "error",
+    "react/prop-types": 0
+  }
+}

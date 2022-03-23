@@ -1,0 +1,3 @@
+const ibrGridTheme = {
+  foregroundColor: '',
+};

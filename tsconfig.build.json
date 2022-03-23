@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+  "exclude": ["node_modules", "**/*/dist", "**/*.test.ts"],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@uroborus/*": ["./packages/*", "./applications/*"]
+    },
+    "declaration": true,
+    "composite": true,
+  }
+}
