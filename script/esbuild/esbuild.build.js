@@ -1,7 +1,5 @@
 import esbuild from 'esbuild';
 import path from 'path';
-// import { fileURLToPath } from 'url';
-// const __filename = fileURLToPath(import.meta.url);
 
 const entryfile = path.resolve('src/index.ts');
 const outputfile = path.resolve('dist/index.js');

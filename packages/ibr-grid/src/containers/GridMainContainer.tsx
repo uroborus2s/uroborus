@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { styled } from '@mui/material/styles';
+import { styled } from '@uroborus/styled';
 
 const GridMainContainerStyeld = styled('div', {
   name: 'MuiDataGrid',

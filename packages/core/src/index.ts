@@ -1,4 +1,6 @@
-export { default as logurs2 } from './logger/index';
+export { default as logurs2 } from './logger';
+export * from './logger';
+
 export { default as isIE } from './window/isIE';
 
-export * from './logger/index';
+export { default as UIError } from './error/UIError';

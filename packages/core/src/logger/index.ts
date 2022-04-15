@@ -14,7 +14,7 @@ export interface Logger {
   disableAll: (isPersist?: boolean) => void;
 }
 
-const logLevels = {
+export const logLevels = {
   trace: 0,
   debug: 1,
   info: 2,
@@ -23,8 +23,8 @@ const logLevels = {
   silent: 5,
 } as const;
 
-type LogLevel = keyof typeof logLevels;
-type LogName = string | symbol;
+export type LogLevel = keyof typeof logLevels;
+export type LogName = string | symbol;
 
 const noop = (...args: any[]) => void 0;
 

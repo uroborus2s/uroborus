@@ -20,6 +20,14 @@
   },
   "plugins": ["@typescript-eslint", "prettier"],
   "rules": {
-    "@typescript-eslint/ban-ts-comment": ["warn"]
+    "@typescript-eslint/ban-ts-comment": ["warn"],
+    "@typescript-eslint/ban-types": [
+      "error",
+      { "extendDefaults": true, "types": { "{}": false } }
+    ],
+    "no-restricted-imports": [
+      "error",
+      { "patterns": ["@material-ui/*/*/*", "!@material-ui/core/test-utils/*"] }
+    ]
   }
 }

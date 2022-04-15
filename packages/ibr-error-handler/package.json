@@ -1,17 +1,17 @@
 {
-  "name": "@uroborus/ibr-errorhandler",
+  "name": "@uroborus/errorhandler",
   "version": "1.0.0",
   "description": "",
   "type": "module",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "ts-types": " tsc --emitDeclarationOnly && mv ./dist/src/* ./dist && rm -rf ./dist/src",
-    "build": "rm -rf dist && node ../../script/esbuild/esbuild.build.js && pnpm run ts-types"
+    "ts-types": " tsc --emitDeclarationOnly && mv ./types/src/* ./types && rm -rf ./types/src",
+    "build": "rm -rf dist && node ../../script/esbuild/esbuild.build.js"
   },
   "author": "uroborus",
   "devDependencies": {
-    "@uroborus/core": "workspace:^1.0.0"
+    "@uroborus/core": "workspace:*"
   }
 }

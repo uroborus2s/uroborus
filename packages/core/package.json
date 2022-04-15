@@ -4,13 +4,12 @@
   "description": "> TODO: description",
   "author": "snails336 <yangqiuji81@gmail.com>",
   "homepage": "",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "src/index.ts",
   "type": "module",
   "scripts": {
     "test": "echo \"Error: run tests from root\" && exit 1",
-    "ts-types": "tsc -p tsconfig.json --emitDeclarationOnly && mv ./dist/src/* ./dist && rm -rf ./dist/src",
-    "build": "rm -rf dist && node ../../script/esbuild/esbuild.build.js && pnpm run ts-types"
+    "ts-types": "tsc -p tsconfig.json --emitDeclarationOnly && mv ./types/src/* ./types && rm -rf ./types/src",
+    "build": "rm -rf dist && node ../../script/esbuild/esbuild.build.js"
   },
   "devDependencies": {}
 }

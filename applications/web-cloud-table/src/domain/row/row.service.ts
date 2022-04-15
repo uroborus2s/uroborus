@@ -1,4 +1,4 @@
-// import { api, CREATROW } from '@/domain';
+// import { row, CREATROW } from '@/domain';
 import { cmdDispatcher, transformResponse } from '@/domain/core';
 import request from '@/domain/request/request';
 import { CommandOptions } from '@/domain/types';
