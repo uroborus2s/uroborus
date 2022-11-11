@@ -27,13 +27,13 @@ module.exports = function () {
         },
       ],
       '@babel/preset-typescript',
-      '@babel/preset-react',
+      '@babel/preset-state',
     ],
     plugins: [
       [
         'babel-plugin-import',
         {
-          libraryName: '@material-ui/core',
+          libraryName: '@mui/core',
           libraryDirectory: '',
           camel2DashComponentName: false,
         },

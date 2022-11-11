@@ -1,0 +1,11 @@
+node_modules
+dist
+coverage
+.idea
+.husky
+test
+.eslintrc.json
+jest.config.ts
+.prettierignore
+.prettierrc
+scripts/*.js

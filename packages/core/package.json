@@ -1,15 +1,20 @@
 {
   "name": "@uroborus/core",
-  "version": "1.0.0",
-  "description": "> TODO: description",
+  "version": "0.0.1",
+  "description": "基础模块",
   "author": "snails336 <yangqiuji81@gmail.com>",
   "homepage": "",
   "main": "src/index.ts",
+  "module": "src/index.ts",
+  "typings": "src/index.ts",
   "type": "module",
   "scripts": {
     "test": "echo \"Error: run tests from root\" && exit 1",
-    "ts-types": "tsc -p tsconfig.json --emitDeclarationOnly && mv ./types/src/* ./types && rm -rf ./types/src",
-    "build": "rm -rf dist && node ../../script/esbuild/esbuild.build.js"
+    "build:esm": "node ../../scripts/esbuild.esm",
+    "build:stable": "node ../../scripts/esbuild.cjs",
+    "build:types": "node ../../scripts/build.types",
+    "prebuild": "rimraf dist tsconfig.tsbuildinfo types",
+    "build": "pnpm run build:stable && pnpm run build:esm && pnpm run build:types"
   },
   "devDependencies": {}
 }

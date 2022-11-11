@@ -92,7 +92,7 @@ lib-cov
 coverage
 *.lcov
 
-# nyc test coverage
+# nyc tests coverage
 .nyc_output
 
 # Grunt intermediate storage (https://gruntjs.com/creating-plugins#storing-task-files)
@@ -206,7 +206,20 @@ build
 .next/**
 build/**
 dist/**
+
 # umi
 .umi/
 .umi-production/
 .umi-test/
+
+# remix
+/.cache
+/build
+/public/build
+
+/cypress/screenshots
+/cypress/videos
+/prisma/data.db
+/prisma/data.db-journal
+
+/app/styles/tailwind.css

@@ -1,0 +1,48 @@
+{
+  "name": "@uroborus/uro-sense",
+  "version": "0.0.1",
+  "description": "ui相关基础功能",
+  "author": "snails336 <yangqiuji81@gmail.com>",
+  "homepage": "",
+  "main": "src/index.ts",
+  "module": "src/index.ts",
+  "typings": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1",
+    "build:esm": "node ../../scripts/esbuild.esm",
+    "build:stable": "node ../../scripts/esbuild.cjs",
+    "build:types": "node ../../scripts/build.types",
+    "prebuild": "rimraf dist tsconfig.tsbuildinfo types",
+    "build": "pnpm run build:stable && pnpm run build:esm && pnpm run build:types"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    },
+    "@emotion/react": {
+      "optional": true
+    },
+    "@emotion/styled": {
+      "optional": true
+    }
+  },
+  "peerDependencies": {
+    "@emotion/react": "11.9.3",
+    "@emotion/styled": "^11.10.0",
+    "@types/react": "^18.0.24",
+    "@types/react-dom": "^18.0.8",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "dependencies": {
+    "@babel/core": "^7.19.6",
+    "@mui/base": "5.0.0-alpha.92",
+    "@mui/system": "^5.10.0",
+    "@mui/types": "^7.2.0",
+    "@mui/utils": "^5.9.3",
+    "@uroborus/core": "workspace:*",
+    "@uroborus/uro-hooks": "workspace:*",
+    "classnames": "^2.3.1"
+  }
+}

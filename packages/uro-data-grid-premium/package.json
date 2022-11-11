@@ -1,0 +1,37 @@
+{
+  "name": "@uroborus/grid-premium",
+  "version": "1.0.0",
+  "description": "一个web表格插件",
+  "author": "snails336 <yangqiuji81@gmail.com>",
+  "homepage": "",
+  "license": "ISC",
+  "main": "src/index.ts",
+  "module": "src/index.ts",
+  "typings": "src/index.ts",
+  "directories": {},
+  "files": [
+    "lib"
+  ],
+  "publishConfig": {
+    "registry": "https://registry.npm.taobao.org/"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1",
+    "build:esm": "node ../../scripts/esbuild.esm",
+    "build:stable": "node ../../scripts/esbuild.cjs",
+    "build:types": "node ../../scripts/build.types",
+    "prebuild": "rimraf dist tsconfig.tsbuildinfo types",
+    "build": "pnpm run build:stable && pnpm run build:esm && pnpm run build:types"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.17",
+    "@types/react-dom": "^18.0.6",
+    "@uroborus/core": "workspace:*",
+    "@uroborus/grid-core": "workspace:*",
+    "@uroborus/logger": "workspace:*",
+    "classnames": "^2.3.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "recoil": "^0.7.5"
+  }
+}

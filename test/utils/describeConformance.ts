@@ -1,5 +1,5 @@
 import { cloneElement, ElementType, ReactElement } from 'react';
-import { render, RenderOptions } from '@testing-library/react';
+import { render, RenderOptions, screen } from '@testing-library/react';
 
 export interface Optionsinterface<
   D extends ElementType,
@@ -9,6 +9,7 @@ export interface Optionsinterface<
   inheritComponent: D;
   skip: TestKindsNames[];
   execution: TestKindsNames[];
+  testComponentPropWith: (props: any) => ElementType;
 }
 
 export type GeneralComponentTest<
@@ -25,26 +26,21 @@ const generalTestComponentProp: GeneralComponentTest<any, any> = (
 ) => {
   describe('测试组件通用属性：component', () => {
     it('通过属性：component 更改root元素类型', function () {
+      const optionsProp = options || {};
+      const { testComponentPropWith: component = null } = options || {};
       // @ts-ignore
-      const wrapper = render(cloneElement(elementl, { component }), options);
-    });
-  });
-};
-
-const generalTestComponentsProp = (
-  element: ReactElement,
-  options?: Omit<RenderOptions, 'queries'>,
-) => {
-  describe('测试组件通用属性：component', () => {
-    it('通过属性：component 更改root元素类型', function () {
-      const wrapper = render(cloneElement(elementl, { component }), options);
+      const { debug } = render(
+        cloneElement(elementl, { component }),
+        optionsProp,
+      );
+      console.log(screen.getByTestId('component-element'));
+      // expect(baseElement).toContainElement(createElement(component!));
     });
   });
 };
 
 const allTests = {
   componentProp: generalTestComponentProp,
-  componentsProp: generalTestComponentsProp,
 } as const;
 
 export type TestKindsNames = keyof typeof allTests;
@@ -65,9 +61,8 @@ export default <
     const filteredTestNames = execution.filter(
       (testKey) => !skip.includes(testKey),
     );
-
     filteredTestNames.forEach((testName) => {
-      allTests[testName].call(void 0, element, options);
+      allTests[testName].call(undefined, element, options);
     });
   });
 };

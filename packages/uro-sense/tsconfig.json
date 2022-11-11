@@ -1,0 +1,8 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "lib": ["ES6", "ES5", "DOM"],
+    "jsx": "react-jsx"
+  },
+  "include": ["src/**/*.ts*", "src/**/*"]
+}

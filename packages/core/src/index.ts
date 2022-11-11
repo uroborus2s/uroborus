@@ -1,6 +1,5 @@
-export { default as logurs2 } from './logger';
-export * from './logger';
+export * from './colors';
 
-export { default as isIE } from './window/isIE';
+export * from './util';
 
-export { default as UIError } from './error/UIError';
+export * from './event';
