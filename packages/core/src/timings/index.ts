@@ -1,0 +1,70 @@
+const records: Record<string, number> = {};
+
+const isEnabled = false;
+
+const isTimingsEnabled = (): boolean => isEnabled;
+
+export const start = (key: string) => {
+  // we want to strip all the code out for production builds
+  // draw back: can only do timings in dev env (which seems to be fine for now)
+  if (process.env.NODE_ENV !== 'production') {
+    if (!isTimingsEnabled()) {
+      return;
+    }
+    const now: number = performance.now();
+
+    records[key] = now;
+  }
+};
+
+export const finish = (key: string) => {
+  if (process.env.NODE_ENV !== 'production') {
+    if (!isTimingsEnabled()) {
+      return;
+    }
+    const now: number = performance.now();
+
+    const previous = records[key];
+
+    if (!previous) {
+      // eslint-disable-next-line no-console
+      console.warn('cannot finish timing as no previous time found', key);
+      return;
+    }
+
+    const result: number = now - previous;
+    const rounded: string = result.toFixed(2);
+
+    const style = (() => {
+      if (result < 12) {
+        return {
+          textColor: 'green',
+          symbol: '✅',
+        };
+      }
+      if (result < 40) {
+        return {
+          textColor: 'orange',
+          symbol: '⚠️',
+        };
+      }
+      return {
+        textColor: 'red',
+        symbol: '❌',
+      };
+    })();
+
+    // eslint-disable-next-line no-console
+    console.log(
+      `${style.symbol} %cTiming %c${rounded} %cms %c${key}`,
+      // title
+      'color: blue; font-weight: bold;',
+      // result
+      `color: ${style.textColor}; font-size: 1.1em;`,
+      // ms
+      'color: grey;',
+      // key
+      'color: purple; font-weight: bold;',
+    );
+  }
+};

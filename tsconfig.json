@@ -1,17 +1,13 @@
 {
   "extends": "@tsconfig/recommended/tsconfig.json",
-  "exclude": [
-    "node_modules",
-    "dist",
-    "**/*/dist",
-    "**/*.test.ts",
-    "**/*/node_modules",
-    "scripts"
-  ],
+  "exclude": ["node_modules/", "dist/", "build/", "*/.*/"],
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
     "composite": true,
-    "allowJs": true
+    "allowJs": true,
+    "baseUrl": ".",
+    "isolatedModules": true,
+    "jsx": "react-jsx"
   },
   "compileOnSave": true
 }

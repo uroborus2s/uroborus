@@ -1,6 +1,9 @@
-import { OverridableStringUnion } from '@mui/types';
-import { CSSObject } from '@mui/system';
-import { ColorPaletteProp } from './colorSystem';
+import type { CSSObject } from '@mui/system';
+import type { OverridableStringUnion } from '@uroborus/core';
+
+import type { ColorPaletteProp } from './colorSystem.js';
+import { DefaultColorPalette } from './colorSystem.js';
+import { Theme } from './theme.js';
 
 export interface VariantPropOverrides {}
 
@@ -13,6 +16,8 @@ export type VariantProp = OverridableStringUnion<
 
 type State = 'Hover' | 'Active' | 'Disabled';
 
+type StateLower = 'normal' | 'hover' | 'active' | 'disabled';
+
 export type VariantKey = DefaultVariantProp | `${DefaultVariantProp}${State}`;
 
 export type DefaultVariantKey =
@@ -20,63 +25,21 @@ export type DefaultVariantKey =
   | `${Exclude<DefaultVariantProp, 'solid'>}${State}`;
 
 // Split interfaces into multiple chunks so that they can be augmented independently
+export interface Variants extends Record<ColorPaletteProp, VariantPalette> {}
+export interface VariantRange extends Record<StateLower, CSSObject> {
+  variantBorderWidth: number;
+}
 
-export interface VariantPlain
-  extends Record<ColorPaletteProp | 'context', CSSObject> {}
-export interface VariantPlainHover
-  extends Record<ColorPaletteProp | 'context', CSSObject> {}
-export interface VariantPlainActive
-  extends Record<ColorPaletteProp | 'context', CSSObject> {}
-export interface VariantPlainDisabled
-  extends Record<ColorPaletteProp | 'context', CSSObject> {}
+export interface VariantPlain extends VariantRange {}
+export interface VariantOutlined extends VariantRange {}
+export interface VariantSoft extends VariantRange {}
+export interface VariantSolid extends VariantRange {}
 
-export interface VariantOutlined
-  extends Record<ColorPaletteProp | 'context', CSSObject> {}
-export interface VariantOutlinedHover
-  extends Record<ColorPaletteProp | 'context', CSSObject> {}
-export interface VariantOutlinedActive
-  extends Record<ColorPaletteProp | 'context', CSSObject> {}
-export interface VariantOutlinedDisabled
-  extends Record<ColorPaletteProp | 'context', CSSObject> {}
-
-export interface VariantSoft
-  extends Record<ColorPaletteProp | 'context', CSSObject> {}
-export interface VariantSoftHover
-  extends Record<ColorPaletteProp | 'context', CSSObject> {}
-export interface VariantSoftActive
-  extends Record<ColorPaletteProp | 'context', CSSObject> {}
-export interface VariantSoftDisabled
-  extends Record<ColorPaletteProp | 'context', CSSObject> {}
-
-export interface VariantSolid
-  extends Record<ColorPaletteProp | 'context', CSSObject> {}
-export interface VariantSolidHover
-  extends Record<ColorPaletteProp | 'context', CSSObject> {}
-export interface VariantSolidActive
-  extends Record<ColorPaletteProp | 'context', CSSObject> {}
-export interface VariantSolidDisabled
-  extends Record<ColorPaletteProp | 'context', CSSObject> {}
-
-export interface Variants {
+export interface VariantPalette {
   plain: VariantPlain;
-  plainHover: VariantPlainHover;
-  plainActive: VariantPlainActive;
-  plainDisabled: VariantPlainDisabled;
-
   outlined: VariantOutlined;
-  outlinedHover: VariantOutlinedHover;
-  outlinedActive: VariantOutlinedActive;
-  outlinedDisabled: VariantOutlinedDisabled;
-
   soft: VariantSoft;
-  softHover: VariantSoftHover;
-  softActive: VariantSoftActive;
-  softDisabled: VariantSoftDisabled;
-
   solid: VariantSolid;
-  solidHover: VariantSolidHover;
-  solidActive: VariantSolidActive;
-  solidDisabled: VariantSolidDisabled;
 }
 
 export interface VariantPlainInversion
@@ -97,3 +60,77 @@ export interface VariantOverrides {
 
 export interface ColorInversionConfig
   extends Partial<Record<VariantProp, Array<VariantProp> | undefined>> {}
+
+export const createVariants = (theme: Theme) => {
+  let variants = {} as unknown as Variants;
+
+  const createVariantStyle = (
+    name: DefaultVariantProp,
+    paletteKey: DefaultColorPalette,
+  ) => {
+    let variantStyles = {
+      variantBorderWidth: 0,
+    };
+    (['normal', 'hover', 'active', 'disabled'] as Array<StateLower>).forEach(
+      (action) => {
+        const color = theme.palette[paletteKey][`${name}Color`];
+        const backgroundColor = theme.palette[paletteKey][`${name}Bg`];
+        const borderColor = theme.palette[paletteKey][`${name}Border`];
+
+        const style: CSSObject = {
+          ...(color ? { color } : {}),
+          ...(backgroundColor ? { backgroundColor } : {}),
+          ...(borderColor ? { borderColor } : {}),
+        };
+        if (action === 'hover') {
+          style.cursor = 'pointer';
+        } else if (action === 'disabled') {
+          style.cursor = 'default';
+          style.pointerEvents = 'none';
+        } else if (action === 'normal') {
+          if (borderColor) {
+            variantStyles.variantBorderWidth = 1;
+            style.border = `${variantStyles.variantBorderWidth}px solid`;
+          }
+        }
+
+        variantStyles = {
+          ...variantStyles,
+          [action]: style,
+        };
+      },
+    );
+    return variantStyles;
+  };
+
+  const createVariant = (paletteName: DefaultColorPalette) => {
+    let variant = {};
+    (['plain', 'outlined', 'soft', 'solid'] as DefaultVariantProp[]).forEach(
+      (variantName) => {
+        variant = {
+          ...variant,
+          [variantName]: createVariantStyle(variantName, paletteName),
+        };
+      },
+    );
+    return variant as unknown as VariantPalette;
+  };
+
+  (
+    [
+      'primary',
+      'neutral',
+      'danger',
+      'info',
+      'success',
+      'warning',
+    ] as Array<DefaultColorPalette>
+  ).forEach((palette) => {
+    variants = {
+      ...variants,
+      [palette]: createVariant(palette),
+    };
+  });
+
+  return variants;
+};

@@ -1,25 +1,24 @@
-import { OverridableStringUnion } from '@mui/types';
-import {
+import type {
   Breakpoints,
   Spacing,
-  SxProps as SystemSxProps,
   SystemProps as SystemSystemProps,
+  SxProps as SystemSxProps,
 } from '@mui/system';
-import { DefaultColorScheme, ExtendedColorScheme } from './colorScheme';
-import { ColorSystem } from './colorSystem';
-import { Focus } from './focus';
-import { Shadow } from './shadow';
-import { Radius } from './radius';
-import {
+
+import type { DefaultColorScheme } from './colorScheme.js';
+import type { ColorSystem } from './colorSystem.js';
+import type { Focus } from './focus.js';
+import type { Radius } from './radius.js';
+import type { Shadow } from './shadow.js';
+import type {
   FontFamily,
   FontSize,
   FontWeight,
-  LineHeight,
   LetterSpacing,
+  LineHeight,
   TypographySystem,
-} from './typography';
-import { Variants, VariantOverrides, ColorInversionConfig } from './variants';
-import { Border } from './border';
+} from './typography.js';
+import type { Variants } from './variants.js';
 
 type Split<T, K extends keyof T = keyof T> = K extends string | number
   ? { [k in K]: Exclude<T[K], undefined> }
@@ -35,16 +34,9 @@ type ConcatDeep<T> = T extends Record<string | number, infer V>
     : never
   : never;
 
-/**
- * Does not work for these cases:
- * - { borderRadius: string | number } // the value can't be a union
- * - { shadows: [string, string, ..., string] } // the value can't be an array
- */
-type NormalizeVars<T> = ConcatDeep<Split<T>>;
-
 export interface RuntimeColorSystem extends Omit<ColorSystem, 'palette'> {
   palette: ColorSystem['palette'] & {
-    colorScheme: DefaultColorScheme | ExtendedColorScheme;
+    colorScheme: DefaultColorScheme;
   };
 }
 
@@ -59,36 +51,16 @@ export interface ThemeScales {
   letterSpacing: LetterSpacing;
 }
 
-interface ColorSystemVars extends Omit<ColorSystem, 'palette'> {
-  palette: Omit<ColorSystem['palette'], 'mode'>;
-}
-export interface ThemeVars extends ThemeScales, ColorSystemVars {}
-
-export interface ThemeCssVarOverrides {}
-
-export type ThemeCssVar = OverridableStringUnion<
-  NormalizeVars<ThemeVars>,
-  ThemeCssVarOverrides
->;
-
 export interface Theme extends ThemeScales, RuntimeColorSystem {
-  colorSchemes: Record<DefaultColorScheme | ExtendedColorScheme, ColorSystem>;
+  colorSchemes: Record<DefaultColorScheme, ColorSystem>;
   focus: Focus;
-  border: Border;
   typography: TypographySystem;
   variants: Variants;
-  colorInversion: VariantOverrides;
-  colorInversionConfig: ColorInversionConfig;
   spacing: Spacing;
   breakpoints: Breakpoints;
-  cssVarPrefix: string;
-  vars: ThemeVars;
-  getCssVar: (field: ThemeCssVar, ...vars: ThemeCssVar[]) => string;
-  getColorSchemeSelector: (
-    colorScheme: DefaultColorScheme | ExtendedColorScheme,
-  ) => string;
+  getColorSchemeSelector: (colorScheme: DefaultColorScheme) => string;
 }
 
-export type SxProps = SystemSxProps<Theme>;
-
 export type SystemProps = SystemSystemProps<Theme>;
+
+export type SxProps = SystemSxProps<Theme>;

@@ -2,10 +2,10 @@
   "name": "@uroborus/grid-core",
   "version": "1.0.0",
   "description": "grid插件的基础库",
-  "author": "snails336 <yangqiuji81@gmail.com>",
+  "author": "snails336",
   "homepage": "",
-  "license": "ISC",
-  "main": "src/index.ts",
+  "license": "MIT",
+  "main": "src/index.ts.ts",
   "type": "module",
   "module": "src/index.ts",
   "typings": "src/index.ts",
@@ -18,33 +18,51 @@
   },
   "scripts": {
     "test": "echo \"Error: run tests from root\" && exit 1",
-    "build:esm": "node ../../scripts/esbuild.esm",
-    "build:stable": "node ../../scripts/esbuild.cjs",
-    "build:types": "node ../../scripts/build.types --dir:types",
-    "prebuild": "rimraf dist tsconfig.tsbuildinfo types",
-    "build": "pnpm run prebuild && pnpm run build:stable && pnpm run build:esm && pnpm run build:types"
-  },
-  "devDependencies": {
-    "@babel/core": "^7.18.10",
-    "@emotion/react": "11.9.3",
-    "@emotion/styled": "^11.10.0",
-    "@mui/base": "5.0.0-alpha.92",
-    "@mui/system": "^5.10.0",
-    "@mui/types": "^7.2.0",
-    "@mui/utils": "^5.9.3",
-    "@recoiljs/refine": "^0.1.1",
-    "@types/react": "^18.0.17",
-    "@types/react-dom": "^18.0.6",
-    "@uroborus/core": "workspace:*",
-    "@uroborus/uro-sense": "workspace:*",
-    "classnames": "^2.3.1",
-    "csstype": "^3.1.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "recoil": "^0.7.5",
-    "recoil-sync": "^0.1.0"
+    "build": "pnpm prebuild && pnpm build:stable",
+    "build:stable": "node ../../scr/build.vite.mjs stable",
+    "build:node": "node ../../scr/build.vite.mjs node",
+    "build:modern": "node ../../scr/build.vite.mjs modern",
+    "build:legacy": "node ../../scr/build.vite.mjs legacy",
+    "build:types": "node ../../scr/build.types.mjs",
+    "prebuild": "rimraf build tsconfig.build.tsbuildinfo"
   },
   "dependencies": {
-    "@uroborus/uro-hooks": "workspace:^1.0.0"
+    "@recoiljs/refine": "^0.1.1",
+    "@uroborus/core": "workspace:*",
+    "@uroborus/hooks": "workspace:*",
+    "classnames": "^2.3.2",
+    "recoil": "^0.7.6",
+    "recoil-sync": "^0.2.0"
+  },
+  "peerDependencies": {
+    "@emotion/react": "^11.9.3",
+    "@emotion/styled": "^11.10.0",
+    "@types/react": "^18.0.24",
+    "@types/react-dom": "^18.0.8",
+    "sense-ui": "workspace:*",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    },
+    "@emotion/react": {
+      "optional": true
+    },
+    "@emotion/styled": {
+      "optional": true
+    },
+    "sense-ui": {
+      "optional": true
+    }
+  },
+  "engines": {
+    "node": ">=16.18.1"
+  },
+  "exports": {
+    "development": "./src/index.ts",
+    "import": "./build/grid-core.js",
+    "types": "./src/index.ts"
   }
 }

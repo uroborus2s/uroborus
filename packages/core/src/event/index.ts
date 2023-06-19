@@ -1,5 +1,5 @@
-export * from './eventService';
+export type { WINDOWEventBinding } from './event.types.js';
 
-export * from './event.types';
+export { bindEvents } from './bindEvents.js';
 
-export * from './frameworkOverrides';
+export { EventService } from './eventService.js';

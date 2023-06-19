@@ -1,5 +1,4 @@
 import { useThemeProps as systemUseThemeProps } from '@mui/system';
-import defaultTheme from './defaultTheme';
 
 export default function useThemeProps<T>({
   props,
@@ -11,6 +10,5 @@ export default function useThemeProps<T>({
   return systemUseThemeProps({
     props,
     name,
-    defaultTheme: { ...defaultTheme, components: {} },
   });
 }

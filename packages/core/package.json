@@ -1,20 +1,59 @@
 {
   "name": "@uroborus/core",
-  "version": "0.0.1",
+  "version": "0.0.1-alpha.2",
   "description": "基础模块",
   "author": "snails336 <yangqiuji81@gmail.com>",
   "homepage": "",
-  "main": "src/index.ts",
-  "module": "src/index.ts",
-  "typings": "src/index.ts",
+  "main": "build/node/index.js",
+  "module": "build/index.js",
+  "types": "build/index.d.ts",
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "test": "echo \"Error: run tests from root\" && exit 1",
-    "build:esm": "node ../../scripts/esbuild.esm",
-    "build:stable": "node ../../scripts/esbuild.cjs",
-    "build:types": "node ../../scripts/build.types",
-    "prebuild": "rimraf dist tsconfig.tsbuildinfo types",
-    "build": "pnpm run build:stable && pnpm run build:esm && pnpm run build:types"
+    "build": "pnpm prebuild && pnpm build:legacy && pnpm build:stable && pnpm build:modern && pnpm build:node && pnpm build:types",
+    "build:legacy": "BROWSERSLIST_ENV=legacy esno ../../scripts/build.ts legacy",
+    "build:modern": "BROWSERSLIST_ENV=modern esno ../../scripts/build.ts modern",
+    "build:node": "BROWSERSLIST_ENV=node esno ../../scripts/build.ts node",
+    "build:stable": "BROWSERSLIST_ENV=stable esno ../../scripts/build.ts stable",
+    "build:types": "tsc -p tsconfig.build.json",
+    "prebuild": "rimraf build tsconfig.build.tsbuildinfo",
+    "vite": "vite build"
   },
-  "devDependencies": {}
+  "exports": {
+    ".": {
+      "import": "./build/index.js",
+      "types": "./build/index.d.ts",
+      "require": "./build/node/index.js",
+      "default": "./build/index.js"
+    },
+    "./legacy": {
+      "import": "./build/legacy/index.js",
+      "types": "./build/index.d.ts",
+      "default": "./build/legacy/index.js"
+    },
+    "./logger": {
+      "import": "./build/logger/index.js",
+      "types": "./build/index.d.ts",
+      "require": "./build/node/logger/index.js",
+      "default": "./build/logger/index.js"
+    }
+  },
+  "peerDependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "dependencies": {
+    "@mui/private-theming": "^5.11.12",
+    "@mui/types": "^7.2.3",
+    "@mui/utils": "^5.11.12",
+    "raf-schd": "^4.0.3"
+  },
+  "engines": {
+    "node": ">=16.18.1"
+  },
+  "devDependencies": {
+    "@types/raf-schd": "^4.0.1",
+    "user-agent-data-types": "^0.3.0"
+  }
 }

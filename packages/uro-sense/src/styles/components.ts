@@ -1,10 +1,11 @@
-import { CSSInterpolation } from '@mui/system';
-import { GlobalStateSlot } from '@mui/utils';
-import {
-  ButtonOwnerState,
-  ButtonProps,
-  ButtonSlot,
-} from '../button/buttonProps';
+import type { CSSInterpolation } from '@mui/system';
+import type { GlobalStateSlot } from '@uroborus/core';
+
+import type {
+  CircularProgressOwnerState,
+  CircularProgressProps,
+  CircularProgressSlot,
+} from '../CircularProgress/index.js';
 
 export type OverridesStyleRules<
   ClassKey extends string = string,
@@ -26,8 +27,12 @@ export type OverridesStyleRules<
 >;
 
 export interface Components<Theme = unknown> {
-  UroButton?: {
-    defaultProps?: Partial<ButtonProps>;
-    styleOverrides?: OverridesStyleRules<ButtonSlot, ButtonOwnerState, Theme>;
+  UroCircularProgress?: {
+    defaultProps?: Partial<CircularProgressProps>;
+    styleOverrides?: OverridesStyleRules<
+      CircularProgressSlot,
+      CircularProgressOwnerState,
+      Theme
+    >;
   };
 }

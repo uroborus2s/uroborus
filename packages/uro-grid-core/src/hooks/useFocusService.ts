@@ -1,17 +1,23 @@
-import { useRecoilValue } from 'recoil';
-import { gridOptionsWrapperAtom } from '@/state';
-import { MutableRefObject, useCallback } from 'react';
-import { Constants } from '@/constants';
+import {
+  FOCUSABLE_EXCLUDE,
+  FOCUSABLE_SELECTOR,
+  getTabIndex,
+  last,
+} from '@uroborus/core';
+
+import { GridOptionsService } from '../service/gridOptionsService.js';
+
+const clearFocusedCell = (resetSelf: () => void) => () => {
+  resetSelf();
+};
 
 const findFocusableElements = (
-  rootNode: HTMLElement | undefined,
+  rootNode: HTMLElement,
   exclude?: string | null,
   onlyUnmanaged = false,
-) => {
-  if (!rootNode) return null;
-
-  const focusableString = Constants.FOCUSABLE_SELECTOR;
-  let excludeString = Constants.FOCUSABLE_EXCLUDE;
+): HTMLElement[] => {
+  const focusableString = FOCUSABLE_SELECTOR;
+  let excludeString = FOCUSABLE_EXCLUDE;
 
   if (exclude) {
     excludeString += `, ${exclude}`;
@@ -37,48 +43,102 @@ const findFocusableElements = (
   return diff(nodes, excludeNodes);
 };
 
-export default function () {
-  const gridWrapOptions = useRecoilValue(gridOptionsWrapperAtom);
-
-  const findNextFocusableElement = useCallback(
-    (
-      rootNode?: MutableRefObject<HTMLElement | undefined>,
-      onlyManaged?: boolean,
-      backwards?: boolean,
-    ) => {
-      const rootRef = gridWrapOptions?.getGridRootRef();
-
-      const rootEmel = rootNode
-        ? rootNode.current ?? rootRef?.current
-        : rootRef?.current;
-      const focusable = findFocusableElements(
-        rootEmel,
-        onlyManaged ? ':not([tabindex="-1"])' : null,
-      );
-      if (focusable) {
-        const eDocument = gridWrapOptions!.getDocument();
-        const activeEl = eDocument.activeElement as HTMLElement;
-
-        let currentIndex: number;
-
-        if (onlyManaged) {
-          currentIndex = focusable.findIndex((el) => el.contains(activeEl));
-        } else {
-          currentIndex = focusable.indexOf(activeEl);
-        }
-
-        const nextIndex = currentIndex + (backwards ? -1 : 1);
-
-        if (nextIndex < 0 || nextIndex >= focusable.length) {
-          return null;
-        }
-
-        return focusable[nextIndex];
-      }
-      return null;
-    },
-    [gridWrapOptions],
+const focusInto = (
+  rootNode: HTMLElement,
+  up = false,
+  onlyUnmanaged = false,
+) => {
+  const focusableElements = findFocusableElements(
+    rootNode,
+    null,
+    onlyUnmanaged,
   );
+  const toFocus = up ? last(focusableElements) : focusableElements[0];
 
-  return { findNextFocusableElement };
-}
+  if (toFocus) {
+    toFocus.focus();
+    return true;
+  }
+
+  return false;
+};
+
+const getFocusableContainers = (rootElement: HTMLElement) => {
+  const els: HTMLElement[] = [];
+
+  const gridBodyCompEl = rootElement.querySelector('.uro-root');
+  const sideBarEl = rootElement.querySelector('.uro-side-bar');
+  if (gridBodyCompEl) {
+    els.push(gridBodyCompEl as HTMLElement);
+  }
+
+  if (sideBarEl) {
+    els.push(sideBarEl as HTMLElement);
+  }
+
+  return els;
+};
+
+const findTabbableParent = (
+  nodeProps: HTMLElement | null,
+  limit = 5,
+): HTMLElement | null => {
+  let counter = 0;
+  let node = nodeProps;
+  while (node && getTabIndex(node) === null && counter < limit) {
+    node = node.parentElement;
+    counter += 1;
+  }
+
+  if (getTabIndex(node) === null) {
+    return null;
+  }
+
+  return node;
+};
+
+const isDetailGrid = (rootElement: HTMLElement): boolean => {
+  const el = findTabbableParent(rootElement);
+
+  return el?.getAttribute('row-id')?.startsWith('detail') || false;
+};
+
+export default (gridConfiguration: GridOptionsService) => {
+  const focusNextInnerContainer = (backwards: boolean) => {
+    const eDocument = gridConfiguration.getDocument();
+
+    const focusableContainers = getFocusableContainers(
+      gridConfiguration.rootElementRef.current!,
+    );
+    const idxWithFocus = focusableContainers.findIndex((container) =>
+      container.contains(eDocument.activeElement),
+    );
+    const nextIdx = idxWithFocus + (backwards ? -1 : 1);
+
+    if (nextIdx <= 0 || nextIdx >= focusableContainers.length) {
+      return false;
+    }
+
+    return focusInto(focusableContainers[nextIdx]);
+  };
+
+  const focusNextGridCoreContainer = (backwards: boolean) => {
+    if (focusNextInnerContainer(backwards)) {
+      return true;
+    }
+
+    if (
+      !backwards &&
+      !isDetailGrid(gridConfiguration.rootElementRef.current!)
+    ) {
+    }
+
+    return false;
+  };
+
+  const onColumnEverythingChanged = () => {};
+
+  const onCellFocused = () => {};
+
+  return { focusNextGridCoreContainer };
+};

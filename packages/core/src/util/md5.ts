@@ -1,3 +1,5 @@
+/* eslint no-bitwise: [2, { int32Hint: true }] */
+
 let ieCompatibility = false;
 
 function add32Std(a: any, b: any) {

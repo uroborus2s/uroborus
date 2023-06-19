@@ -1,26 +1,83 @@
 {
-  "name": "@uroborus/uro-hooks",
-  "version": "1.0.0",
+  "name": "@uroborus/hooks",
+  "version": "0.0.1-alpha.2",
   "description": "",
   "author": "snails336 <yangqiuji81@gmail.com>",
   "homepage": "",
-  "main": "src/index.ts",
-  "module": "src/index.ts",
-  "typings": "src/index.ts",
+  "main": "build/node/index.js",
+  "module": "build/index.ts",
+  "typings": "build/index.d.ts",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "pnpm prebuild && pnpm build:legacy && pnpm build:stable && pnpm build:modern && pnpm build:node && pnpm build:types",
+    "build:legacy": "BROWSERSLIST_ENV=legacy esno ../../scripts/build.ts legacy",
+    "build:modern": "BROWSERSLIST_ENV=modern esno ../../scripts/build.ts modern",
+    "build:node": "BROWSERSLIST_ENV=node esno ../../scripts/build.ts node",
+    "build:stable": "BROWSERSLIST_ENV=stable esno ../../scripts/build.ts stable",
+    "build:types": "tsc -p tsconfig.build.json",
+    "prebuild": "rimraf build tsconfig.build.tsbuildinfo"
   },
   "keywords": [],
-  "license": "ISC",
+  "license": "MIT",
   "peerDependenciesMeta": {
     "@types/react": {
       "optional": true
     }
   },
+  "dependencies": {
+    "@juggle/resize-observer": "^3.4.0",
+    "@uroborus/core": "workspace:*"
+  },
   "peerDependencies": {
-    "@types/react": "^18.0.24",
-    "@types/react-dom": "^18.0.8",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
+  },
+  "exports": {
+    ".": {
+      "import": "./build/index.js",
+      "require": "./build/node/index.js",
+      "types": "./build/index.d.ts"
+    },
+    "./legacy": {
+      "import": "./build/legacy/index.js",
+      "require": "./build/node/index.js",
+      "types": "./build/index.d.ts"
+    },
+    "./useResizeObserver": {
+      "import": "./build/useResizeObserver/index.js",
+      "require": "./build/node/useResizeObserver/index.js",
+      "types": "./build/useResizeObserver/index.d.ts"
+    },
+    "./useLatest": {
+      "import": "./build/useLatest/index.js",
+      "require": "./build/node/useLatest/index.js",
+      "types": "./build/useLatest/index.d.ts"
+    },
+    "./useEffectOnce": {
+      "import": "./build/useEffectOnce/index.js",
+      "require": "./build/node/useEffectOnce/index.js",
+      "types": "./build/useEffectOnce/index.d.ts"
+    },
+    "./useLayoutEffect": {
+      "import": "./build/useLayoutEffect/index.js",
+      "require": "./build/node/useLayoutEffect/index.js",
+      "types": "./build/useLayoutEffect/index.d.ts"
+    },
+    "./useDevelopment": {
+      "import": "./build/useDevelopment/index.js",
+      "require": "./build/node/useDevelopment/index.js",
+      "types": "./build/useDevelopment/index.d.ts"
+    },
+    "./useUniqueId": {
+      "import": "./build/useUniqueId/index.js",
+      "require": "./build/node/useUniqueId/index.js",
+      "types": "./build/useUniqueId/index.d.ts"
+    },
+    "./useRequiredContext": {
+      "import": "./build/useRequiredContext/index.js",
+      "require": "./build/node/useRequiredContext/index.js",
+      "types": "./build/useRequiredContext/index.d.ts"
+    }
   }
 }

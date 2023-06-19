@@ -1,7 +1,11 @@
 import { createStyled } from '@mui/system';
-import defaultTheme from './defaultTheme';
-import styleFunctionSx from './styleFunctionSx';
 
-const styled = createStyled({ defaultTheme, styleFunctionSx });
+import defaultTheme from './defaultTheme.js';
+import styleFunctionSx from './styleFunctionSx.js';
+
+const styled = createStyled({
+  defaultTheme,
+  styleFunctionSx,
+});
 
 export default styled;

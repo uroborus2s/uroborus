@@ -1,0 +1,11 @@
+{
+  "exclude": "../tsconfig.ts",
+  "compilerOptions": {
+    "composite": true,
+    "module": "ESNext",
+    "moduleResolution": "NodeNext",
+    "allowSyntheticDefaultImports": true,
+    "declaration": true
+  },
+  "include": ["*.ts"]
+}

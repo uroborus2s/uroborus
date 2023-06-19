@@ -5,7 +5,9 @@
     "noEmit": true,
     "noUnusedLocals": true,
     "skipLibCheck": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext"
   },
-  "include": ["utils/**/*", "index.ts"]
+  "include": ["utils/**/*", "index.ts", "util.ts"]
 }

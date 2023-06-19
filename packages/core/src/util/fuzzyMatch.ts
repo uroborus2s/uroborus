@@ -10,7 +10,7 @@ export function getBigrams(from: string) {
   let j;
   let ref;
 
-  for (i = 0, j = 0, ref = v.length; j <= ref; i++, j++) {
+  for (i = 0, j = 0, ref = v.length; j <= ref; i += 1, i += 1) {
     v[i] = s.slice(i, i + 2);
   }
 
@@ -34,12 +34,12 @@ export function stringDistances(str1: string, str2: string): number {
   let j;
   let len;
 
-  for (j = 0, len = pairs1.length; j < len; j++) {
+  for (j = 0, len = pairs1.length; j < len; j += 1) {
     const x = pairs1[j];
     let k;
     let len1;
 
-    for (k = 0, len1 = pairs2.length; k < len1; k++) {
+    for (k = 0, len1 = pairs2.length; k < len1; k += 1) {
       const y = pairs2[k];
       if (x === y) {
         hitCount += 1;
@@ -57,7 +57,7 @@ export function stringWeightedDistances(str1: string, str2: string): number {
   let weight = 0;
   let lastIndex = 0;
 
-  for (let i = 0; i < a.length; i++) {
+  for (let i = 0; i < a.length; i += 1) {
     const idx = b.indexOf(a[i], lastIndex);
     if (idx !== -1) {
       lastIndex = idx;
@@ -70,10 +70,9 @@ export function stringWeightedDistances(str1: string, str2: string): number {
 /**
  *
  * @param {String} inputValue 要与字符串列表进行比较的值
- * @param allSuggestions The list of strings to be compared against
- * @param hideIrrelevant By default, fuzzy suggestions will just sort the allSuggestions list, set this to true
- *        to filter out the irrelevant values
- * @param weighted Set this to true, to make letters matched in the order they were typed have priority in the results.
+ * @param allSuggestions 要比较的字符串列表
+ * @param hideIrrelevant 默认情况下，模糊建议只会对 allSuggestions 列表进行排序， 将其设置为 true 以过滤掉不相关的值
+ * @param weighted 将此设置为 true，以使按键入顺序匹配的字母在结果中具有优先权。
  */
 export function fuzzySuggestions(
   inputValue: string,

@@ -27,6 +27,18 @@ export function includes<T>(array: T[], value: T): boolean {
   return array.indexOf(value) > -1;
 }
 
+export function toNumber(value: any): number | undefined {
+  if (typeof value === 'number') {
+    return value;
+  }
+
+  if (typeof value === 'string') {
+    return Number(value);
+  }
+
+  return undefined;
+}
+
 export function toBoolean(value: any): boolean {
   if (typeof value === 'boolean') {
     return value;
@@ -39,18 +51,6 @@ export function toBoolean(value: any): boolean {
   }
 
   return false;
-}
-
-export function toNumber(value: any): number | undefined {
-  if (typeof value === 'number') {
-    return value;
-  }
-
-  if (typeof value === 'string') {
-    return Number(value);
-  }
-
-  return undefined;
 }
 
 export function isTrue(value: any): boolean {
@@ -66,4 +66,14 @@ export function toDecimalNumber(value: any): number | undefined {
     return parseInt(value, 10);
   }
   return undefined;
+}
+
+// 蛇形字符转换为驼峰
+export function toHump(lineChar: string, sep = '_') {
+  const regExp = new RegExp(`\\${sep}(\\w)`, 'g');
+  return lineChar.replace(regExp, (substring, args) => args.toUpperCase());
+}
+
+export function toLine(humpChar: string, sep = '_') {
+  return humpChar.replace(/([A-Z])/g, `${sep}$1`).toLowerCase();
 }

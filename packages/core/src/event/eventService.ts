@@ -1,5 +1,6 @@
-import { Event, EventFunction, EventType } from './event.types';
-import { FrameworkOverrides, IFrameworkOverrides } from './frameworkOverrides';
+import type { Event, EventFunction, EventType } from './event.types.js';
+import type { IFrameworkOverrides } from './frameworkOverrides.js';
+import { FrameworkOverrides } from './frameworkOverrides.js';
 
 export class EventService<P extends EventType> implements Event<P> {
   private readonly allSyncListeners: Map<string, Set<EventFunction<P>>>;
@@ -14,7 +15,7 @@ export class EventService<P extends EventType> implements Event<P> {
 
   private scheduled = false;
 
-  // using an object performs better than a Set for the number of different events we have
+  // 对于我们拥有的不同事件的数量，使用对象比 Set 表现更好
   private firedEvents: { [key: string]: boolean } = {};
 
   private frameworkOverrides: IFrameworkOverrides<P>;
@@ -34,37 +35,30 @@ export class EventService<P extends EventType> implements Event<P> {
     }
   }
 
-  // this gets called inside the grid's thread, for each event that it
-  // wants to set async. the grid then batches the events into one setTimeout()
-  // because setTimeout() is an expensive operation. ideally we would have
-  // each event in it's own setTimeout(), but we batch for performance.
+  // 这在线程内部被调用，对于它想要设置异步的每个事件。
+  // 理想情况下，我们会将每个事件都放在它自己的 setTimeout() 中，但我们为了性能而进行批处理。
   private emitAsync(func: () => void): void {
-    // add to the queue for executing later in the next VM turn
+    // 添加到队列中以便稍后在下一个 VM 回合中执行
     this.asyncFunctionsQueue.push(func);
 
-    // check if timeout is already scheduled. the first time the grid calls
-    // this within it's thread turn, this should be false, so it will schedule
-    // the 'flush queue' method the first time it comes here. then the flag is
-    // set to 'true' so it will know it's already scheduled for subsequent calls.
+    // 检查是否已安排超时。在的线程轮次中第一次调用它时，这应该是假的，所以它会在第一次到达这里时安排“刷新队列”方法。
+    // 然后标志设置为“true”，这样它就会知道它已经安排好进行后续调用。
     if (!this.scheduled) {
-      // if not scheduled, schedule one
+      // 如果没有安排，安排一个
       window.setTimeout(this.flushAsyncQueue.bind(this), 0);
-      // mark that it is scheduled
+      // 标记它已安排
       this.scheduled = true;
     }
   }
 
-  // this happens in the next VM turn only, and empties the queue of events
+  // 这只发生在下一个 VM 回合，并清空事件队列
   private flushAsyncQueue(): void {
-    // we take a copy, because the event listener could be using
-    // the grid, which would cause more events, which would be potentially
-    // added to the queue, so safe to take a copy, the new events will
-    // get executed in a later VM turn rather than risk updating the
-    // queue as we are flushing it.
+    // 这会导致更多的事件，这些事件可能会被添加到队列中，
+    // 如此安全地获取副本，新事件将在稍后的 VM 轮次中执行，而不是在我们刷新队列时冒着更新队列的风险。
     const queueCopy = this.asyncFunctionsQueue.slice();
     this.asyncFunctionsQueue = [];
 
-    // execute the queue
+    // 执行队列
     queueCopy.forEach((func) => func());
 
     this.scheduled = false;

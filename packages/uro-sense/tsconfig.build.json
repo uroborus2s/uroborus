@@ -1,13 +1,16 @@
 {
+  //此配置仅用于发出声明(.d.ts)
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "composite": true,
-    "noEmit": false,
-    "emitDeclarationOnly": true,
-    "declaration": true,
-    "declarationDir": "",
     "rootDir": "src",
-    "outDir": "dist"
+    "outDir": "build",
+    "baseUrl": ".",
+    "noEmit": false,
+    "declaration": true
   },
-  "exclude": ["src/**/*.spec.ts*", "src/**/*.test.ts*"]
+  "exclude": ["src/**/*.spec.ts*", "src/**/*.test.ts*", "__test__/*"],
+  "references": [
+    { "path": "../uro-hooks/tsconfig.build.json" },
+    { "path": "../core/tsconfig.build.json" }
+  ]
 }

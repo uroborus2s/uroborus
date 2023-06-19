@@ -57,8 +57,9 @@ nbdist/
 
 # IntelliJ
 .idea/
+.fleet/
 out/
-# mpeltonen/sbt-idea plugin
+# mpeltonen/sbt-idea plugins
 .idea_modules/
 
 ## Xcode User settings
@@ -198,7 +199,7 @@ dist
 .pnp.*
 .yarn.lock
 # pnpm
-pnpm-lock.yaml
+.pnpm/
 
 #turborepo 忽略文件
 .turbo
@@ -213,13 +214,12 @@ dist/**
 .umi-test/
 
 # remix
-/.cache
-/build
-/public/build
+/**/cypress/screenshots
+/**/cypress/videos
+/**/prisma/data.db
+/**/prisma/data.db-journal
 
-/cypress/screenshots
-/cypress/videos
-/prisma/data.db
-/prisma/data.db-journal
+/**/app/styles/tailwind.css
 
-/app/styles/tailwind.css
+# vite
+.vite

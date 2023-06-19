@@ -1,37 +1,44 @@
+import { useCallback } from 'react';
+
 export interface DragListenerParams {
-  /** 在多少像素的拖动之后，应开始拖动操作。默认为4px。 */
+  /** 拖动多少像素后应开始拖动操作。默认为 4px。 */
   dragStartPixels?: number;
-  /** 要向其添加拖动处理的DOM元素 */
-  eElement: HTMLElement;
-  /** Some places may wish to ignore certain events, eg range selection ignores shift clicks */
+  /** 有些地方可能希望忽略某些事件，例如范围选择忽略shift点击 */
   skipMouseEvent?: (mouseEvent: MouseEvent) => boolean;
-  /** Callback for drag starting */
+  /** 拖动开始的回调 */
   onDragStart: (mouseEvent: MouseEvent | Touch) => void;
-  /** Callback for drag stopping */
+  /** 拖动停止的回调 */
   onDragStop: (mouseEvent: MouseEvent | Touch) => void;
-  /** Callback for mouse move while dragging */
+  /** 拖动时鼠标移动的回调 */
   onDragging: (mouseEvent: MouseEvent | Touch) => void;
 }
 
-export default (params: DragListenerParams, includeTouch = false) => {
-  const onMouseDown = (mouseEvent: MouseEvent): void => {
-    const e = mouseEvent as any;
+export default (
+  {
+    skipMouseEvent,
+    dragStartPixels,
+    onDragging,
+    onDragStop,
+    onDragStart,
+  }: DragListenerParams,
+  includeTouch = false,
+) => {
+  const onMouseDown = useCallback((event: MouseEvent) => {
+    if (skipMouseEvent && skipMouseEvent(event)) return;
 
-    if (params.skipMouseEvent && params.skipMouseEvent(mouseEvent)) {
+    // 如果有两个具有父子关系的元素，并且都是可拖动的，
+    // 当我们拖孩子的时候，我们不应该拖父母。
+    // 这方面的一个例子是行移动和范围选择——当使用拖动 rowDrag 组件时，行移动应该得到优先考虑。
+    if ((event as any).alreadyProcessedByDragService) {
       return;
     }
-    // if there are two elements with parent / child relationship, and both are draggable,
-    // when we drag the child, we should NOT drag the parent. an example of this is row moving
-    // and range selection - row moving should get preference when use drags the rowDrag component.
-    if (e.alreadyProcessedByDragService) {
-      return;
-    }
 
-    e.alreadyProcessedByDragService = true;
+    (event as any).alreadyProcessedByDragService = true;
 
-    // only interested in left button clicks
-    if (mouseEvent.button !== 0) {
-      return;
+    // 只对左键点击感兴趣
+    if (event.button !== 0) {
     }
-  };
+  }, []);
+
+  return { onMouseDown };
 };

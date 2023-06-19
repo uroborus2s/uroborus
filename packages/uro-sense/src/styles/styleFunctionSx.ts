@@ -1,46 +1,21 @@
 import {
-  compose,
   unstable_createStyleFunctionSx,
   style,
-  display,
-  flexbox,
   grid,
-  positions,
   sizing,
   spacing,
-  border,
-  borderTop,
-  borderRight,
-  borderBottom,
-  borderLeft,
-  borderColor,
-  borderTopColor,
-  borderRightColor,
-  borderBottomColor,
-  borderLeftColor,
-  palette,
-  typographyVariant,
+  Interpolation,
+  StyleFunctionSx,
 } from '@mui/system';
 
-// The default system themeKey is shape
-const borderRadius = style({
-  prop: 'borderRadius',
-  themeKey: 'radius',
-});
-
-const borders = compose(
-  border,
-  borderTop,
-  borderRight,
-  borderBottom,
-  borderLeft,
-  borderColor,
-  borderTopColor,
-  borderRightColor,
-  borderBottomColor,
-  borderLeftColor,
-  borderRadius,
-);
+import borders from './borders.js';
+import { compose } from './compose.js';
+import type { StyleFunction } from './compose.js';
+import display from './display.js';
+import flexbox from './flexbox.js';
+import palette from './palette.js';
+import positions from './positions.js';
+import type { SxProps, Theme } from './types/index.js';
 
 // The default system themeKey is shadows
 const boxShadow = style({
@@ -49,32 +24,38 @@ const boxShadow = style({
 });
 
 // The default system themeKey is typography
-export const fontFamily = style({
+export const fontFamily: StyleFunction<'fontFamily'> = style({
   prop: 'fontFamily',
   themeKey: 'fontFamily',
 });
 
 // The default system themeKey is typography
-export const fontSize = style({
+export const fontSize: StyleFunction<'fontSize'> = style({
   prop: 'fontSize',
   themeKey: 'fontSize',
 });
 
 // The default system themeKey is typography
-export const fontWeight = style({
+export const fontWeight: StyleFunction<'fontWeight'> = style({
   prop: 'fontWeight',
   themeKey: 'fontWeight',
 });
 
 // The default system themeKey is typography
-export const letterSpacing = style({
+export const letterSpacing: StyleFunction<'letterSpacing'> = style({
   prop: 'letterSpacing',
   themeKey: 'letterSpacing',
 });
 
-export const lineHeight = style({
+export const lineHeight: StyleFunction<'lineHeight'> = style({
   prop: 'lineHeight',
   themeKey: 'lineHeight',
+});
+
+export const typographyVariant: StyleFunction<'typography'> = style({
+  prop: 'typography',
+  cssProperty: false,
+  themeKey: 'typography',
 });
 
 const typography = compose(
@@ -99,6 +80,15 @@ const styleFunctionMapping = {
   typography,
 };
 
-const styleFunctionSx = unstable_createStyleFunctionSx(styleFunctionMapping);
+const styleFunctionSx = unstable_createStyleFunctionSx(
+  styleFunctionMapping,
+) as StyleFunctionSx;
+
+styleFunctionSx.filterProps = ['sx'];
+
+export const sx = (styles: SxProps) => {
+  return ({ theme }: { theme: Theme }) =>
+    styleFunctionSx({ sx: styles, theme }) as Interpolation<{ theme: Theme }>;
+};
 
 export default styleFunctionSx;

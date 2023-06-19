@@ -1,5 +1,4 @@
 node_modules
-dist
 coverage
 .idea
 .husky
@@ -8,4 +7,4 @@ test
 jest.config.ts
 .prettierignore
 .prettierrc
-scripts/*.js
+scr/*.js

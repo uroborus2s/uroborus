@@ -2,20 +2,24 @@
   "env": {
     "browser": true,
     "es6": true,
-    "node": true
+    "node": true,
+    "jest/globals": true
   },
+  "parser": "@typescript-eslint/parser",
   "extends": [
-    "eslint:recommended",
-    "plugin:import/recommended",
-    "plugin:import/typescript",
-    "plugin:react/recommended",
     "airbnb",
     "airbnb-typescript",
+    "eslint:recommended",
+    "plugin:node/recommended",
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended",
+    "plugin:import/recommended",
+    "plugin:import/typescript",
     "plugin:@typescript-eslint/recommended",
-    "plugin:promise/recommended",
+    "plugin:jsx-a11y/recommended",
+    "plugin:react/jsx-runtime",
     "plugin:prettier/recommended"
   ],
-  "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaFeatures": {
       "jsx": true
@@ -23,56 +27,146 @@
     "ecmaVersion": 12,
     "sourceType": "module",
     "project": [
-      "./tsconfig.json",
-      "./packages/*/tsconfig.json",
-      "./apps/*/tsconfig.json"
+      "packages/*/tsconfig.json",
+      "apps/*/tsconfig.json",
+      "examples/*/tsconfig.json",
+      "tsconfig.json",
+      "scripts/tsconfig.json"
     ]
   },
   "settings": {
-    "import/extensions": [".js", ".jsx", ".ts", ".tsx"],
+    "import/extensions": [".js", ".jsx", "ts", "tsx"],
     "import/parsers": {
-      "@typescript-eslint/parser": [".ts", ".tsx"]
+      "@typescript-eslint/parser": [".tsx", ".ts"]
     },
     "import/resolver": {
       "node": {
-        "extensions": [".js", ".jsx", ".ts", ".tsx"],
-        "moduleDirectory": ["apps/*/src", "packages/*/src"]
+        "resolvePaths": ["node_modules/@types"],
+        "tryExtensions": [".js", ".json", ".node", ".ts", ".d.ts"]
       },
       "typescript": {
         "alwaysTryTypes": true,
         "project": [
-          "./tsconfig.json",
-          "./packages/*/tsconfig.json",
-          "./apps/*/tsconfig.json",
-          "./test/tsconfig.json"
+          "tsconfig.json",
+          "packages/*/tsconfig.json",
+          "examples/*/tsconfig.json",
+          "apps/*/tsconfig.json",
+          "test/tsconfig.json"
         ]
       }
-      //      "alias": {
-      //        "map": [["/@", "./src"]],
-      //        "extensions": [".js", ".jsx", ".ts", ".tsx"]
-      //      }
     }
   },
-  "plugins": ["@typescript-eslint", "import"],
+  "plugins": [
+    "@typescript-eslint",
+    "node",
+    "react-hooks",
+    "jsx-a11y",
+    "import"
+  ],
   "overrides": [
     {
       "files": ["*.test.js", "*.test.ts", "*.test.tsx"],
-      "rules": {
-        "no-restricted-imports": [
-          "error",
-          {
-            // Use named import from `test/utils` instead.
-            // The other files are private.
-            "patterns": ["test/utils/*"]
-          }
-        ]
-      }
+      "plugins": ["jest"],
+      "extends": ["plugin:jest/recommended"],
+      "rules": { "jest/prefer-expect-assertions": "off" }
     }
   ],
   "rules": {
-    "react/prop-types": "off",
-    "react/react-in-jsx-scope": "off",
-    "react/jsx-props-no-spreading": "off",
+    "import/extensions": [
+      "error",
+      {
+        "js": { "mode": "always", "extensionOverride": "ts*" },
+        "json": "always"
+      }
+    ],
+    "import/prefer-default-export": "off",
+    "import/no-extraneous-dependencies": [
+      "error",
+      {
+        "packageDir": [".", "./packages/core/","./packages/uro-react-dnd/","./packages/uro-sense/"],
+        "peerDependencies": true
+      }
+    ],
+    "no-underscore-dangle": "off",
+    "node/no-unsupported-features/es-syntax": [
+      "error",
+      { "ignores": ["modules"] }
+    ],
+    "node/no-missing-import": "off",
+    "node/no-unpublished-import": [
+      "error",
+      {
+        "allowModules": [
+          "vite",
+          "@rollup/plugin-babel",
+          "@vitejs/plugin-react",
+          "@storybook/react",
+          "@uroborus/core",
+          "@vitejs/plugin-react-swc",
+          "fast-glob",
+          "yargs",
+          "@swc/core",
+          "browserslist",
+          "fs-extra"
+        ],
+        "tryExtensions": [".js", ".json", ".node"]
+      }
+    ],
+    "no-restricted-syntax": "off",
+    "no-restricted-exports": ["error", { "restrictedNamedExports": [] }],
+    "node/no-extraneous-import": [
+      "error",
+      {
+        "allowModules": [
+          "@vitejs/plugin-legacy",
+          "@vitejs/plugin-react-swc",
+          "vite"
+        ]
+      }
+    ],
+    "@typescript-eslint/ban-types": [
+      "error",
+      {
+        "extendDefaults": true,
+        "types": {
+          "{}": false
+        }
+      }
+    ],
+    "import/order": [
+      "error",
+      {
+        "groups": [
+          "builtin",
+          "external",
+          "internal",
+          "parent",
+          "sibling",
+          "index",
+          "unknown"
+        ],
+        "pathGroups": [
+          {
+            "pattern": "react*",
+            "group": "builtin",
+            "position": "before"
+          },
+          {
+            "pattern": "@/**",
+            "group": "external",
+            "position": "after"
+          }
+        ],
+        "newlines-between": "always",
+        "pathGroupsExcludedImportTypes": [],
+        "alphabetize": {
+          "order": "asc",
+          "caseInsensitive": true
+        },
+        "warnOnUnassignedImports": false
+      }
+    ],
+    "react/require-default-props": "off",
     "react/function-component-definition": [
       2,
       {
@@ -80,29 +174,51 @@
         "unnamedComponents": "arrow-function"
       }
     ],
-    "import/no-extraneous-dependencies": ["error", { "devDependencies": true }],
-    "import/prefer-default-export": "off",
-    "no-else-return": ["error", { "allowElseIf": true }],
-    "no-underscore-dangle": [
+    "@typescript-eslint/no-empty-interface": "off",
+    "react/jsx-props-no-spreading": "off",
+    "no-param-reassign": ["error", { "props": false }],
+    "@typescript-eslint/naming-convention": [
       "error",
       {
-        "enforceInClassFields": false,
-        "allowAfterThis": true
+        "selector": "variable",
+        //camelCase - 标准驼峰式格式——字符之间不允许有下划线，并且允许连续大写（即 myID 和 myId 都有效）。
+        //strictCamelCase - 与 camelCase 相同，但不允许连续大写（即 myId 有效，但 myID 无效）。
+        //PascalCase - 与 camelCase 相同，除了第一个字符必须大写。
+        //StrictPascalCase - 与 strictCamelCase 相同，除了第一个字符必须大写。
+        //snake_case - 标准 snake_case 格式——所有字符必须小写，并且允许使用下划线。
+        //UPPER_CASE - 与 snake_case 相同，除了所有字符必须大写。
+        "format": ["camelCase", "UPPER_CASE", "PascalCase"],
+        "filter": {
+          "regex": "^_",
+          "match": false
+        }
       }
-    ],
-    "@typescript-eslint/ban-ts-comment": ["warn"],
-    "@typescript-eslint/ban-types": [
-      "error",
-      { "extendDefaults": true, "types": { "{}": false } }
-    ],
-    "import/no-unresolved": "error",
-    "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
-    "no-param-reassign": [2, { "props": false }],
-    "no-bitwise": [
-      2,
-      { "allow": [">>", "^", "<<", "&", "|", ">>>", "~", "|="] }
-    ],
-    "@typescript-eslint/no-empty-interface": ["off"],
-    "react/require-default-props": ["off"]
+    ]
   }
+  //    "react/prop-types": "off",
+  //    "react/react-in-jsx-scope": "off",
+  //    "import/prefer-default-export": "off",
+  //    "no-else-return": ["error", { "allowElseIf": true }],
+  //    "no-underscore-dangle": [
+  //      "error",
+  //      {
+  //        "enforceInClassFields": false,
+  //        "allowAfterThis": true
+  //      }
+  //    ],
+  //    "@typescript-eslint/ban-ts-comment": ["warn"],
+  //    "@typescript-eslint/ban-types": [
+  //      "error",
+  //      { "extendDefaults": true, "types": { "{}": false } }
+  //    ],
+  //    "import/no-unresolved": "error",
+  //    "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
+  //    "no-param-reassign": [2, { "props": false }],
+  //    "no-bitwise": [
+  //      2,
+  //      { "allow": [">>", "^", "<<", "&", "|", ">>>", "~", "|="] }
+  //    ],
+  //    "@typescript-eslint/no-empty-types": ["off"],
+  //    "react/require-default-props": ["off"]
+  //  }
 }

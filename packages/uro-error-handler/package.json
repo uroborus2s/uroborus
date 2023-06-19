@@ -6,16 +6,11 @@
   "typings": "types/index.d.ts",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: run tests from root\" && exit 1",
-    "build:esm": "node ../../scripts/esbuild.esm",
-    "build:stable": "node ../../scripts/esbuild.cjs",
-    "build:types": "node ../../scripts/build.types",
-    "prebuild": "rimraf dist tsconfig.tsbuildinfo types",
-    "build": "pnpm run build:stable && pnpm run build:esm && pnpm run build:types"
+    "test": "echo \"Error: run tests from root\" && exit 1"
   },
   "author": "uroborus",
   "devDependencies": {
-    "@uroborus/core": "workspace:0.0.1",
+    "@uroborus/core": "workspace:*",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   }

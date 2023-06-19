@@ -1,29 +1,15 @@
-import { EventType, FunctionHandler } from './event.types';
-import { includes } from '../util';
-
-const OUTSIDE_ANGULAR_EVENTS = [
-  'mouseover',
-  'mouseout',
-  'mouseenter',
-  'mouseleave',
-];
-const PASSIVE_EVENTS = ['touchstart', 'touchend', 'touchmove', 'touchcancel'];
+import type { EventType, FunctionHandler } from './event.types.js';
 
 export interface IFrameworkOverrides<P extends EventType> {
-  /** Because Angular uses Zones, you should not use setTimeout or setInterval (as it'll keep angular constantly doing dirty checks etc
-   * So to get around this, we allow the framework to specify how to execute setTimeout. The default is to just call the browser setTimeout().
+  /** 因为 Angular 使用 Zones，所以不应该使用 setTimeout 或 setInterval
+   * 因为它会保持角度不断地做脏检查等所以要解决这个问题, 我们允许框架指定如何执行 setTimeout。默认是只调用浏览器 setTimeout().
    */
   setTimeout(action: FunctionHandler, timeout?: number): void;
   setInterval(action: FunctionHandler, interval?: number): Promise<number>;
 
-  /** Again because Angular uses Zones, we allow adding some events outside of Zone JS so that we do not kick off
-   * the Angular change detection. We do this for some events ONLY, and not all events, just events that get fired
-   * a lot (eg mouse move), but we need to make sure in AG Grid that we do NOT call any grid callbacks while processing
-   * these events, as we will be outside of ZoneJS and hence Angular2 Change Detection won't work. However it's fine
-   * for our code to result in AG Grid events (and Angular application action on these) as these go through
-   * Event Emitter's.
-   *
-   * This was done by Niall and Sean. The problematic events are mouseover, mouseout, mouseenter and mouseleave.
+  /** 同样因为 Angular 使用区域，我们允许在 Zone JS 之外添加一些事件，这样我们就不会启动 Angular 变化检测。
+   * 我们只对某些事件执行此操作，而不是所有事件，仅针对经常触发的事件（例如鼠标移动），
+   * 这是由 Niall 和 Sean 完成的。有问题的事件是 mouseover、mouseout、mouseenter 和 mouseleave。
    */
   addEventListener(
     element: HTMLElement,
@@ -37,18 +23,6 @@ export interface IFrameworkOverrides<P extends EventType> {
     listener: FunctionHandler,
     global: boolean,
   ): void;
-
-  /*
-   * vue components are specified in the "components" part of the vue component - as such we need a way to deteremine if a given component is
-   * within that context - this method provides this
-   * Note: This is only really used/necessary with cellRendererSelectors
-   */
-  frameworkComponent(name: string): any;
-
-  /*
-   * Allows framework to identify if a class is a component from that framework.
-   */
-  isFrameworkComponent(comp: any): boolean;
 }
 
 export class FrameworkOverrides<P extends EventType>
@@ -71,51 +45,29 @@ export class FrameworkOverrides<P extends EventType>
     type: string,
     listener: EventListenerOrEventListenerObject,
     options?: boolean | AddEventListenerOptions,
-  ): void {
-    let o = options;
-    if (typeof o !== 'object') {
-      const isPassive = includes(PASSIVE_EVENTS, type);
-      o = {
-        capture: !!options,
-        passive: isPassive,
-      };
-    }
-    element.addEventListener(type, listener, o);
-  }
+  ): void {}
 
-  // for Vanilla JS, we just execute the listener
+  // 对于 Vanilla JS，我们只执行监听器
   // eslint-disable-next-line class-methods-use-this
   public dispatchEvent(
     eventType: P | string,
     listener: FunctionHandler,
-    global = false,
-  ): void {
-    listener();
-  }
+    global: boolean,
+  ): void {}
 
-  // eslint-disable-next-line class-methods-use-this
-  public frameworkComponent(name: string): any {
-    return null;
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  public isFrameworkComponent(comp: any): boolean {
-    return false;
-  }
-}
-
-export function addSafePassiveEventListener<P extends EventType>(
-  frameworkOverrides: IFrameworkOverrides<P>,
-  eElement: HTMLElement,
-  event: string,
-  listener: EventListenerOrEventListenerObject,
-) {
-  const isPassive = includes(PASSIVE_EVENTS, event);
-  const options = isPassive ? { passive: true } : undefined;
-
-  // this check is here for certain scenarios where I believe the user must be destroying
-  // the grid somehow but continuing for it to be used
-  if (frameworkOverrides && frameworkOverrides.addEventListener) {
-    frameworkOverrides.addEventListener(eElement, event, listener, options);
-  }
+  // static addSafePassiveEventListener<P extends EventType>(
+  //   frameworkOverrides: IFrameworkOverrides<P>,
+  //   eElement: HTMLElement,
+  //   event: string,
+  //   listener: EventListenerOrEventListenerObject,
+  // ) {
+  //   const isPassive = includes(PASSIVE_EVENTS, event);
+  //   const options = isPassive ? { passive: true } : undefined;
+  //
+  //   // this check is here for certain scenarios where I believe the user must be destroying
+  //   // the grid somehow but continuing for it to be used
+  //   if (frameworkOverrides && frameworkOverrides.addEventListener) {
+  //     frameworkOverrides.addEventListener(eElement, event, listener, options);
+  //   }
+  // }
 }

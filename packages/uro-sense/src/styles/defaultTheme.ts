@@ -1,12 +1,12 @@
-import { deepmerge } from '@mui/utils';
+import { deepmerge } from '@uroborus/core';
+
 import extendTheme, {
   ColorSystemOptions,
   CssVarsThemeOptions,
-} from './extendTheme';
-import { RuntimeColorSystem, Theme } from './types';
-import { createSoftInversion, createSolidInversion } from './variantUtils';
+} from './extendTheme.js';
+import { RuntimeColorSystem, Theme } from './types/index.js';
 
-export const createThemeWithVars = (
+export const createTheme = (
   themeInput?: Omit<CssVarsThemeOptions, 'colorSchemes'> & ColorSystemOptions,
 ) => {
   const {
@@ -68,14 +68,6 @@ export const createThemeWithVars = (
   } as unknown as Theme;
 };
 
-const defaultTheme = createThemeWithVars();
-
-defaultTheme.colorInversion = deepmerge(
-  {
-    soft: createSoftInversion(defaultTheme),
-    solid: createSolidInversion(defaultTheme),
-  },
-  defaultTheme.colorInversion,
-);
+const defaultTheme = createTheme();
 
 export default defaultTheme;

@@ -9,7 +9,7 @@ import {
 } from '@uroborus/grid-core';
 import classNames from 'classnames';
 import { useRecoilValue } from 'recoil';
-import useDragService from '@uroborus/grid-core/src/hooks/useDragService';
+import useDragService from 'src/hooks/useDragService';
 
 type OwnerState = {
   classes: GridOptions['classes'];

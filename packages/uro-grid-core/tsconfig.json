@@ -1,12 +1,24 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "lib": ["ES6", "ES5", "DOM"],
+    "lib": ["ESNext", "ES6", "DOM"],
+    "noEmit": false,
+    "emitDeclarationOnly": true,
+    "declaration": true,
+    "rootDir": "src",
+    "outDir": "build",
     "jsx": "react-jsx",
+    "module": "NodeNext",
+    "composite": false,
     "baseUrl": ".",
-    "paths": {
-      "@/*": ["src/*"]
-    }
+    "downlevelIteration": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true
   },
-  "include": ["src/**/*", "tests/**/*"]
+  "include": ["src"],
+  "references": [
+    { "path": "../uro-hooks/tsconfig.json" },
+    { "path": "../core/tsconfig.json" },
+    { "path": "../uro-sense/tsconfig.json" }
+  ]
 }

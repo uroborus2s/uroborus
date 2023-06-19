@@ -696,7 +696,7 @@ const parcelRequire = (function (init) {
       return Controller;
     })();
 
-  // ASSET: scripts/modules/easing.js
+  // ASSET: scr/modules/easing.js
   var $JJyr$exports = {};
   /*!
    * Terms of Use: Easing Functions (Equations)

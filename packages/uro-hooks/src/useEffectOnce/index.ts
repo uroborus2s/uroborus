@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
-const useEffectOnce = (effect: () => void | (() => void)) => {
-  const effectFn = useRef<() => void | (() => void)>(effect);
+const useEffectOnce = (effect: () => void | (() => () => void)) => {
+  const effectFn = useRef<() => void | (() => () => void)>(effect);
   const destroyFn = useRef<void | (() => void)>();
   const effectCalled = useRef(false);
   const rendered = useRef(false);
@@ -11,7 +11,7 @@ const useEffectOnce = (effect: () => void | (() => void)) => {
     rendered.current = true;
   }
   useEffect(() => {
-    // only execute the effect first time around
+    // 仅在第一次执行效果
     if (!effectCalled.current) {
       destroyFn.current = effectFn.current.call(undefined);
       effectCalled.current = true;

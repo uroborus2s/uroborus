@@ -1,0 +1,48 @@
+{
+  "name": "@uroborus/react-dnd",
+  "version": "0.0.0",
+  "main": "src/index.ts",
+  "module": "src/index.ts",
+  "typings": "src/index.ts",
+  "type": "module",
+  "keywords": [],
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite",
+    "build": "pnpm prebuild && pnpm build:types && vite build",
+    "preview": "vite preview",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build",
+    "build:types": "tsc -p tsconfig.build.json",
+    "prebuild": "rimraf build tsconfig.build.tsbuildinfo"
+  },
+  "peerDependencies": {
+    "@emotion/react": "11.10.6",
+    "@emotion/styled": "^11.10.6",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "dependencies": {
+    "@uroborus/core": "workspace:*",
+    "@uroborus/hooks": "workspace:*",
+    "css-box-model": "^1.2.1",
+    "react-error-boundary": "^4.0.4",
+    "recoil": "^0.7.7"
+  },
+  "devDependencies": {
+    "@storybook/addon-essentials": "^7.0.0-beta.64",
+    "@storybook/addon-interactions": "^7.0.0-beta.64",
+    "@storybook/addon-links": "^7.0.0-beta.64",
+    "@storybook/blocks": "^7.0.0-beta.64",
+    "@storybook/react": "^7.0.0-beta.64",
+    "@storybook/react-vite": "^7.0.0-beta.64",
+    "@storybook/testing-library": "^0.0.14-next.1",
+    "prop-types": "^15.8.1",
+    "storybook": "^7.0.0-beta.64",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "engines": {
+    "node": ">=16.18.1"
+  }
+}

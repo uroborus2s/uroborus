@@ -1,8 +1,10 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "lib": ["ES6", "ES5", "DOM"],
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "lib": ["DOM", "ESNext"],
+    "module": "NodeNext"
   },
-  "include": ["src/**/*", "tests/**/*"]
+  "include": ["src/**/*", "tests/**/*"],
+  "references": [{ "path": "../core/tsconfig.json" }]
 }
